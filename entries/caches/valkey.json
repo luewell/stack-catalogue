@@ -1,0 +1,57 @@
+{
+  "services": [
+    {
+      "type": "valkey",
+      "category": "cache",
+      "support": "current",
+      "version": "9.1.1",
+      "description": "Valkey, the BSD-licensed Redis fork",
+      "artifacts": {
+        "darwin/arm64": {
+          "url": "https://github.com/luewell/stack-binaries/releases/download/valkey-9.1.1/valkey-9.1.1-macos-arm64.tar.gz",
+          "digest": {
+            "algorithm": "sha256",
+            "value": "5b5648f25e365ff758346815fb7da46d8270f2832d3d4e9fd1901b1d0177e34b"
+          },
+          "archive": "tar.gz",
+          "paths": [
+            "bin"
+          ],
+          "strip": 1
+        },
+        "linux/amd64": {
+          "url": "https://download.valkey.io/releases/valkey-9.1.1-noble-x86_64.tar.gz",
+          "digest": {
+            "algorithm": "sha256",
+            "value": "41f5eb5dc88111c5d117821c120c5a9fbcf2bcc3316953f811c04444046ecb28"
+          },
+          "archive": "tar.gz",
+          "paths": [
+            "bin"
+          ],
+          "strip": 1
+        },
+        "linux/arm64": {
+          "url": "https://download.valkey.io/releases/valkey-9.1.1-noble-arm64.tar.gz",
+          "digest": {
+            "algorithm": "sha256",
+            "value": "f1477b12c36832dcb8e3e2f83c1a1554a18ab94b204d017e1d8443bff1dade21"
+          },
+          "archive": "tar.gz",
+          "paths": [
+            "bin"
+          ],
+          "strip": 1
+        }
+      },
+      "runtime": {
+        "start": "{install}/bin/valkey-server --port {port} --bind 127.0.0.1 --dir {data} --unixsocket {socket}/valkey.sock --appendonly no",
+        "stop_signal": "SIGTERM",
+        "default_port": 6379,
+        "connection": {
+          "REDIS_URL": "redis://127.0.0.1:{port}"
+        }
+      }
+    }
+  ]
+}

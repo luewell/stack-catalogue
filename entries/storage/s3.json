@@ -1,0 +1,72 @@
+{
+  "services": [
+    {
+      "type": "s3",
+      "category": "storage",
+      "support": "current",
+      "version": "1.7.0",
+      "description": "versitygw, an S3 gateway over a plain directory",
+      "artifacts": {
+        "darwin/arm64": {
+          "url": "https://github.com/versity/versitygw/releases/download/v1.7.0/versitygw_v1.7.0_Darwin_arm64.tar.gz",
+          "digest": {
+            "algorithm": "sha256",
+            "value": "df3870bf83a88e0828864f2d9ab62d83a6e56722d620e84204bb04d48b9fe727"
+          },
+          "archive": "tar.gz",
+          "paths": [
+            "versitygw"
+          ],
+          "strip": 1
+        },
+        "linux/amd64": {
+          "url": "https://github.com/versity/versitygw/releases/download/v1.7.0/versitygw_v1.7.0_Linux_x86_64.tar.gz",
+          "digest": {
+            "algorithm": "sha256",
+            "value": "dacec530fecaa8776feec0536998dd4bd78036e0d4db0da9b9189d96bb790e03"
+          },
+          "archive": "tar.gz",
+          "paths": [
+            "versitygw"
+          ],
+          "strip": 1
+        },
+        "linux/arm64": {
+          "url": "https://github.com/versity/versitygw/releases/download/v1.7.0/versitygw_v1.7.0_Linux_arm64.tar.gz",
+          "digest": {
+            "algorithm": "sha256",
+            "value": "5ef8d098e58b66171f2d8cd93dfcf44a7b3984d2e5710562ab1af6c884bc0a34"
+          },
+          "archive": "tar.gz",
+          "paths": [
+            "versitygw"
+          ],
+          "strip": 1
+        }
+      },
+      "runtime": {
+        "initialise": "mkdir -p {data}/buckets {data}/iam",
+        "initialised_marker": "buckets",
+        "start": "{install}/versitygw --port 127.0.0.1:{port} --iam-dir {data}/iam posix {data}/buckets",
+        "stop_signal": "SIGTERM",
+        "default_port": 7070,
+        "connection": {
+          "AWS_ENDPOINT_URL": "https://s3.{group}.{tld}",
+          "AWS_REGION": "us-east-1",
+          "AWS_S3_FORCE_PATH_STYLE": "true",
+          "S3_BUCKET": "{group}"
+        },
+        "ready": "{install}/versitygw admin --access $ROOT_ACCESS_KEY --secret $ROOT_SECRET_KEY --endpoint-url http://127.0.0.1:{port} list-buckets",
+        "secrets": [
+          "ROOT_ACCESS_KEY",
+          "ROOT_SECRET_KEY"
+        ],
+        "group_secrets": [
+          "AWS_ACCESS_KEY_ID",
+          "AWS_SECRET_ACCESS_KEY"
+        ],
+        "provision": "set -e\nADMIN=\"{install}/versitygw admin --access $ROOT_ACCESS_KEY --secret $ROOT_SECRET_KEY --endpoint-url http://127.0.0.1:{port}\"\n$ADMIN list-users | awk '{print $1}' | grep -qx \"$AWS_ACCESS_KEY_ID\" ||\n  $ADMIN create-user --access \"$AWS_ACCESS_KEY_ID\" --secret \"$AWS_SECRET_ACCESS_KEY\" --role user\nfor bucket in {buckets}; do\n  $ADMIN list-buckets | awk '{print $1}' | grep -qx \"$bucket\" ||\n    $ADMIN create-bucket --bucket \"$bucket\" --owner \"$AWS_ACCESS_KEY_ID\"\ndone\n"
+      }
+    }
+  ]
+}

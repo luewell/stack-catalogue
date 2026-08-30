@@ -1,0 +1,193 @@
+{
+  "services": [
+    {
+      "type": "postgres",
+      "category": "database",
+      "support": "lts",
+      "version": "18.6.0",
+      "description": "PostgreSQL 18, supported until November 2030",
+      "artifacts": {
+        "darwin/arm64": {
+          "url": "https://github.com/theseus-rs/postgresql-binaries/releases/download/18.6.0/postgresql-18.6.0-aarch64-apple-darwin.tar.gz",
+          "digest": {
+            "algorithm": "sha256",
+            "value": "a257bcdb8aa3301a13d6a5bcec48f8c9517045b7cbae71e50788b2615539e95b"
+          },
+          "archive": "tar.gz",
+          "paths": [
+            "bin",
+            "lib",
+            "share"
+          ],
+          "strip": 1
+        },
+        "linux/amd64": {
+          "url": "https://github.com/theseus-rs/postgresql-binaries/releases/download/18.6.0/postgresql-18.6.0-x86_64-unknown-linux-gnu.tar.gz",
+          "digest": {
+            "algorithm": "sha256",
+            "value": "bb3d09f876b2383e25a8c9ce09e32d185a03656a23d074f5195542b1b1b3ca61"
+          },
+          "archive": "tar.gz",
+          "paths": [
+            "bin",
+            "lib",
+            "share"
+          ],
+          "strip": 1
+        },
+        "linux/arm64": {
+          "url": "https://github.com/theseus-rs/postgresql-binaries/releases/download/18.6.0/postgresql-18.6.0-aarch64-unknown-linux-gnu.tar.gz",
+          "digest": {
+            "algorithm": "sha256",
+            "value": "5d2b5e8be9e96bfc3d7f22090057a836ec36d5d092542d8d3b93cc145cf4ee13"
+          },
+          "archive": "tar.gz",
+          "paths": [
+            "bin",
+            "lib",
+            "share"
+          ],
+          "strip": 1
+        }
+      },
+      "runtime": {
+        "initialise": "{install}/bin/initdb --pgdata={data} --username={user} --auth=trust --encoding=UTF8 --no-sync",
+        "initialised_marker": "PG_VERSION",
+        "start": "{install}/bin/postgres -D {data} -p {port} -k {socket} -c listen_addresses=127.0.0.1",
+        "stop_signal": "SIGINT",
+        "default_port": 5432,
+        "connection": {
+          "DATABASE_URL": "postgres://{group}@127.0.0.1:{port}/{group}?sslmode=disable",
+          "DB_URL": "postgres://{group}@127.0.0.1:{port}/{group}?sslmode=disable"
+        },
+        "provision": "set -e\n{install}/bin/psql -h {socket} -p {port} -U {user} -d postgres -q -v ON_ERROR_STOP=1 \u003c\u003c'SQL'\nSELECT 'CREATE ROLE \"{group}\" LOGIN'\n  WHERE NOT EXISTS (SELECT FROM pg_roles WHERE rolname = '{group}')\\gexec\nSELECT 'CREATE DATABASE \"{group}\" OWNER \"{group}\"'\n  WHERE NOT EXISTS (SELECT FROM pg_database WHERE datname = '{group}')\\gexec\nREVOKE CONNECT ON DATABASE \"{group}\" FROM PUBLIC;\nSQL\n"
+      }
+    },
+    {
+      "type": "postgres",
+      "category": "database",
+      "support": "lts",
+      "version": "17.11.0",
+      "description": "PostgreSQL 17, supported until November 2029",
+      "artifacts": {
+        "darwin/arm64": {
+          "url": "https://github.com/theseus-rs/postgresql-binaries/releases/download/17.11.0/postgresql-17.11.0-aarch64-apple-darwin.tar.gz",
+          "digest": {
+            "algorithm": "sha256",
+            "value": "fd4b62794b160e26973a768a1eef3248aef9d2ff23ebd6d884a4299485e28e57"
+          },
+          "archive": "tar.gz",
+          "paths": [
+            "bin",
+            "lib",
+            "share"
+          ],
+          "strip": 1
+        },
+        "linux/amd64": {
+          "url": "https://github.com/theseus-rs/postgresql-binaries/releases/download/17.11.0/postgresql-17.11.0-x86_64-unknown-linux-gnu.tar.gz",
+          "digest": {
+            "algorithm": "sha256",
+            "value": "b7a1ba6bae6499d8296e3e81b0171eecfd1766ca9aaa0057e41ad3e844e5e2e0"
+          },
+          "archive": "tar.gz",
+          "paths": [
+            "bin",
+            "lib",
+            "share"
+          ],
+          "strip": 1
+        },
+        "linux/arm64": {
+          "url": "https://github.com/theseus-rs/postgresql-binaries/releases/download/17.11.0/postgresql-17.11.0-aarch64-unknown-linux-gnu.tar.gz",
+          "digest": {
+            "algorithm": "sha256",
+            "value": "abffda09209280ec1502b73720dc4d254fb7fff9a072e324926c600a5b16c221"
+          },
+          "archive": "tar.gz",
+          "paths": [
+            "bin",
+            "lib",
+            "share"
+          ],
+          "strip": 1
+        }
+      },
+      "runtime": {
+        "initialise": "{install}/bin/initdb --pgdata={data} --username={user} --auth=trust --encoding=UTF8 --no-sync",
+        "initialised_marker": "PG_VERSION",
+        "start": "{install}/bin/postgres -D {data} -p {port} -k {socket} -c listen_addresses=127.0.0.1",
+        "stop_signal": "SIGINT",
+        "default_port": 5432,
+        "connection": {
+          "DATABASE_URL": "postgres://{group}@127.0.0.1:{port}/{group}?sslmode=disable",
+          "DB_URL": "postgres://{group}@127.0.0.1:{port}/{group}?sslmode=disable"
+        },
+        "provision": "set -e\n{install}/bin/psql -h {socket} -p {port} -U {user} -d postgres -q -v ON_ERROR_STOP=1 \u003c\u003c'SQL'\nSELECT 'CREATE ROLE \"{group}\" LOGIN'\n  WHERE NOT EXISTS (SELECT FROM pg_roles WHERE rolname = '{group}')\\gexec\nSELECT 'CREATE DATABASE \"{group}\" OWNER \"{group}\"'\n  WHERE NOT EXISTS (SELECT FROM pg_database WHERE datname = '{group}')\\gexec\nREVOKE CONNECT ON DATABASE \"{group}\" FROM PUBLIC;\nSQL\n"
+      }
+    },
+    {
+      "type": "postgres",
+      "category": "database",
+      "support": "lts",
+      "version": "16.15.0",
+      "description": "PostgreSQL 16, supported until November 2028",
+      "artifacts": {
+        "darwin/arm64": {
+          "url": "https://github.com/theseus-rs/postgresql-binaries/releases/download/16.15.0/postgresql-16.15.0-aarch64-apple-darwin.tar.gz",
+          "digest": {
+            "algorithm": "sha256",
+            "value": "46f6382024d9b633d1f4b4903ffef8c2404e00ae83098d628c00591048cb0512"
+          },
+          "archive": "tar.gz",
+          "paths": [
+            "bin",
+            "lib",
+            "share"
+          ],
+          "strip": 1
+        },
+        "linux/amd64": {
+          "url": "https://github.com/theseus-rs/postgresql-binaries/releases/download/16.15.0/postgresql-16.15.0-x86_64-unknown-linux-gnu.tar.gz",
+          "digest": {
+            "algorithm": "sha256",
+            "value": "77dd669eda3985ea8be26256f6af28d3c8414152ada713797555bb7423b4486a"
+          },
+          "archive": "tar.gz",
+          "paths": [
+            "bin",
+            "lib",
+            "share"
+          ],
+          "strip": 1
+        },
+        "linux/arm64": {
+          "url": "https://github.com/theseus-rs/postgresql-binaries/releases/download/16.15.0/postgresql-16.15.0-aarch64-unknown-linux-gnu.tar.gz",
+          "digest": {
+            "algorithm": "sha256",
+            "value": "f6d49ffbaea28cf8732785b18afb75bded905667d4ec8e2308a13a30fe0a24d1"
+          },
+          "archive": "tar.gz",
+          "paths": [
+            "bin",
+            "lib",
+            "share"
+          ],
+          "strip": 1
+        }
+      },
+      "runtime": {
+        "initialise": "{install}/bin/initdb --pgdata={data} --username={user} --auth=trust --encoding=UTF8 --no-sync",
+        "initialised_marker": "PG_VERSION",
+        "start": "{install}/bin/postgres -D {data} -p {port} -k {socket} -c listen_addresses=127.0.0.1",
+        "stop_signal": "SIGINT",
+        "default_port": 5432,
+        "connection": {
+          "DATABASE_URL": "postgres://{group}@127.0.0.1:{port}/{group}?sslmode=disable",
+          "DB_URL": "postgres://{group}@127.0.0.1:{port}/{group}?sslmode=disable"
+        },
+        "provision": "set -e\n{install}/bin/psql -h {socket} -p {port} -U {user} -d postgres -q -v ON_ERROR_STOP=1 \u003c\u003c'SQL'\nSELECT 'CREATE ROLE \"{group}\" LOGIN'\n  WHERE NOT EXISTS (SELECT FROM pg_roles WHERE rolname = '{group}')\\gexec\nSELECT 'CREATE DATABASE \"{group}\" OWNER \"{group}\"'\n  WHERE NOT EXISTS (SELECT FROM pg_database WHERE datname = '{group}')\\gexec\nREVOKE CONNECT ON DATABASE \"{group}\" FROM PUBLIC;\nSQL\n"
+      }
+    }
+  ]
+}

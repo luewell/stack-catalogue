@@ -1,0 +1,65 @@
+{
+  "services": [
+    {
+      "type": "python",
+      "kind": "runtime",
+      "category": "language",
+      "support": "lts",
+      "version": "3.14.7",
+      "description": "Python 3.14, taking bug fixes until October 2030",
+      "artifacts": {
+        "darwin/arm64": {
+          "url": "https://github.com/astral-sh/python-build-standalone/releases/download/20260825/cpython-3.14.7+20260825-aarch64-apple-darwin-install_only.tar.gz",
+          "digest": {
+            "algorithm": "sha256",
+            "value": "4c4a4114bc35f9d76d194fd72f43d8375b2f30686ddfe6b40c9258cfe6c16e40"
+          },
+          "archive": "tar.gz",
+          "paths": [
+            "bin",
+            "lib",
+            "include"
+          ],
+          "strip": 1
+        },
+        "linux/amd64": {
+          "url": "https://github.com/astral-sh/python-build-standalone/releases/download/20260825/cpython-3.14.7+20260825-x86_64-unknown-linux-gnu-install_only.tar.gz",
+          "digest": {
+            "algorithm": "sha256",
+            "value": "d68dfa9c5d37afec0a4c8ffbf5c20d05d34492bd4561c94d7c3c7578e21a7f71"
+          },
+          "archive": "tar.gz",
+          "paths": [
+            "bin",
+            "lib",
+            "include"
+          ],
+          "strip": 1
+        },
+        "linux/arm64": {
+          "url": "https://github.com/astral-sh/python-build-standalone/releases/download/20260825/cpython-3.14.7+20260825-aarch64-unknown-linux-gnu-install_only.tar.gz",
+          "digest": {
+            "algorithm": "sha256",
+            "value": "bd5e9541a62fd1143270a38c2c1cdb94c7a1015c6d104aefa9e12ab5f80370b2"
+          },
+          "archive": "tar.gz",
+          "paths": [
+            "bin",
+            "lib",
+            "include"
+          ],
+          "strip": 1
+        }
+      },
+      "runtime": {
+        "start": "",
+        "commands": [
+          "python",
+          "python3",
+          "pip",
+          "pip3"
+        ]
+      }
+    }
+  ]
+}

@@ -3,22 +3,11 @@
     {
       "type": "php",
       "kind": "runtime",
+      "category": "language",
       "version": "8.5.10",
       "support": "current",
       "description": "PHP 8.5, in active support until the end of 2027",
       "artifacts": {
-        "darwin/arm64": {
-          "url": "https://github.com/luewell/stack-binaries/releases/download/php-8.5.10/php-8.5.10-macos-arm64.tar.gz",
-          "digest": {
-            "algorithm": "sha256",
-            "value": "d1a6fc3f595b13a8675d0fe17c61553e6e767700f5c4edd75069a79eb3b83d46"
-          },
-          "archive": "tar.gz",
-          "strip": 1,
-          "paths": [
-            "bin"
-          ]
-        },
         "linux/arm64": {
           "url": "https://github.com/luewell/stack-binaries/releases/download/php-8.5.10/php-8.5.10-linux-arm64.tar.gz",
           "digest": {
@@ -42,6 +31,18 @@
           "paths": [
             "bin"
           ]
+        },
+        "darwin/arm64": {
+          "url": "https://github.com/luewell/stack-binaries/releases/download/php-8.5.10/php-8.5.10-macos-arm64.tar.gz",
+          "digest": {
+            "algorithm": "sha256",
+            "value": "d1a6fc3f595b13a8675d0fe17c61553e6e767700f5c4edd75069a79eb3b83d46"
+          },
+          "archive": "tar.gz",
+          "strip": 1,
+          "paths": [
+            "bin"
+          ]
         }
       },
       "runtime": {
@@ -49,8 +50,219 @@
           "php"
         ],
         "bin_dir": "bin"
+      }
+    },
+    {
+      "type": "php",
+      "kind": "runtime",
+      "category": "language",
+      "support": "lts",
+      "version": "8.4.25",
+      "description": "PHP 8.4, in active support",
+      "artifacts": {
+        "darwin/arm64": {
+          "url": "https://github.com/luewell/stack-binaries/releases/download/php-8.4.25/php-8.4.25-macos-arm64.tar.gz",
+          "digest": {
+            "algorithm": "sha256",
+            "value": "6bd46333aa51723d7b884f813734f1fe4cdbe6d9aaef43fc12010871bea47945"
+          },
+          "archive": "tar.gz",
+          "paths": [
+            "bin"
+          ],
+          "strip": 1
+        },
+        "linux/amd64": {
+          "url": "https://github.com/luewell/stack-binaries/releases/download/php-8.4.25/php-8.4.25-linux-x86_64.tar.gz",
+          "digest": {
+            "algorithm": "sha256",
+            "value": "c9a34988670150a6df0653d6bbf15b5c7d8d14ecb9987469ae76ce7694011a1a"
+          },
+          "archive": "tar.gz",
+          "paths": [
+            "bin"
+          ],
+          "strip": 1
+        },
+        "linux/arm64": {
+          "url": "https://github.com/luewell/stack-binaries/releases/download/php-8.4.25/php-8.4.25-linux-arm64.tar.gz",
+          "digest": {
+            "algorithm": "sha256",
+            "value": "d10e9a351e939da50d797d5c35f9d5062a7711a0258e59150b7bfa5cb8f8e5d5"
+          },
+          "archive": "tar.gz",
+          "paths": [
+            "bin"
+          ],
+          "strip": 1
+        }
       },
-      "category": "language"
+      "runtime": {
+        "start": "",
+        "commands": [
+          "php"
+        ],
+        "bin_dir": "bin"
+      }
+    },
+    {
+      "type": "php",
+      "kind": "runtime",
+      "category": "language",
+      "support": "current",
+      "version": "8.3.33",
+      "description": "PHP 8.3, security fixes until the end of 2027",
+      "artifacts": {
+        "darwin/arm64": {
+          "url": "https://github.com/luewell/stack-binaries/releases/download/php-8.3.33/php-8.3.33-macos-arm64.tar.gz",
+          "digest": {
+            "algorithm": "sha256",
+            "value": "480df8d3e7d2b1b7cd1e5055cba0cc814cf36a12f763ef5ef15f4a1ea57f3c5e"
+          },
+          "archive": "tar.gz",
+          "paths": [
+            "bin"
+          ],
+          "strip": 1
+        },
+        "linux/amd64": {
+          "url": "https://github.com/luewell/stack-binaries/releases/download/php-8.3.33/php-8.3.33-linux-x86_64.tar.gz",
+          "digest": {
+            "algorithm": "sha256",
+            "value": "bf29d5a160297be7c0dabca40a0f24219331f2b1ed109d01f6e6f6130bc63d54"
+          },
+          "archive": "tar.gz",
+          "paths": [
+            "bin"
+          ],
+          "strip": 1
+        },
+        "linux/arm64": {
+          "url": "https://github.com/luewell/stack-binaries/releases/download/php-8.3.33/php-8.3.33-linux-arm64.tar.gz",
+          "digest": {
+            "algorithm": "sha256",
+            "value": "1635630cdced7e0c994f7d1cc67d1427253daff620be65be7504ddf4e2ec2801"
+          },
+          "archive": "tar.gz",
+          "paths": [
+            "bin"
+          ],
+          "strip": 1
+        }
+      },
+      "runtime": {
+        "start": "",
+        "commands": [
+          "php"
+        ],
+        "bin_dir": "bin"
+      }
+    },
+    {
+      "type": "php",
+      "kind": "runtime",
+      "category": "language",
+      "support": "current",
+      "version": "8.2.33",
+      "description": "PHP 8.2, security fixes only, and they end 31 December 2026",
+      "artifacts": {
+        "darwin/arm64": {
+          "url": "https://github.com/luewell/stack-binaries/releases/download/php-8.2.33/php-8.2.33-macos-arm64.tar.gz",
+          "digest": {
+            "algorithm": "sha256",
+            "value": "3c20392ee020eabf36ff33b4cc7f7973dfd9829ef84d2a26fbb55423db1abe69"
+          },
+          "archive": "tar.gz",
+          "paths": [
+            "bin"
+          ],
+          "strip": 1
+        },
+        "linux/amd64": {
+          "url": "https://github.com/luewell/stack-binaries/releases/download/php-8.2.33/php-8.2.33-linux-x86_64.tar.gz",
+          "digest": {
+            "algorithm": "sha256",
+            "value": "63ee24ed6b731cd6958439afac4b2e49bf2aa4e6727cb2431878bfe207d5293e"
+          },
+          "archive": "tar.gz",
+          "paths": [
+            "bin"
+          ],
+          "strip": 1
+        },
+        "linux/arm64": {
+          "url": "https://github.com/luewell/stack-binaries/releases/download/php-8.2.33/php-8.2.33-linux-arm64.tar.gz",
+          "digest": {
+            "algorithm": "sha256",
+            "value": "8111bab308214c2e021ea54f0fbb897de5a29322081b4b1360df762cbfee52cc"
+          },
+          "archive": "tar.gz",
+          "paths": [
+            "bin"
+          ],
+          "strip": 1
+        }
+      },
+      "runtime": {
+        "start": "",
+        "commands": [
+          "php"
+        ],
+        "bin_dir": "bin"
+      }
+    },
+    {
+      "type": "php",
+      "kind": "runtime",
+      "category": "language",
+      "support": "end of life",
+      "version": "8.1.34",
+      "description": "PHP 8.1, past end of life since December 2025",
+      "artifacts": {
+        "darwin/arm64": {
+          "url": "https://github.com/luewell/stack-binaries/releases/download/php-8.1.34/php-8.1.34-macos-arm64.tar.gz",
+          "digest": {
+            "algorithm": "sha256",
+            "value": "074d2657dff6cd62cdd3f1c82dd3d88fdf4aaf96dca591dd42db32d1d9719374"
+          },
+          "archive": "tar.gz",
+          "paths": [
+            "bin"
+          ],
+          "strip": 1
+        },
+        "linux/amd64": {
+          "url": "https://github.com/luewell/stack-binaries/releases/download/php-8.1.34/php-8.1.34-linux-x86_64.tar.gz",
+          "digest": {
+            "algorithm": "sha256",
+            "value": "4f796f7fc9b03c8d9fed0274dd6a1d8999ea6facc7b9ed9bf142a5f10f9d597e"
+          },
+          "archive": "tar.gz",
+          "paths": [
+            "bin"
+          ],
+          "strip": 1
+        },
+        "linux/arm64": {
+          "url": "https://github.com/luewell/stack-binaries/releases/download/php-8.1.34/php-8.1.34-linux-arm64.tar.gz",
+          "digest": {
+            "algorithm": "sha256",
+            "value": "e59c7001bb7f46cbd70ebc3e82125088205ea2cbb9e3418a626f84cd71ed1719"
+          },
+          "archive": "tar.gz",
+          "paths": [
+            "bin"
+          ],
+          "strip": 1
+        }
+      },
+      "runtime": {
+        "start": "",
+        "commands": [
+          "php"
+        ],
+        "bin_dir": "bin"
+      }
     }
   ]
 }

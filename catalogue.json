@@ -1,28 +1,571 @@
 {
   "version": 1,
   "generated_from": [
-    "entries/languages/php.json"
+    "entries/caches/valkey.json",
+    "entries/databases/postgres.json",
+    "entries/languages/node.json",
+    "entries/languages/php.json",
+    "entries/languages/python.json",
+    "entries/packages/composer.json",
+    "entries/packages/pnpm.json",
+    "entries/storage/s3.json"
   ],
   "services": [
     {
+      "type": "valkey",
+      "category": "cache",
+      "support": "current",
+      "version": "9.1.1",
+      "description": "Valkey, the BSD-licensed Redis fork",
+      "artifacts": {
+        "darwin/arm64": {
+          "url": "https://github.com/luewell/stack-binaries/releases/download/valkey-9.1.1/valkey-9.1.1-macos-arm64.tar.gz",
+          "digest": {
+            "algorithm": "sha256",
+            "value": "5b5648f25e365ff758346815fb7da46d8270f2832d3d4e9fd1901b1d0177e34b"
+          },
+          "archive": "tar.gz",
+          "paths": [
+            "bin"
+          ],
+          "strip": 1
+        },
+        "linux/amd64": {
+          "url": "https://download.valkey.io/releases/valkey-9.1.1-noble-x86_64.tar.gz",
+          "digest": {
+            "algorithm": "sha256",
+            "value": "41f5eb5dc88111c5d117821c120c5a9fbcf2bcc3316953f811c04444046ecb28"
+          },
+          "archive": "tar.gz",
+          "paths": [
+            "bin"
+          ],
+          "strip": 1
+        },
+        "linux/arm64": {
+          "url": "https://download.valkey.io/releases/valkey-9.1.1-noble-arm64.tar.gz",
+          "digest": {
+            "algorithm": "sha256",
+            "value": "f1477b12c36832dcb8e3e2f83c1a1554a18ab94b204d017e1d8443bff1dade21"
+          },
+          "archive": "tar.gz",
+          "paths": [
+            "bin"
+          ],
+          "strip": 1
+        }
+      },
+      "runtime": {
+        "start": "{install}/bin/valkey-server --port {port} --bind 127.0.0.1 --dir {data} --unixsocket {socket}/valkey.sock --appendonly no",
+        "stop_signal": "SIGTERM",
+        "default_port": 6379,
+        "connection": {
+          "REDIS_URL": "redis://127.0.0.1:{port}"
+        }
+      }
+    },
+    {
+      "type": "postgres",
+      "category": "database",
+      "support": "lts",
+      "version": "18.6.0",
+      "description": "PostgreSQL 18, supported until November 2030",
+      "artifacts": {
+        "darwin/arm64": {
+          "url": "https://github.com/theseus-rs/postgresql-binaries/releases/download/18.6.0/postgresql-18.6.0-aarch64-apple-darwin.tar.gz",
+          "digest": {
+            "algorithm": "sha256",
+            "value": "a257bcdb8aa3301a13d6a5bcec48f8c9517045b7cbae71e50788b2615539e95b"
+          },
+          "archive": "tar.gz",
+          "paths": [
+            "bin",
+            "lib",
+            "share"
+          ],
+          "strip": 1
+        },
+        "linux/amd64": {
+          "url": "https://github.com/theseus-rs/postgresql-binaries/releases/download/18.6.0/postgresql-18.6.0-x86_64-unknown-linux-gnu.tar.gz",
+          "digest": {
+            "algorithm": "sha256",
+            "value": "bb3d09f876b2383e25a8c9ce09e32d185a03656a23d074f5195542b1b1b3ca61"
+          },
+          "archive": "tar.gz",
+          "paths": [
+            "bin",
+            "lib",
+            "share"
+          ],
+          "strip": 1
+        },
+        "linux/arm64": {
+          "url": "https://github.com/theseus-rs/postgresql-binaries/releases/download/18.6.0/postgresql-18.6.0-aarch64-unknown-linux-gnu.tar.gz",
+          "digest": {
+            "algorithm": "sha256",
+            "value": "5d2b5e8be9e96bfc3d7f22090057a836ec36d5d092542d8d3b93cc145cf4ee13"
+          },
+          "archive": "tar.gz",
+          "paths": [
+            "bin",
+            "lib",
+            "share"
+          ],
+          "strip": 1
+        }
+      },
+      "runtime": {
+        "initialise": "{install}/bin/initdb --pgdata={data} --username={user} --auth=trust --encoding=UTF8 --no-sync",
+        "initialised_marker": "PG_VERSION",
+        "start": "{install}/bin/postgres -D {data} -p {port} -k {socket} -c listen_addresses=127.0.0.1",
+        "stop_signal": "SIGINT",
+        "default_port": 5432,
+        "connection": {
+          "DATABASE_URL": "postgres://{group}@127.0.0.1:{port}/{group}?sslmode=disable",
+          "DB_URL": "postgres://{group}@127.0.0.1:{port}/{group}?sslmode=disable"
+        },
+        "provision": "set -e\n{install}/bin/psql -h {socket} -p {port} -U {user} -d postgres -q -v ON_ERROR_STOP=1 <<'SQL'\nSELECT 'CREATE ROLE \"{group}\" LOGIN'\n  WHERE NOT EXISTS (SELECT FROM pg_roles WHERE rolname = '{group}')\\gexec\nSELECT 'CREATE DATABASE \"{group}\" OWNER \"{group}\"'\n  WHERE NOT EXISTS (SELECT FROM pg_database WHERE datname = '{group}')\\gexec\nREVOKE CONNECT ON DATABASE \"{group}\" FROM PUBLIC;\nSQL\n"
+      }
+    },
+    {
+      "type": "postgres",
+      "category": "database",
+      "support": "lts",
+      "version": "17.11.0",
+      "description": "PostgreSQL 17, supported until November 2029",
+      "artifacts": {
+        "darwin/arm64": {
+          "url": "https://github.com/theseus-rs/postgresql-binaries/releases/download/17.11.0/postgresql-17.11.0-aarch64-apple-darwin.tar.gz",
+          "digest": {
+            "algorithm": "sha256",
+            "value": "fd4b62794b160e26973a768a1eef3248aef9d2ff23ebd6d884a4299485e28e57"
+          },
+          "archive": "tar.gz",
+          "paths": [
+            "bin",
+            "lib",
+            "share"
+          ],
+          "strip": 1
+        },
+        "linux/amd64": {
+          "url": "https://github.com/theseus-rs/postgresql-binaries/releases/download/17.11.0/postgresql-17.11.0-x86_64-unknown-linux-gnu.tar.gz",
+          "digest": {
+            "algorithm": "sha256",
+            "value": "b7a1ba6bae6499d8296e3e81b0171eecfd1766ca9aaa0057e41ad3e844e5e2e0"
+          },
+          "archive": "tar.gz",
+          "paths": [
+            "bin",
+            "lib",
+            "share"
+          ],
+          "strip": 1
+        },
+        "linux/arm64": {
+          "url": "https://github.com/theseus-rs/postgresql-binaries/releases/download/17.11.0/postgresql-17.11.0-aarch64-unknown-linux-gnu.tar.gz",
+          "digest": {
+            "algorithm": "sha256",
+            "value": "abffda09209280ec1502b73720dc4d254fb7fff9a072e324926c600a5b16c221"
+          },
+          "archive": "tar.gz",
+          "paths": [
+            "bin",
+            "lib",
+            "share"
+          ],
+          "strip": 1
+        }
+      },
+      "runtime": {
+        "initialise": "{install}/bin/initdb --pgdata={data} --username={user} --auth=trust --encoding=UTF8 --no-sync",
+        "initialised_marker": "PG_VERSION",
+        "start": "{install}/bin/postgres -D {data} -p {port} -k {socket} -c listen_addresses=127.0.0.1",
+        "stop_signal": "SIGINT",
+        "default_port": 5432,
+        "connection": {
+          "DATABASE_URL": "postgres://{group}@127.0.0.1:{port}/{group}?sslmode=disable",
+          "DB_URL": "postgres://{group}@127.0.0.1:{port}/{group}?sslmode=disable"
+        },
+        "provision": "set -e\n{install}/bin/psql -h {socket} -p {port} -U {user} -d postgres -q -v ON_ERROR_STOP=1 <<'SQL'\nSELECT 'CREATE ROLE \"{group}\" LOGIN'\n  WHERE NOT EXISTS (SELECT FROM pg_roles WHERE rolname = '{group}')\\gexec\nSELECT 'CREATE DATABASE \"{group}\" OWNER \"{group}\"'\n  WHERE NOT EXISTS (SELECT FROM pg_database WHERE datname = '{group}')\\gexec\nREVOKE CONNECT ON DATABASE \"{group}\" FROM PUBLIC;\nSQL\n"
+      }
+    },
+    {
+      "type": "postgres",
+      "category": "database",
+      "support": "lts",
+      "version": "16.15.0",
+      "description": "PostgreSQL 16, supported until November 2028",
+      "artifacts": {
+        "darwin/arm64": {
+          "url": "https://github.com/theseus-rs/postgresql-binaries/releases/download/16.15.0/postgresql-16.15.0-aarch64-apple-darwin.tar.gz",
+          "digest": {
+            "algorithm": "sha256",
+            "value": "46f6382024d9b633d1f4b4903ffef8c2404e00ae83098d628c00591048cb0512"
+          },
+          "archive": "tar.gz",
+          "paths": [
+            "bin",
+            "lib",
+            "share"
+          ],
+          "strip": 1
+        },
+        "linux/amd64": {
+          "url": "https://github.com/theseus-rs/postgresql-binaries/releases/download/16.15.0/postgresql-16.15.0-x86_64-unknown-linux-gnu.tar.gz",
+          "digest": {
+            "algorithm": "sha256",
+            "value": "77dd669eda3985ea8be26256f6af28d3c8414152ada713797555bb7423b4486a"
+          },
+          "archive": "tar.gz",
+          "paths": [
+            "bin",
+            "lib",
+            "share"
+          ],
+          "strip": 1
+        },
+        "linux/arm64": {
+          "url": "https://github.com/theseus-rs/postgresql-binaries/releases/download/16.15.0/postgresql-16.15.0-aarch64-unknown-linux-gnu.tar.gz",
+          "digest": {
+            "algorithm": "sha256",
+            "value": "f6d49ffbaea28cf8732785b18afb75bded905667d4ec8e2308a13a30fe0a24d1"
+          },
+          "archive": "tar.gz",
+          "paths": [
+            "bin",
+            "lib",
+            "share"
+          ],
+          "strip": 1
+        }
+      },
+      "runtime": {
+        "initialise": "{install}/bin/initdb --pgdata={data} --username={user} --auth=trust --encoding=UTF8 --no-sync",
+        "initialised_marker": "PG_VERSION",
+        "start": "{install}/bin/postgres -D {data} -p {port} -k {socket} -c listen_addresses=127.0.0.1",
+        "stop_signal": "SIGINT",
+        "default_port": 5432,
+        "connection": {
+          "DATABASE_URL": "postgres://{group}@127.0.0.1:{port}/{group}?sslmode=disable",
+          "DB_URL": "postgres://{group}@127.0.0.1:{port}/{group}?sslmode=disable"
+        },
+        "provision": "set -e\n{install}/bin/psql -h {socket} -p {port} -U {user} -d postgres -q -v ON_ERROR_STOP=1 <<'SQL'\nSELECT 'CREATE ROLE \"{group}\" LOGIN'\n  WHERE NOT EXISTS (SELECT FROM pg_roles WHERE rolname = '{group}')\\gexec\nSELECT 'CREATE DATABASE \"{group}\" OWNER \"{group}\"'\n  WHERE NOT EXISTS (SELECT FROM pg_database WHERE datname = '{group}')\\gexec\nREVOKE CONNECT ON DATABASE \"{group}\" FROM PUBLIC;\nSQL\n"
+      }
+    },
+    {
+      "type": "node",
+      "kind": "runtime",
+      "category": "language",
+      "support": "lts",
+      "version": "24.20.0",
+      "description": "Node.js 24, the current long-term support release",
+      "artifacts": {
+        "darwin/arm64": {
+          "url": "https://nodejs.org/dist/v24.20.0/node-v24.20.0-darwin-arm64.tar.gz",
+          "digest": {
+            "algorithm": "sha256",
+            "value": "40e5607e5ecb3db9192723776da2d75d966260fc74a7a9e731c1bd67dda96bc8"
+          },
+          "archive": "tar.gz",
+          "paths": [
+            "bin",
+            "lib",
+            "include"
+          ],
+          "strip": 1
+        },
+        "linux/amd64": {
+          "url": "https://nodejs.org/dist/v24.20.0/node-v24.20.0-linux-x64.tar.gz",
+          "digest": {
+            "algorithm": "sha256",
+            "value": "855d581f8a4eb1a8117e3426de25fe02770592febcfb31369aee1ffbfee9e8ec"
+          },
+          "archive": "tar.gz",
+          "paths": [
+            "bin",
+            "lib",
+            "include"
+          ],
+          "strip": 1
+        },
+        "linux/arm64": {
+          "url": "https://nodejs.org/dist/v24.20.0/node-v24.20.0-linux-arm64.tar.gz",
+          "digest": {
+            "algorithm": "sha256",
+            "value": "3515603e2487879a39bc75716f1a2affd027500c64ba50e845cf72cb33219013"
+          },
+          "archive": "tar.gz",
+          "paths": [
+            "bin",
+            "lib",
+            "include"
+          ],
+          "strip": 1
+        }
+      },
+      "runtime": {
+        "start": "",
+        "commands": [
+          "node",
+          "npm",
+          "npx",
+          "corepack"
+        ]
+      }
+    },
+    {
+      "type": "node",
+      "kind": "runtime",
+      "category": "language",
+      "support": "current",
+      "version": "26.8.1",
+      "description": "Node.js 26, the current release, which is not long-term support",
+      "artifacts": {
+        "darwin/arm64": {
+          "url": "https://nodejs.org/dist/v26.8.1/node-v26.8.1-darwin-arm64.tar.gz",
+          "digest": {
+            "algorithm": "sha256",
+            "value": "6e577fd0d9db776db82306629e441a9dace416702622aebdd171c9dfaa41f4d2"
+          },
+          "archive": "tar.gz",
+          "paths": [
+            "bin",
+            "lib",
+            "include"
+          ],
+          "strip": 1
+        },
+        "linux/amd64": {
+          "url": "https://nodejs.org/dist/v26.8.1/node-v26.8.1-linux-x64.tar.gz",
+          "digest": {
+            "algorithm": "sha256",
+            "value": "b2b76660fa4ded4e0b2a41ee3c0c651cd52ea8170ead91ebac1e147ac3d55643"
+          },
+          "archive": "tar.gz",
+          "paths": [
+            "bin",
+            "lib",
+            "include"
+          ],
+          "strip": 1
+        },
+        "linux/arm64": {
+          "url": "https://nodejs.org/dist/v26.8.1/node-v26.8.1-linux-arm64.tar.gz",
+          "digest": {
+            "algorithm": "sha256",
+            "value": "d5f973ce975e4bd03e6c2038260f7e9201615aa8e1ee293c72f8dcc2a6d9fddb"
+          },
+          "archive": "tar.gz",
+          "paths": [
+            "bin",
+            "lib",
+            "include"
+          ],
+          "strip": 1
+        }
+      },
+      "runtime": {
+        "start": "",
+        "commands": [
+          "node",
+          "npm",
+          "npx",
+          "corepack"
+        ]
+      }
+    },
+    {
+      "type": "node",
+      "kind": "runtime",
+      "category": "language",
+      "support": "lts",
+      "version": "20.20.2",
+      "description": "Node.js 20, long-term support, in maintenance",
+      "artifacts": {
+        "darwin/arm64": {
+          "url": "https://nodejs.org/dist/v20.20.2/node-v20.20.2-darwin-arm64.tar.gz",
+          "digest": {
+            "algorithm": "sha256",
+            "value": "466e05f3477c20dfb723054dfebffe55bc74660ee77f612166fca121dacb65b6"
+          },
+          "archive": "tar.gz",
+          "paths": [
+            "bin",
+            "lib",
+            "include"
+          ],
+          "strip": 1
+        },
+        "linux/amd64": {
+          "url": "https://nodejs.org/dist/v20.20.2/node-v20.20.2-linux-x64.tar.gz",
+          "digest": {
+            "algorithm": "sha256",
+            "value": "19e56f0825510207dd904f087fe52faa0a4eb6b2aab5f0ea7a33830d04888b8b"
+          },
+          "archive": "tar.gz",
+          "paths": [
+            "bin",
+            "lib",
+            "include"
+          ],
+          "strip": 1
+        },
+        "linux/arm64": {
+          "url": "https://nodejs.org/dist/v20.20.2/node-v20.20.2-linux-arm64.tar.gz",
+          "digest": {
+            "algorithm": "sha256",
+            "value": "47ef73d543ecf6eb19435f6c03a0ac4809b3bf0dd6b26c7c571efc2a6572a74d"
+          },
+          "archive": "tar.gz",
+          "paths": [
+            "bin",
+            "lib",
+            "include"
+          ],
+          "strip": 1
+        }
+      },
+      "runtime": {
+        "start": "",
+        "commands": [
+          "node",
+          "npm",
+          "npx",
+          "corepack"
+        ]
+      }
+    },
+    {
+      "type": "node",
+      "kind": "runtime",
+      "category": "language",
+      "support": "end of life",
+      "version": "18.20.8",
+      "description": "Node.js 18, past end of life: it receives no security fixes",
+      "artifacts": {
+        "darwin/arm64": {
+          "url": "https://nodejs.org/dist/v18.20.8/node-v18.20.8-darwin-arm64.tar.gz",
+          "digest": {
+            "algorithm": "sha256",
+            "value": "bae4965d29d29bd32f96364eefbe3bca576a03e917ddbb70b9330d75f2cacd76"
+          },
+          "archive": "tar.gz",
+          "paths": [
+            "bin",
+            "lib",
+            "include"
+          ],
+          "strip": 1
+        },
+        "linux/amd64": {
+          "url": "https://nodejs.org/dist/v18.20.8/node-v18.20.8-linux-x64.tar.gz",
+          "digest": {
+            "algorithm": "sha256",
+            "value": "27a9f3f14d5e99ad05a07ed3524ba3ee92f8ff8b6db5ff80b00f9feb5ec8097a"
+          },
+          "archive": "tar.gz",
+          "paths": [
+            "bin",
+            "lib",
+            "include"
+          ],
+          "strip": 1
+        },
+        "linux/arm64": {
+          "url": "https://nodejs.org/dist/v18.20.8/node-v18.20.8-linux-arm64.tar.gz",
+          "digest": {
+            "algorithm": "sha256",
+            "value": "2e3dfc51154e6fea9fc86a90c4ea8f3ecb8b60acaf7367c4b76691da192571c1"
+          },
+          "archive": "tar.gz",
+          "paths": [
+            "bin",
+            "lib",
+            "include"
+          ],
+          "strip": 1
+        }
+      },
+      "runtime": {
+        "start": "",
+        "commands": [
+          "node",
+          "npm",
+          "npx",
+          "corepack"
+        ]
+      }
+    },
+    {
+      "type": "node",
+      "kind": "runtime",
+      "category": "language",
+      "support": "end of life",
+      "version": "16.20.2",
+      "description": "Node.js 16, past end of life: it receives no security fixes",
+      "artifacts": {
+        "darwin/arm64": {
+          "url": "https://nodejs.org/dist/v16.20.2/node-v16.20.2-darwin-arm64.tar.gz",
+          "digest": {
+            "algorithm": "sha256",
+            "value": "6a5c4108475871362d742b988566f3fe307f6a67ce14634eb3fbceb4f9eea88c"
+          },
+          "archive": "tar.gz",
+          "paths": [
+            "bin",
+            "lib",
+            "include"
+          ],
+          "strip": 1
+        },
+        "linux/amd64": {
+          "url": "https://nodejs.org/dist/v16.20.2/node-v16.20.2-linux-x64.tar.gz",
+          "digest": {
+            "algorithm": "sha256",
+            "value": "c9193e6c414891694759febe846f4f023bf48410a6924a8b1520c46565859665"
+          },
+          "archive": "tar.gz",
+          "paths": [
+            "bin",
+            "lib",
+            "include"
+          ],
+          "strip": 1
+        },
+        "linux/arm64": {
+          "url": "https://nodejs.org/dist/v16.20.2/node-v16.20.2-linux-arm64.tar.gz",
+          "digest": {
+            "algorithm": "sha256",
+            "value": "b6945fcc9ad220386bb814bfae7137189fd17297f2959a744105e1bee006035a"
+          },
+          "archive": "tar.gz",
+          "paths": [
+            "bin",
+            "lib",
+            "include"
+          ],
+          "strip": 1
+        }
+      },
+      "runtime": {
+        "start": "",
+        "commands": [
+          "node",
+          "npm",
+          "npx",
+          "corepack"
+        ]
+      }
+    },
+    {
       "type": "php",
       "kind": "runtime",
+      "category": "language",
       "version": "8.5.10",
       "support": "current",
       "description": "PHP 8.5, in active support until the end of 2027",
       "artifacts": {
-        "darwin/arm64": {
-          "url": "https://github.com/luewell/stack-binaries/releases/download/php-8.5.10/php-8.5.10-macos-arm64.tar.gz",
-          "digest": {
-            "algorithm": "sha256",
-            "value": "d1a6fc3f595b13a8675d0fe17c61553e6e767700f5c4edd75069a79eb3b83d46"
-          },
-          "archive": "tar.gz",
-          "strip": 1,
-          "paths": [
-            "bin"
-          ]
-        },
         "linux/arm64": {
           "url": "https://github.com/luewell/stack-binaries/releases/download/php-8.5.10/php-8.5.10-linux-arm64.tar.gz",
           "digest": {
@@ -46,6 +589,18 @@
           "paths": [
             "bin"
           ]
+        },
+        "darwin/arm64": {
+          "url": "https://github.com/luewell/stack-binaries/releases/download/php-8.5.10/php-8.5.10-macos-arm64.tar.gz",
+          "digest": {
+            "algorithm": "sha256",
+            "value": "d1a6fc3f595b13a8675d0fe17c61553e6e767700f5c4edd75069a79eb3b83d46"
+          },
+          "archive": "tar.gz",
+          "strip": 1,
+          "paths": [
+            "bin"
+          ]
         }
       },
       "runtime": {
@@ -53,8 +608,513 @@
           "php"
         ],
         "bin_dir": "bin"
+      }
+    },
+    {
+      "type": "php",
+      "kind": "runtime",
+      "category": "language",
+      "support": "lts",
+      "version": "8.4.25",
+      "description": "PHP 8.4, in active support",
+      "artifacts": {
+        "darwin/arm64": {
+          "url": "https://github.com/luewell/stack-binaries/releases/download/php-8.4.25/php-8.4.25-macos-arm64.tar.gz",
+          "digest": {
+            "algorithm": "sha256",
+            "value": "6bd46333aa51723d7b884f813734f1fe4cdbe6d9aaef43fc12010871bea47945"
+          },
+          "archive": "tar.gz",
+          "paths": [
+            "bin"
+          ],
+          "strip": 1
+        },
+        "linux/amd64": {
+          "url": "https://github.com/luewell/stack-binaries/releases/download/php-8.4.25/php-8.4.25-linux-x86_64.tar.gz",
+          "digest": {
+            "algorithm": "sha256",
+            "value": "c9a34988670150a6df0653d6bbf15b5c7d8d14ecb9987469ae76ce7694011a1a"
+          },
+          "archive": "tar.gz",
+          "paths": [
+            "bin"
+          ],
+          "strip": 1
+        },
+        "linux/arm64": {
+          "url": "https://github.com/luewell/stack-binaries/releases/download/php-8.4.25/php-8.4.25-linux-arm64.tar.gz",
+          "digest": {
+            "algorithm": "sha256",
+            "value": "d10e9a351e939da50d797d5c35f9d5062a7711a0258e59150b7bfa5cb8f8e5d5"
+          },
+          "archive": "tar.gz",
+          "paths": [
+            "bin"
+          ],
+          "strip": 1
+        }
       },
-      "category": "language"
+      "runtime": {
+        "start": "",
+        "commands": [
+          "php"
+        ],
+        "bin_dir": "bin"
+      }
+    },
+    {
+      "type": "php",
+      "kind": "runtime",
+      "category": "language",
+      "support": "current",
+      "version": "8.3.33",
+      "description": "PHP 8.3, security fixes until the end of 2027",
+      "artifacts": {
+        "darwin/arm64": {
+          "url": "https://github.com/luewell/stack-binaries/releases/download/php-8.3.33/php-8.3.33-macos-arm64.tar.gz",
+          "digest": {
+            "algorithm": "sha256",
+            "value": "480df8d3e7d2b1b7cd1e5055cba0cc814cf36a12f763ef5ef15f4a1ea57f3c5e"
+          },
+          "archive": "tar.gz",
+          "paths": [
+            "bin"
+          ],
+          "strip": 1
+        },
+        "linux/amd64": {
+          "url": "https://github.com/luewell/stack-binaries/releases/download/php-8.3.33/php-8.3.33-linux-x86_64.tar.gz",
+          "digest": {
+            "algorithm": "sha256",
+            "value": "bf29d5a160297be7c0dabca40a0f24219331f2b1ed109d01f6e6f6130bc63d54"
+          },
+          "archive": "tar.gz",
+          "paths": [
+            "bin"
+          ],
+          "strip": 1
+        },
+        "linux/arm64": {
+          "url": "https://github.com/luewell/stack-binaries/releases/download/php-8.3.33/php-8.3.33-linux-arm64.tar.gz",
+          "digest": {
+            "algorithm": "sha256",
+            "value": "1635630cdced7e0c994f7d1cc67d1427253daff620be65be7504ddf4e2ec2801"
+          },
+          "archive": "tar.gz",
+          "paths": [
+            "bin"
+          ],
+          "strip": 1
+        }
+      },
+      "runtime": {
+        "start": "",
+        "commands": [
+          "php"
+        ],
+        "bin_dir": "bin"
+      }
+    },
+    {
+      "type": "php",
+      "kind": "runtime",
+      "category": "language",
+      "support": "current",
+      "version": "8.2.33",
+      "description": "PHP 8.2, security fixes only, and they end 31 December 2026",
+      "artifacts": {
+        "darwin/arm64": {
+          "url": "https://github.com/luewell/stack-binaries/releases/download/php-8.2.33/php-8.2.33-macos-arm64.tar.gz",
+          "digest": {
+            "algorithm": "sha256",
+            "value": "3c20392ee020eabf36ff33b4cc7f7973dfd9829ef84d2a26fbb55423db1abe69"
+          },
+          "archive": "tar.gz",
+          "paths": [
+            "bin"
+          ],
+          "strip": 1
+        },
+        "linux/amd64": {
+          "url": "https://github.com/luewell/stack-binaries/releases/download/php-8.2.33/php-8.2.33-linux-x86_64.tar.gz",
+          "digest": {
+            "algorithm": "sha256",
+            "value": "63ee24ed6b731cd6958439afac4b2e49bf2aa4e6727cb2431878bfe207d5293e"
+          },
+          "archive": "tar.gz",
+          "paths": [
+            "bin"
+          ],
+          "strip": 1
+        },
+        "linux/arm64": {
+          "url": "https://github.com/luewell/stack-binaries/releases/download/php-8.2.33/php-8.2.33-linux-arm64.tar.gz",
+          "digest": {
+            "algorithm": "sha256",
+            "value": "8111bab308214c2e021ea54f0fbb897de5a29322081b4b1360df762cbfee52cc"
+          },
+          "archive": "tar.gz",
+          "paths": [
+            "bin"
+          ],
+          "strip": 1
+        }
+      },
+      "runtime": {
+        "start": "",
+        "commands": [
+          "php"
+        ],
+        "bin_dir": "bin"
+      }
+    },
+    {
+      "type": "php",
+      "kind": "runtime",
+      "category": "language",
+      "support": "end of life",
+      "version": "8.1.34",
+      "description": "PHP 8.1, past end of life since December 2025",
+      "artifacts": {
+        "darwin/arm64": {
+          "url": "https://github.com/luewell/stack-binaries/releases/download/php-8.1.34/php-8.1.34-macos-arm64.tar.gz",
+          "digest": {
+            "algorithm": "sha256",
+            "value": "074d2657dff6cd62cdd3f1c82dd3d88fdf4aaf96dca591dd42db32d1d9719374"
+          },
+          "archive": "tar.gz",
+          "paths": [
+            "bin"
+          ],
+          "strip": 1
+        },
+        "linux/amd64": {
+          "url": "https://github.com/luewell/stack-binaries/releases/download/php-8.1.34/php-8.1.34-linux-x86_64.tar.gz",
+          "digest": {
+            "algorithm": "sha256",
+            "value": "4f796f7fc9b03c8d9fed0274dd6a1d8999ea6facc7b9ed9bf142a5f10f9d597e"
+          },
+          "archive": "tar.gz",
+          "paths": [
+            "bin"
+          ],
+          "strip": 1
+        },
+        "linux/arm64": {
+          "url": "https://github.com/luewell/stack-binaries/releases/download/php-8.1.34/php-8.1.34-linux-arm64.tar.gz",
+          "digest": {
+            "algorithm": "sha256",
+            "value": "e59c7001bb7f46cbd70ebc3e82125088205ea2cbb9e3418a626f84cd71ed1719"
+          },
+          "archive": "tar.gz",
+          "paths": [
+            "bin"
+          ],
+          "strip": 1
+        }
+      },
+      "runtime": {
+        "start": "",
+        "commands": [
+          "php"
+        ],
+        "bin_dir": "bin"
+      }
+    },
+    {
+      "type": "python",
+      "kind": "runtime",
+      "category": "language",
+      "support": "lts",
+      "version": "3.14.7",
+      "description": "Python 3.14, taking bug fixes until October 2030",
+      "artifacts": {
+        "darwin/arm64": {
+          "url": "https://github.com/astral-sh/python-build-standalone/releases/download/20260825/cpython-3.14.7+20260825-aarch64-apple-darwin-install_only.tar.gz",
+          "digest": {
+            "algorithm": "sha256",
+            "value": "4c4a4114bc35f9d76d194fd72f43d8375b2f30686ddfe6b40c9258cfe6c16e40"
+          },
+          "archive": "tar.gz",
+          "paths": [
+            "bin",
+            "lib",
+            "include"
+          ],
+          "strip": 1
+        },
+        "linux/amd64": {
+          "url": "https://github.com/astral-sh/python-build-standalone/releases/download/20260825/cpython-3.14.7+20260825-x86_64-unknown-linux-gnu-install_only.tar.gz",
+          "digest": {
+            "algorithm": "sha256",
+            "value": "d68dfa9c5d37afec0a4c8ffbf5c20d05d34492bd4561c94d7c3c7578e21a7f71"
+          },
+          "archive": "tar.gz",
+          "paths": [
+            "bin",
+            "lib",
+            "include"
+          ],
+          "strip": 1
+        },
+        "linux/arm64": {
+          "url": "https://github.com/astral-sh/python-build-standalone/releases/download/20260825/cpython-3.14.7+20260825-aarch64-unknown-linux-gnu-install_only.tar.gz",
+          "digest": {
+            "algorithm": "sha256",
+            "value": "bd5e9541a62fd1143270a38c2c1cdb94c7a1015c6d104aefa9e12ab5f80370b2"
+          },
+          "archive": "tar.gz",
+          "paths": [
+            "bin",
+            "lib",
+            "include"
+          ],
+          "strip": 1
+        }
+      },
+      "runtime": {
+        "start": "",
+        "commands": [
+          "python",
+          "python3",
+          "pip",
+          "pip3"
+        ]
+      }
+    },
+    {
+      "type": "composer",
+      "kind": "runtime",
+      "category": "packages",
+      "support": "current",
+      "version": "2.10.3",
+      "description": "Composer 2, the current line",
+      "artifacts": {
+        "darwin/arm64": {
+          "url": "https://getcomposer.org/download/2.10.3/composer.phar",
+          "digest": {
+            "algorithm": "sha256",
+            "value": "7a2d379d5b8ffdaa028580ef26494c36d2feef4b178d3dd1473a4dbc5e17c8d6"
+          },
+          "archive": "none",
+          "paths": [
+            "composer"
+          ],
+          "strip": 0
+        },
+        "linux/amd64": {
+          "url": "https://getcomposer.org/download/2.10.3/composer.phar",
+          "digest": {
+            "algorithm": "sha256",
+            "value": "7a2d379d5b8ffdaa028580ef26494c36d2feef4b178d3dd1473a4dbc5e17c8d6"
+          },
+          "archive": "none",
+          "paths": [
+            "composer"
+          ],
+          "strip": 0
+        },
+        "linux/arm64": {
+          "url": "https://getcomposer.org/download/2.10.3/composer.phar",
+          "digest": {
+            "algorithm": "sha256",
+            "value": "7a2d379d5b8ffdaa028580ef26494c36d2feef4b178d3dd1473a4dbc5e17c8d6"
+          },
+          "archive": "none",
+          "paths": [
+            "composer"
+          ],
+          "strip": 0
+        }
+      },
+      "runtime": {
+        "start": "",
+        "commands": [
+          "composer"
+        ],
+        "bin_dir": "."
+      }
+    },
+    {
+      "type": "pnpm",
+      "kind": "runtime",
+      "category": "packages",
+      "support": "current",
+      "version": "11.25.0",
+      "description": "pnpm 11, the line pnpm points its own users at",
+      "artifacts": {
+        "darwin/arm64": {
+          "url": "https://github.com/pnpm/pnpm/releases/download/v11.25.0/pnpm-darwin-arm64.tar.gz",
+          "digest": {
+            "algorithm": "sha256",
+            "value": "cdcf7130ed2e7aa324c7c76ab597de66db0529b6b1e0db9e489bde538fdc0d04"
+          },
+          "archive": "tar.gz",
+          "paths": [
+            "pnpm",
+            "dist"
+          ],
+          "strip": 0
+        },
+        "linux/amd64": {
+          "url": "https://github.com/pnpm/pnpm/releases/download/v11.25.0/pnpm-linux-x64.tar.gz",
+          "digest": {
+            "algorithm": "sha256",
+            "value": "11caeed8b581d460638f836f10f6ead19cbf08d774a5b8e502628b20ebf3ac43"
+          },
+          "archive": "tar.gz",
+          "paths": [
+            "pnpm",
+            "dist"
+          ],
+          "strip": 0
+        },
+        "linux/arm64": {
+          "url": "https://github.com/pnpm/pnpm/releases/download/v11.25.0/pnpm-linux-arm64.tar.gz",
+          "digest": {
+            "algorithm": "sha256",
+            "value": "6d62b433b7a77b77e814dfaca8032bae57bb79c1a5ad50442e688c4f7fed3c8a"
+          },
+          "archive": "tar.gz",
+          "paths": [
+            "pnpm",
+            "dist"
+          ],
+          "strip": 0
+        }
+      },
+      "runtime": {
+        "start": "",
+        "commands": [
+          "pnpm"
+        ],
+        "bin_dir": "."
+      }
+    },
+    {
+      "type": "pnpm",
+      "kind": "runtime",
+      "category": "packages",
+      "support": "current",
+      "version": "12.1.0",
+      "description": "pnpm 12, newer than the line pnpm recommends",
+      "artifacts": {
+        "darwin/arm64": {
+          "url": "https://github.com/pnpm/pnpm/releases/download/v12.1.0/pnpm-darwin-arm64.tar.gz",
+          "digest": {
+            "algorithm": "sha256",
+            "value": "927542783706b6966b6792f263b9b958dcd9909c5174965cd1aae0f4ab7f613c"
+          },
+          "archive": "tar.gz",
+          "paths": [
+            "pnpm",
+            "dist"
+          ],
+          "strip": 0
+        },
+        "linux/amd64": {
+          "url": "https://github.com/pnpm/pnpm/releases/download/v12.1.0/pnpm-linux-x64.tar.gz",
+          "digest": {
+            "algorithm": "sha256",
+            "value": "ef4c3e31c8f6e587c9f04ca4b42b63d47f331247930617304ffa63354c11db79"
+          },
+          "archive": "tar.gz",
+          "paths": [
+            "pnpm",
+            "dist"
+          ],
+          "strip": 0
+        },
+        "linux/arm64": {
+          "url": "https://github.com/pnpm/pnpm/releases/download/v12.1.0/pnpm-linux-arm64.tar.gz",
+          "digest": {
+            "algorithm": "sha256",
+            "value": "24b202af01579ae885c8b3dc39a29c03d418a0c85eea274a969b216612abcd07"
+          },
+          "archive": "tar.gz",
+          "paths": [
+            "pnpm",
+            "dist"
+          ],
+          "strip": 0
+        }
+      },
+      "runtime": {
+        "start": "",
+        "commands": [
+          "pnpm"
+        ],
+        "bin_dir": "."
+      }
+    },
+    {
+      "type": "s3",
+      "category": "storage",
+      "support": "current",
+      "version": "1.7.0",
+      "description": "versitygw, an S3 gateway over a plain directory",
+      "artifacts": {
+        "darwin/arm64": {
+          "url": "https://github.com/versity/versitygw/releases/download/v1.7.0/versitygw_v1.7.0_Darwin_arm64.tar.gz",
+          "digest": {
+            "algorithm": "sha256",
+            "value": "df3870bf83a88e0828864f2d9ab62d83a6e56722d620e84204bb04d48b9fe727"
+          },
+          "archive": "tar.gz",
+          "paths": [
+            "versitygw"
+          ],
+          "strip": 1
+        },
+        "linux/amd64": {
+          "url": "https://github.com/versity/versitygw/releases/download/v1.7.0/versitygw_v1.7.0_Linux_x86_64.tar.gz",
+          "digest": {
+            "algorithm": "sha256",
+            "value": "dacec530fecaa8776feec0536998dd4bd78036e0d4db0da9b9189d96bb790e03"
+          },
+          "archive": "tar.gz",
+          "paths": [
+            "versitygw"
+          ],
+          "strip": 1
+        },
+        "linux/arm64": {
+          "url": "https://github.com/versity/versitygw/releases/download/v1.7.0/versitygw_v1.7.0_Linux_arm64.tar.gz",
+          "digest": {
+            "algorithm": "sha256",
+            "value": "5ef8d098e58b66171f2d8cd93dfcf44a7b3984d2e5710562ab1af6c884bc0a34"
+          },
+          "archive": "tar.gz",
+          "paths": [
+            "versitygw"
+          ],
+          "strip": 1
+        }
+      },
+      "runtime": {
+        "initialise": "mkdir -p {data}/buckets {data}/iam",
+        "initialised_marker": "buckets",
+        "start": "{install}/versitygw --port 127.0.0.1:{port} --iam-dir {data}/iam posix {data}/buckets",
+        "stop_signal": "SIGTERM",
+        "default_port": 7070,
+        "connection": {
+          "AWS_ENDPOINT_URL": "https://s3.{group}.{tld}",
+          "AWS_REGION": "us-east-1",
+          "AWS_S3_FORCE_PATH_STYLE": "true",
+          "S3_BUCKET": "{group}"
+        },
+        "ready": "{install}/versitygw admin --access $ROOT_ACCESS_KEY --secret $ROOT_SECRET_KEY --endpoint-url http://127.0.0.1:{port} list-buckets",
+        "secrets": [
+          "ROOT_ACCESS_KEY",
+          "ROOT_SECRET_KEY"
+        ],
+        "group_secrets": [
+          "AWS_ACCESS_KEY_ID",
+          "AWS_SECRET_ACCESS_KEY"
+        ],
+        "provision": "set -e\nADMIN=\"{install}/versitygw admin --access $ROOT_ACCESS_KEY --secret $ROOT_SECRET_KEY --endpoint-url http://127.0.0.1:{port}\"\n$ADMIN list-users | awk '{print $1}' | grep -qx \"$AWS_ACCESS_KEY_ID\" ||\n  $ADMIN create-user --access \"$AWS_ACCESS_KEY_ID\" --secret \"$AWS_SECRET_ACCESS_KEY\" --role user\nfor bucket in {buckets}; do\n  $ADMIN list-buckets | awk '{print $1}' | grep -qx \"$bucket\" ||\n    $ADMIN create-bucket --bucket \"$bucket\" --owner \"$AWS_ACCESS_KEY_ID\"\ndone\n"
+      }
     }
   ]
 }
