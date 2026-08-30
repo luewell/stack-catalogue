@@ -12,7 +12,10 @@ import sys
 from pathlib import Path
 
 ENTRIES = Path("entries")
-OUTPUT = Path("catalogue.json")
+# Versioned in the path, not only in the document. A binary reads the URL it was
+# built with, so the day the format changes incompatibly the old ones have to
+# keep finding a file they understand.
+OUTPUT = Path("v1.json")
 
 
 def main() -> int:

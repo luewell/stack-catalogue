@@ -14,7 +14,7 @@ There is no default source. A URL nobody chose would be a supply chain nobody
 agreed to, so it is named on purpose:
 
 ```
-stack catalog update --from https://raw.githubusercontent.com/luewell/stack-catalogue/main/catalogue.json
+stack catalog update --from https://stack-catalogue.luewell.dev/v1.json
 ```
 
 What was fetched is cached, so a machine with no network keeps working, and
@@ -34,7 +34,7 @@ refuses entries that offer one.
 Before committing a change:
 
 ```
-stack catalog check catalogue.json
+stack catalog check v1.json
 ```
 
 That applies the same rules the tool applies when it fetches, so a file that
@@ -57,7 +57,7 @@ entries/
 One file per type, so every version of PHP is reviewed beside the others and a
 change to one language does not touch anybody else's line.
 
-`catalogue.json` is **generated** from them by `build.py`, and committed because
+`v1.json` is **generated** from them by `build.py`, and committed because
 the tool fetches a single URL and cannot walk a directory. CI regenerates it and
 fails if the committed one differs, so it cannot drift from its sources. Edit
 the files under `entries/`, run `python3 build.py`, and commit both.
