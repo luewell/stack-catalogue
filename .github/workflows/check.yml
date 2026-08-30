@@ -22,6 +22,18 @@ jobs:
       # what an entry may offer live in one place, in the tool, and
       # "stack catalog check" applies them: running that here would mean a copy
       # of them, which is how two answers to one question appear.
+      # The committed file has to match what its sources produce, or it has
+      # drifted and whoever edited it by hand will be surprised later.
+      - name: The combined file is what entries/ produces
+        run: |
+          set -euo pipefail
+          python3 build.py
+          if ! git diff --quiet catalogue.json; then
+            echo "catalogue.json does not match entries/; run build.py and commit it" >&2
+            git diff catalogue.json >&2
+            exit 1
+          fi
+
       - name: It is a catalogue, and every entry is filled in
         run: |
           set -euo pipefail

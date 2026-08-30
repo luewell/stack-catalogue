@@ -41,6 +41,31 @@ That applies the same rules the tool applies when it fetches, so a file that
 passes here is a file a machine will accept. It also says when an entry is
 already shipped and will therefore be ignored.
 
+## How it is laid out
+
+Entries live under `entries/`, grouped by what somebody is choosing between:
+
+```
+entries/
+  databases/    postgres.json, mysql.json
+  caches/       valkey.json
+  storage/      s3.json
+  languages/    php.json, node.json, python.json
+  packages/     composer.json, pnpm.json
+```
+
+One file per type, so every version of PHP is reviewed beside the others and a
+change to one language does not touch anybody else's line.
+
+`catalogue.json` is **generated** from them by `build.py`, and committed because
+the tool fetches a single URL and cannot walk a directory. CI regenerates it and
+fails if the committed one differs, so it cannot drift from its sources. Edit
+the files under `entries/`, run `python3 build.py`, and commit both.
+
+The category is carried into each entry as data, not only in the directory name.
+`stack catalog` groups its listing by it, and the directory would otherwise be
+an organisation only this repository can see.
+
 ## What is in here now
 
 PHP versions built by [stack-binaries](https://github.com/luewell/stack-binaries),

@@ -1,8 +1,4 @@
 {
-  "version": 1,
-  "generated_from": [
-    "entries/languages/php.json"
-  ],
   "services": [
     {
       "type": "php",
