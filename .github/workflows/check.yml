@@ -1,0 +1,94 @@
+# Refuses a catalogue a machine would refuse, before anybody fetches it.
+name: Check the catalogue
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    runs-on: ubuntu-24.04
+    steps:
+      # Pinned to a commit rather than a tag. A tag moves, and this repository
+      # decides what every machine downloads.
+      - name: Check out
+        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+
+      # A well-formed file is the part CI can settle on its own. The rules about
+      # what an entry may offer live in one place, in the tool, and
+      # "stack catalog check" applies them: running that here would mean a copy
+      # of them, which is how two answers to one question appear.
+      - name: It is a catalogue, and every entry is filled in
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import json, sys
+
+          with open("catalogue.json") as handle:
+              document = json.load(handle)
+
+          problems = []
+          if document.get("version") != 1:
+              problems.append(f"version is {document.get('version')!r}, and this tool writes 1")
+
+          seen = set()
+          for entry in document.get("services", []):
+              name = f"{entry.get('type')}-{entry.get('version')}"
+              for field in ("type", "version"):
+                  if not entry.get(field):
+                      problems.append(f"{name}: no {field}")
+
+              artifacts = entry.get("artifacts") or {}
+              if not artifacts:
+                  problems.append(f"{name}: offers nothing to download")
+
+              for platform, artifact in artifacts.items():
+                  url = artifact.get("url", "")
+                  digest = artifact.get("digest") or {}
+                  if not url.startswith("https://"):
+                      problems.append(f"{name} {platform}: not fetched over https")
+                  if not digest.get("value") or not digest.get("algorithm"):
+                      problems.append(
+                          f"{name} {platform}: no digest, and a download nobody "
+                          "can check is not something to run")
+
+              if name in seen:
+                  problems.append(f"{name}: named twice")
+              seen.add(name)
+
+          for problem in problems:
+              print(f"  {problem}", file=sys.stderr)
+          if problems:
+              sys.exit(1)
+          print(f"{len(document.get('services', []))} entries, all filled in")
+          PY
+
+      # The digests are the whole point, so they are checked against what the
+      # URLs actually serve rather than trusted because they look like hashes.
+      - name: Every digest matches what its URL serves
+        run: |
+          set -euo pipefail
+          python3 - <<'PY' > urls.txt
+          import json
+          with open("catalogue.json") as handle:
+              document = json.load(handle)
+          for entry in document.get("services", []):
+              for artifact in (entry.get("artifacts") or {}).values():
+                  print(artifact["url"], artifact["digest"]["value"])
+          PY
+
+          while read -r url expected; do
+            [ -n "$url" ] || continue
+            actual="$(curl -fsSL "$url" | sha256sum | awk '{print $1}')"
+            if [ "$actual" != "$expected" ]; then
+              echo "${url}" >&2
+              echo "  the catalogue says ${expected}" >&2
+              echo "  the server serves  ${actual}" >&2
+              exit 1
+            fi
+            echo "ok  ${url}"
+          done < urls.txt

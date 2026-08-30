@@ -1,0 +1,48 @@
+{
+  "version": 1,
+  "services": [
+    {
+      "type": "php",
+      "kind": "runtime",
+      "version": "8.5.10",
+      "support": "current",
+      "description": "PHP 8.5, in active support until the end of 2027",
+      "artifacts": {
+        "darwin/arm64": {
+          "url": "https://github.com/luewell/stack-binaries/releases/download/php-8.5.10/php-8.5.10-macos-arm64.tar.gz",
+          "digest": {
+            "algorithm": "sha256",
+            "value": "d1a6fc3f595b13a8675d0fe17c61553e6e767700f5c4edd75069a79eb3b83d46"
+          },
+          "archive": "tar.gz",
+          "strip": 1,
+          "paths": ["bin"]
+        },
+        "linux/arm64": {
+          "url": "https://github.com/luewell/stack-binaries/releases/download/php-8.5.10/php-8.5.10-linux-arm64.tar.gz",
+          "digest": {
+            "algorithm": "sha256",
+            "value": "408143caaaecb14d063a3ec18a6b831e2f7013e0c864626570dd3839b44fab43"
+          },
+          "archive": "tar.gz",
+          "strip": 1,
+          "paths": ["bin"]
+        },
+        "linux/amd64": {
+          "url": "https://github.com/luewell/stack-binaries/releases/download/php-8.5.10/php-8.5.10-linux-x86_64.tar.gz",
+          "digest": {
+            "algorithm": "sha256",
+            "value": "3fc2726390c0b0c92e2c9d9788961ce1f044530161aa6f5bc952bf11018a52a2"
+          },
+          "archive": "tar.gz",
+          "strip": 1,
+          "paths": ["bin"]
+        }
+      },
+      "runtime": {
+        "commands": ["php"],
+        "bin_dir": "bin"
+      }
+    }
+  ]
+}
