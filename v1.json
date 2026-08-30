@@ -1113,7 +1113,12 @@
           "AWS_ACCESS_KEY_ID",
           "AWS_SECRET_ACCESS_KEY"
         ],
-        "provision": "set -e\nADMIN=\"{install}/versitygw admin --access $ROOT_ACCESS_KEY --secret $ROOT_SECRET_KEY --endpoint-url http://127.0.0.1:{port}\"\n$ADMIN list-users | awk '{print $1}' | grep -qx \"$AWS_ACCESS_KEY_ID\" ||\n  $ADMIN create-user --access \"$AWS_ACCESS_KEY_ID\" --secret \"$AWS_SECRET_ACCESS_KEY\" --role user\nfor bucket in {buckets}; do\n  $ADMIN list-buckets | awk '{print $1}' | grep -qx \"$bucket\" ||\n    $ADMIN create-bucket --bucket \"$bucket\" --owner \"$AWS_ACCESS_KEY_ID\"\ndone\n"
+        "provision": "set -e\nADMIN=\"{install}/versitygw admin --access $ROOT_ACCESS_KEY --secret $ROOT_SECRET_KEY --endpoint-url http://127.0.0.1:{port}\"\n$ADMIN list-users | awk '{print $1}' | grep -qx \"$AWS_ACCESS_KEY_ID\" ||\n  $ADMIN create-user --access \"$AWS_ACCESS_KEY_ID\" --secret \"$AWS_SECRET_ACCESS_KEY\" --role user\nfor bucket in {buckets}; do\n  $ADMIN list-buckets | awk '{print $1}' | grep -qx \"$bucket\" ||\n    $ADMIN create-bucket --bucket \"$bucket\" --owner \"$AWS_ACCESS_KEY_ID\"\ndone\n",
+        "published": {
+          "root": "buckets",
+          "attribute": "user.policy",
+          "owner": "AWS_ACCESS_KEY_ID"
+        }
       }
     }
   ]
