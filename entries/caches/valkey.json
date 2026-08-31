@@ -45,7 +45,7 @@
         }
       },
       "runtime": {
-        "start": "{install}/bin/valkey-server --port {port} --bind 127.0.0.1 --dir {data} --unixsocket {socket}/valkey.sock --appendonly no",
+        "start": "\"$STACK_INSTALL_DIR/bin/valkey-server\" --port \"$STACK_PORT\" --bind 127.0.0.1 --dir \"$STACK_DATA_DIR\" --unixsocket \"$STACK_SOCKET_DIR/valkey.sock\" --appendonly no",
         "stop_signal": "SIGTERM",
         "default_port": 6379,
         "connection": {

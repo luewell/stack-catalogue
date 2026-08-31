@@ -16,6 +16,13 @@ The user's global instructions apply. All project artifacts are English.
 - Runtime templates execute with the consuming user's privileges. Validate
   authentication and isolation with the matching Stack integration tests before
   changing initialization, provisioning or access policies.
+- Command templates receive paths and identities as reserved `STACK_*` environment
+  variables. Quote expansions; do not splice values into shell source. Service
+  metadata and connection templates retain their separate substitution contract.
+- Node entries carry official lifecycle dates; the consumer refreshes LTS/EOL
+  status from those dates. Update source and generated metadata together.
+- The S3 entry selects `provisioner: versitygw` for native signed account creation;
+  root/group credentials must not appear in administrative command arguments.
 - PostgreSQL uses SCRAM for TCP and Unix sockets, a reserved administrator,
   per-group passwords and a `pgdata` cluster directory. Connection templates may
   interpolate only declared group secrets. S3 publishing declares both policy

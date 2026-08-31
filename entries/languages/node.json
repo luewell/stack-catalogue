@@ -59,6 +59,10 @@
           "npx",
           "corepack"
         ]
+      },
+      "lifecycle": {
+        "lts": "2025-10-28",
+        "end": "2028-04-30"
       }
     },
     {
@@ -117,18 +121,21 @@
         "commands": [
           "node",
           "npm",
-          "npx",
-          "corepack"
+          "npx"
         ]
+      },
+      "lifecycle": {
+        "lts": "2026-10-28",
+        "end": "2029-04-30"
       }
     },
     {
       "type": "node",
       "kind": "runtime",
       "category": "language",
-      "support": "lts",
+      "support": "end of life",
       "version": "20.20.2",
-      "description": "Node.js 20, long-term support, in maintenance",
+      "description": "Node.js 20, past end of life; receives no security fixes",
       "artifacts": {
         "darwin/arm64": {
           "url": "https://nodejs.org/dist/v20.20.2/node-v20.20.2-darwin-arm64.tar.gz",
@@ -181,6 +188,10 @@
           "npx",
           "corepack"
         ]
+      },
+      "lifecycle": {
+        "lts": "2023-10-24",
+        "end": "2026-04-30"
       }
     },
     {
@@ -242,6 +253,10 @@
           "npx",
           "corepack"
         ]
+      },
+      "lifecycle": {
+        "lts": "2022-10-25",
+        "end": "2025-04-30"
       }
     },
     {
@@ -303,6 +318,10 @@
           "npx",
           "corepack"
         ]
+      },
+      "lifecycle": {
+        "lts": "2021-10-26",
+        "end": "2023-09-11"
       }
     }
   ]

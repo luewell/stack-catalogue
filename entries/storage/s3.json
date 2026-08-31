@@ -45,9 +45,9 @@
         }
       },
       "runtime": {
-        "initialise": "mkdir -p {data}/buckets {data}/iam",
+        "initialise": "mkdir -p \"$STACK_DATA_DIR/buckets\" \"$STACK_DATA_DIR/iam\"",
         "initialised_marker": "buckets",
-        "start": "{install}/versitygw --port 127.0.0.1:{port} --iam-dir {data}/iam posix {data}/buckets",
+        "start": "\"$STACK_INSTALL_DIR/versitygw\" --port \"127.0.0.1:$STACK_PORT\" --iam-dir \"$STACK_DATA_DIR/iam\" posix \"$STACK_DATA_DIR/buckets\"",
         "stop_signal": "SIGTERM",
         "default_port": 7070,
         "connection": {
@@ -55,7 +55,7 @@
           "AWS_REGION": "us-east-1",
           "AWS_S3_FORCE_PATH_STYLE": "true"
         },
-        "ready": "{install}/versitygw admin --access $ROOT_ACCESS_KEY --secret $ROOT_SECRET_KEY --endpoint-url http://127.0.0.1:{port} list-buckets",
+        "ready": "ADMIN_ACCESS_KEY_ID=\"$ROOT_ACCESS_KEY\" ADMIN_SECRET_ACCESS_KEY=\"$ROOT_SECRET_KEY\" ADMIN_ENDPOINT_URL=\"http://127.0.0.1:$STACK_PORT\" \"$STACK_INSTALL_DIR/versitygw\" admin list-buckets",
         "secrets": [
           "ROOT_ACCESS_KEY",
           "ROOT_SECRET_KEY"
@@ -64,13 +64,14 @@
           "AWS_ACCESS_KEY_ID",
           "AWS_SECRET_ACCESS_KEY"
         ],
-        "provision": "set -e\nADMIN=\"{install}/versitygw admin --access $ROOT_ACCESS_KEY --secret $ROOT_SECRET_KEY --endpoint-url http://127.0.0.1:{port}\"\n$ADMIN list-users | awk '{print $1}' | grep -qx \"$AWS_ACCESS_KEY_ID\" ||\n  $ADMIN create-user --access \"$AWS_ACCESS_KEY_ID\" --secret \"$AWS_SECRET_ACCESS_KEY\" --role user\nfor bucket in {buckets}; do\n  $ADMIN list-buckets | awk '{print $1}' | grep -qx \"$bucket\" ||\n    $ADMIN create-bucket --bucket \"$bucket\" --owner \"$AWS_ACCESS_KEY_ID\"\ndone\n",
+        "provision": "set -ef\nexport ADMIN_ACCESS_KEY_ID=\"$ROOT_ACCESS_KEY\"\nexport ADMIN_SECRET_ACCESS_KEY=\"$ROOT_SECRET_KEY\"\nexport ADMIN_ENDPOINT_URL=\"http://127.0.0.1:$STACK_PORT\"\n\nadmin() {\n  \"$STACK_INSTALL_DIR/versitygw\" admin \"$@\"\n}\n\nfor bucket in $STACK_BUCKETS; do\n  admin list-buckets | awk '{print $1}' | grep -qx \"$bucket\" ||\n    admin create-bucket --bucket \"$bucket\" --owner \"$AWS_ACCESS_KEY_ID\"\ndone",
         "published": {
           "root": "buckets",
           "attribute": "user.policy",
           "ownership_attribute": "user.acl",
           "owner": "AWS_ACCESS_KEY_ID"
-        }
+        },
+        "provisioner": "versitygw"
       }
     }
   ]

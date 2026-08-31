@@ -56,7 +56,7 @@
         }
       },
       "runtime": {
-        "start": "{install}/bin/valkey-server --port {port} --bind 127.0.0.1 --dir {data} --unixsocket {socket}/valkey.sock --appendonly no",
+        "start": "\"$STACK_INSTALL_DIR/bin/valkey-server\" --port \"$STACK_PORT\" --bind 127.0.0.1 --dir \"$STACK_DATA_DIR\" --unixsocket \"$STACK_SOCKET_DIR/valkey.sock\" --appendonly no",
         "stop_signal": "SIGTERM",
         "default_port": 6379,
         "connection": {
@@ -119,16 +119,16 @@
         }
       },
       "runtime": {
-        "initialise": "set -e\nif [ -e \"{data}/PG_VERSION\" ]; then\n  printf '%s\\n' 'The existing PostgreSQL cluster uses an unsupported data layout; preserve it and choose an empty instance directory.' >&2\n  exit 1\nfi\nprintf '%s\\n' \"$POSTGRES_ADMIN_PASSWORD\" | \"{install}/bin/initdb\" --pgdata=\"{data}/pgdata\" --username=stack_admin --auth=scram-sha-256 --pwfile=/dev/stdin --encoding=UTF8 --no-sync\n",
+        "initialise": "set -e\nif [ -e \"$STACK_DATA_DIR/PG_VERSION\" ]; then\n  printf '%s\\n' 'The existing PostgreSQL cluster uses an unsupported data layout; preserve it and choose an empty instance directory.' >&2\n  exit 1\nfi\nprintf '%s\\n' \"$POSTGRES_ADMIN_PASSWORD\" | \"$STACK_INSTALL_DIR/bin/initdb\" --pgdata=\"$STACK_DATA_DIR/pgdata\" --username=stack_admin --auth=scram-sha-256 --pwfile=/dev/stdin --encoding=UTF8 --no-sync\n",
         "initialised_marker": "pgdata/PG_VERSION",
-        "start": "\"{install}/bin/postgres\" -D \"{data}/pgdata\" -p {port} -k \"{socket}\" -c listen_addresses=127.0.0.1",
+        "start": "\"$STACK_INSTALL_DIR/bin/postgres\" -D \"$STACK_DATA_DIR/pgdata\" -p \"$STACK_PORT\" -k \"$STACK_SOCKET_DIR\" -c listen_addresses=127.0.0.1",
         "stop_signal": "SIGINT",
         "default_port": 5432,
         "connection": {
           "DATABASE_URL": "postgres://{group}:${DB_PASSWORD}@127.0.0.1:{port}/{group}?sslmode=disable",
           "DB_URL": "postgres://{group}:${DB_PASSWORD}@127.0.0.1:{port}/{group}?sslmode=disable"
         },
-        "provision": "set -e\nPGPASSWORD=\"$POSTGRES_ADMIN_PASSWORD\" \"{install}/bin/psql\" -h \"{socket}\" -p {port} -U stack_admin -d postgres -X -w -q -v ON_ERROR_STOP=1 -v ECHO=none <<'SQL'\nSET log_statement = 'none';\nSET log_min_error_statement = 'panic';\nSET log_min_duration_statement = -1;\nSET log_min_duration_sample = -1;\nSET log_transaction_sample_rate = 0;\nSET password_encryption = 'scram-sha-256';\nREVOKE ALL ON DATABASE postgres, template0, template1 FROM PUBLIC;\n\\getenv group_password DB_PASSWORD\nSELECT 'CREATE ROLE \"{group}\" LOGIN'\n  WHERE NOT EXISTS (SELECT FROM pg_roles WHERE rolname = '{group}')\\gexec\nALTER ROLE \"{group}\" LOGIN NOSUPERUSER NOCREATEDB NOCREATEROLE NOREPLICATION NOBYPASSRLS PASSWORD :'group_password';\nSELECT 'CREATE DATABASE \"{group}\" OWNER \"{group}\" ALLOW_CONNECTIONS false'\n  WHERE NOT EXISTS (SELECT FROM pg_database WHERE datname = '{group}')\\gexec\nREVOKE CONNECT ON DATABASE \"{group}\" FROM PUBLIC;\nALTER DATABASE \"{group}\" ALLOW_CONNECTIONS true;\nSQL\n",
+        "provision": "set -e\nPGPASSWORD=\"$POSTGRES_ADMIN_PASSWORD\" \"$STACK_INSTALL_DIR/bin/psql\" -h \"$STACK_SOCKET_DIR\" -p \"$STACK_PORT\" -U stack_admin -d postgres -X -w -q -v ON_ERROR_STOP=1 -v ECHO=none <<'SQL'\nSET log_statement = 'none';\nSET log_min_error_statement = 'panic';\nSET log_min_duration_statement = -1;\nSET log_min_duration_sample = -1;\nSET log_transaction_sample_rate = 0;\nSET password_encryption = 'scram-sha-256';\nREVOKE ALL ON DATABASE postgres, template0, template1 FROM PUBLIC;\n\\getenv group_password DB_PASSWORD\n\\getenv group_name STACK_GROUP\nSELECT format('CREATE ROLE %I LOGIN', :'group_name')\n  WHERE NOT EXISTS (SELECT FROM pg_roles WHERE rolname = :'group_name')\\gexec\nALTER ROLE :\"group_name\" LOGIN NOSUPERUSER NOCREATEDB NOCREATEROLE NOREPLICATION NOBYPASSRLS PASSWORD :'group_password';\nSELECT format('CREATE DATABASE %I OWNER %I ALLOW_CONNECTIONS false', :'group_name', :'group_name')\n  WHERE NOT EXISTS (SELECT FROM pg_database WHERE datname = :'group_name')\\gexec\nREVOKE CONNECT ON DATABASE :\"group_name\" FROM PUBLIC;\nALTER DATABASE :\"group_name\" ALLOW_CONNECTIONS true;\nSQL\n",
         "bin_dir": "bin",
         "commands": [
           "psql",
@@ -145,7 +145,7 @@
           "clusterdb",
           "pgbench"
         ],
-        "ready": "PGPASSWORD=\"$POSTGRES_ADMIN_PASSWORD\" \"{install}/bin/psql\" -h \"{socket}\" -p {port} -U stack_admin -d postgres -X -w -q -v ON_ERROR_STOP=1 -tAc \"SELECT 1\"",
+        "ready": "PGPASSWORD=\"$POSTGRES_ADMIN_PASSWORD\" \"$STACK_INSTALL_DIR/bin/psql\" -h \"$STACK_SOCKET_DIR\" -p \"$STACK_PORT\" -U stack_admin -d postgres -X -w -q -v ON_ERROR_STOP=1 -tAc \"SELECT 1\"",
         "secrets": [
           "POSTGRES_ADMIN_PASSWORD"
         ],
@@ -205,16 +205,16 @@
         }
       },
       "runtime": {
-        "initialise": "set -e\nif [ -e \"{data}/PG_VERSION\" ]; then\n  printf '%s\\n' 'The existing PostgreSQL cluster uses an unsupported data layout; preserve it and choose an empty instance directory.' >&2\n  exit 1\nfi\nprintf '%s\\n' \"$POSTGRES_ADMIN_PASSWORD\" | \"{install}/bin/initdb\" --pgdata=\"{data}/pgdata\" --username=stack_admin --auth=scram-sha-256 --pwfile=/dev/stdin --encoding=UTF8 --no-sync\n",
+        "initialise": "set -e\nif [ -e \"$STACK_DATA_DIR/PG_VERSION\" ]; then\n  printf '%s\\n' 'The existing PostgreSQL cluster uses an unsupported data layout; preserve it and choose an empty instance directory.' >&2\n  exit 1\nfi\nprintf '%s\\n' \"$POSTGRES_ADMIN_PASSWORD\" | \"$STACK_INSTALL_DIR/bin/initdb\" --pgdata=\"$STACK_DATA_DIR/pgdata\" --username=stack_admin --auth=scram-sha-256 --pwfile=/dev/stdin --encoding=UTF8 --no-sync\n",
         "initialised_marker": "pgdata/PG_VERSION",
-        "start": "\"{install}/bin/postgres\" -D \"{data}/pgdata\" -p {port} -k \"{socket}\" -c listen_addresses=127.0.0.1",
+        "start": "\"$STACK_INSTALL_DIR/bin/postgres\" -D \"$STACK_DATA_DIR/pgdata\" -p \"$STACK_PORT\" -k \"$STACK_SOCKET_DIR\" -c listen_addresses=127.0.0.1",
         "stop_signal": "SIGINT",
         "default_port": 5432,
         "connection": {
           "DATABASE_URL": "postgres://{group}:${DB_PASSWORD}@127.0.0.1:{port}/{group}?sslmode=disable",
           "DB_URL": "postgres://{group}:${DB_PASSWORD}@127.0.0.1:{port}/{group}?sslmode=disable"
         },
-        "provision": "set -e\nPGPASSWORD=\"$POSTGRES_ADMIN_PASSWORD\" \"{install}/bin/psql\" -h \"{socket}\" -p {port} -U stack_admin -d postgres -X -w -q -v ON_ERROR_STOP=1 -v ECHO=none <<'SQL'\nSET log_statement = 'none';\nSET log_min_error_statement = 'panic';\nSET log_min_duration_statement = -1;\nSET log_min_duration_sample = -1;\nSET log_transaction_sample_rate = 0;\nSET password_encryption = 'scram-sha-256';\nREVOKE ALL ON DATABASE postgres, template0, template1 FROM PUBLIC;\n\\getenv group_password DB_PASSWORD\nSELECT 'CREATE ROLE \"{group}\" LOGIN'\n  WHERE NOT EXISTS (SELECT FROM pg_roles WHERE rolname = '{group}')\\gexec\nALTER ROLE \"{group}\" LOGIN NOSUPERUSER NOCREATEDB NOCREATEROLE NOREPLICATION NOBYPASSRLS PASSWORD :'group_password';\nSELECT 'CREATE DATABASE \"{group}\" OWNER \"{group}\" ALLOW_CONNECTIONS false'\n  WHERE NOT EXISTS (SELECT FROM pg_database WHERE datname = '{group}')\\gexec\nREVOKE CONNECT ON DATABASE \"{group}\" FROM PUBLIC;\nALTER DATABASE \"{group}\" ALLOW_CONNECTIONS true;\nSQL\n",
+        "provision": "set -e\nPGPASSWORD=\"$POSTGRES_ADMIN_PASSWORD\" \"$STACK_INSTALL_DIR/bin/psql\" -h \"$STACK_SOCKET_DIR\" -p \"$STACK_PORT\" -U stack_admin -d postgres -X -w -q -v ON_ERROR_STOP=1 -v ECHO=none <<'SQL'\nSET log_statement = 'none';\nSET log_min_error_statement = 'panic';\nSET log_min_duration_statement = -1;\nSET log_min_duration_sample = -1;\nSET log_transaction_sample_rate = 0;\nSET password_encryption = 'scram-sha-256';\nREVOKE ALL ON DATABASE postgres, template0, template1 FROM PUBLIC;\n\\getenv group_password DB_PASSWORD\n\\getenv group_name STACK_GROUP\nSELECT format('CREATE ROLE %I LOGIN', :'group_name')\n  WHERE NOT EXISTS (SELECT FROM pg_roles WHERE rolname = :'group_name')\\gexec\nALTER ROLE :\"group_name\" LOGIN NOSUPERUSER NOCREATEDB NOCREATEROLE NOREPLICATION NOBYPASSRLS PASSWORD :'group_password';\nSELECT format('CREATE DATABASE %I OWNER %I ALLOW_CONNECTIONS false', :'group_name', :'group_name')\n  WHERE NOT EXISTS (SELECT FROM pg_database WHERE datname = :'group_name')\\gexec\nREVOKE CONNECT ON DATABASE :\"group_name\" FROM PUBLIC;\nALTER DATABASE :\"group_name\" ALLOW_CONNECTIONS true;\nSQL\n",
         "bin_dir": "bin",
         "commands": [
           "psql",
@@ -231,7 +231,7 @@
           "clusterdb",
           "pgbench"
         ],
-        "ready": "PGPASSWORD=\"$POSTGRES_ADMIN_PASSWORD\" \"{install}/bin/psql\" -h \"{socket}\" -p {port} -U stack_admin -d postgres -X -w -q -v ON_ERROR_STOP=1 -tAc \"SELECT 1\"",
+        "ready": "PGPASSWORD=\"$POSTGRES_ADMIN_PASSWORD\" \"$STACK_INSTALL_DIR/bin/psql\" -h \"$STACK_SOCKET_DIR\" -p \"$STACK_PORT\" -U stack_admin -d postgres -X -w -q -v ON_ERROR_STOP=1 -tAc \"SELECT 1\"",
         "secrets": [
           "POSTGRES_ADMIN_PASSWORD"
         ],
@@ -291,16 +291,16 @@
         }
       },
       "runtime": {
-        "initialise": "set -e\nif [ -e \"{data}/PG_VERSION\" ]; then\n  printf '%s\\n' 'The existing PostgreSQL cluster uses an unsupported data layout; preserve it and choose an empty instance directory.' >&2\n  exit 1\nfi\nprintf '%s\\n' \"$POSTGRES_ADMIN_PASSWORD\" | \"{install}/bin/initdb\" --pgdata=\"{data}/pgdata\" --username=stack_admin --auth=scram-sha-256 --pwfile=/dev/stdin --encoding=UTF8 --no-sync\n",
+        "initialise": "set -e\nif [ -e \"$STACK_DATA_DIR/PG_VERSION\" ]; then\n  printf '%s\\n' 'The existing PostgreSQL cluster uses an unsupported data layout; preserve it and choose an empty instance directory.' >&2\n  exit 1\nfi\nprintf '%s\\n' \"$POSTGRES_ADMIN_PASSWORD\" | \"$STACK_INSTALL_DIR/bin/initdb\" --pgdata=\"$STACK_DATA_DIR/pgdata\" --username=stack_admin --auth=scram-sha-256 --pwfile=/dev/stdin --encoding=UTF8 --no-sync\n",
         "initialised_marker": "pgdata/PG_VERSION",
-        "start": "\"{install}/bin/postgres\" -D \"{data}/pgdata\" -p {port} -k \"{socket}\" -c listen_addresses=127.0.0.1",
+        "start": "\"$STACK_INSTALL_DIR/bin/postgres\" -D \"$STACK_DATA_DIR/pgdata\" -p \"$STACK_PORT\" -k \"$STACK_SOCKET_DIR\" -c listen_addresses=127.0.0.1",
         "stop_signal": "SIGINT",
         "default_port": 5432,
         "connection": {
           "DATABASE_URL": "postgres://{group}:${DB_PASSWORD}@127.0.0.1:{port}/{group}?sslmode=disable",
           "DB_URL": "postgres://{group}:${DB_PASSWORD}@127.0.0.1:{port}/{group}?sslmode=disable"
         },
-        "provision": "set -e\nPGPASSWORD=\"$POSTGRES_ADMIN_PASSWORD\" \"{install}/bin/psql\" -h \"{socket}\" -p {port} -U stack_admin -d postgres -X -w -q -v ON_ERROR_STOP=1 -v ECHO=none <<'SQL'\nSET log_statement = 'none';\nSET log_min_error_statement = 'panic';\nSET log_min_duration_statement = -1;\nSET log_min_duration_sample = -1;\nSET log_transaction_sample_rate = 0;\nSET password_encryption = 'scram-sha-256';\nREVOKE ALL ON DATABASE postgres, template0, template1 FROM PUBLIC;\n\\getenv group_password DB_PASSWORD\nSELECT 'CREATE ROLE \"{group}\" LOGIN'\n  WHERE NOT EXISTS (SELECT FROM pg_roles WHERE rolname = '{group}')\\gexec\nALTER ROLE \"{group}\" LOGIN NOSUPERUSER NOCREATEDB NOCREATEROLE NOREPLICATION NOBYPASSRLS PASSWORD :'group_password';\nSELECT 'CREATE DATABASE \"{group}\" OWNER \"{group}\" ALLOW_CONNECTIONS false'\n  WHERE NOT EXISTS (SELECT FROM pg_database WHERE datname = '{group}')\\gexec\nREVOKE CONNECT ON DATABASE \"{group}\" FROM PUBLIC;\nALTER DATABASE \"{group}\" ALLOW_CONNECTIONS true;\nSQL\n",
+        "provision": "set -e\nPGPASSWORD=\"$POSTGRES_ADMIN_PASSWORD\" \"$STACK_INSTALL_DIR/bin/psql\" -h \"$STACK_SOCKET_DIR\" -p \"$STACK_PORT\" -U stack_admin -d postgres -X -w -q -v ON_ERROR_STOP=1 -v ECHO=none <<'SQL'\nSET log_statement = 'none';\nSET log_min_error_statement = 'panic';\nSET log_min_duration_statement = -1;\nSET log_min_duration_sample = -1;\nSET log_transaction_sample_rate = 0;\nSET password_encryption = 'scram-sha-256';\nREVOKE ALL ON DATABASE postgres, template0, template1 FROM PUBLIC;\n\\getenv group_password DB_PASSWORD\n\\getenv group_name STACK_GROUP\nSELECT format('CREATE ROLE %I LOGIN', :'group_name')\n  WHERE NOT EXISTS (SELECT FROM pg_roles WHERE rolname = :'group_name')\\gexec\nALTER ROLE :\"group_name\" LOGIN NOSUPERUSER NOCREATEDB NOCREATEROLE NOREPLICATION NOBYPASSRLS PASSWORD :'group_password';\nSELECT format('CREATE DATABASE %I OWNER %I ALLOW_CONNECTIONS false', :'group_name', :'group_name')\n  WHERE NOT EXISTS (SELECT FROM pg_database WHERE datname = :'group_name')\\gexec\nREVOKE CONNECT ON DATABASE :\"group_name\" FROM PUBLIC;\nALTER DATABASE :\"group_name\" ALLOW_CONNECTIONS true;\nSQL\n",
         "bin_dir": "bin",
         "commands": [
           "psql",
@@ -317,7 +317,7 @@
           "clusterdb",
           "pgbench"
         ],
-        "ready": "PGPASSWORD=\"$POSTGRES_ADMIN_PASSWORD\" \"{install}/bin/psql\" -h \"{socket}\" -p {port} -U stack_admin -d postgres -X -w -q -v ON_ERROR_STOP=1 -tAc \"SELECT 1\"",
+        "ready": "PGPASSWORD=\"$POSTGRES_ADMIN_PASSWORD\" \"$STACK_INSTALL_DIR/bin/psql\" -h \"$STACK_SOCKET_DIR\" -p \"$STACK_PORT\" -U stack_admin -d postgres -X -w -q -v ON_ERROR_STOP=1 -tAc \"SELECT 1\"",
         "secrets": [
           "POSTGRES_ADMIN_PASSWORD"
         ],
@@ -385,6 +385,10 @@
           "npx",
           "corepack"
         ]
+      },
+      "lifecycle": {
+        "lts": "2025-10-28",
+        "end": "2028-04-30"
       }
     },
     {
@@ -443,18 +447,21 @@
         "commands": [
           "node",
           "npm",
-          "npx",
-          "corepack"
+          "npx"
         ]
+      },
+      "lifecycle": {
+        "lts": "2026-10-28",
+        "end": "2029-04-30"
       }
     },
     {
       "type": "node",
       "kind": "runtime",
       "category": "language",
-      "support": "lts",
+      "support": "end of life",
       "version": "20.20.2",
-      "description": "Node.js 20, long-term support, in maintenance",
+      "description": "Node.js 20, past end of life; receives no security fixes",
       "artifacts": {
         "darwin/arm64": {
           "url": "https://nodejs.org/dist/v20.20.2/node-v20.20.2-darwin-arm64.tar.gz",
@@ -507,6 +514,10 @@
           "npx",
           "corepack"
         ]
+      },
+      "lifecycle": {
+        "lts": "2023-10-24",
+        "end": "2026-04-30"
       }
     },
     {
@@ -568,6 +579,10 @@
           "npx",
           "corepack"
         ]
+      },
+      "lifecycle": {
+        "lts": "2022-10-25",
+        "end": "2025-04-30"
       }
     },
     {
@@ -629,6 +644,10 @@
           "npx",
           "corepack"
         ]
+      },
+      "lifecycle": {
+        "lts": "2021-10-26",
+        "end": "2023-09-11"
       }
     },
     {
@@ -1166,9 +1185,9 @@
         }
       },
       "runtime": {
-        "initialise": "mkdir -p {data}/buckets {data}/iam",
+        "initialise": "mkdir -p \"$STACK_DATA_DIR/buckets\" \"$STACK_DATA_DIR/iam\"",
         "initialised_marker": "buckets",
-        "start": "{install}/versitygw --port 127.0.0.1:{port} --iam-dir {data}/iam posix {data}/buckets",
+        "start": "\"$STACK_INSTALL_DIR/versitygw\" --port \"127.0.0.1:$STACK_PORT\" --iam-dir \"$STACK_DATA_DIR/iam\" posix \"$STACK_DATA_DIR/buckets\"",
         "stop_signal": "SIGTERM",
         "default_port": 7070,
         "connection": {
@@ -1176,7 +1195,7 @@
           "AWS_REGION": "us-east-1",
           "AWS_S3_FORCE_PATH_STYLE": "true"
         },
-        "ready": "{install}/versitygw admin --access $ROOT_ACCESS_KEY --secret $ROOT_SECRET_KEY --endpoint-url http://127.0.0.1:{port} list-buckets",
+        "ready": "ADMIN_ACCESS_KEY_ID=\"$ROOT_ACCESS_KEY\" ADMIN_SECRET_ACCESS_KEY=\"$ROOT_SECRET_KEY\" ADMIN_ENDPOINT_URL=\"http://127.0.0.1:$STACK_PORT\" \"$STACK_INSTALL_DIR/versitygw\" admin list-buckets",
         "secrets": [
           "ROOT_ACCESS_KEY",
           "ROOT_SECRET_KEY"
@@ -1185,13 +1204,14 @@
           "AWS_ACCESS_KEY_ID",
           "AWS_SECRET_ACCESS_KEY"
         ],
-        "provision": "set -e\nADMIN=\"{install}/versitygw admin --access $ROOT_ACCESS_KEY --secret $ROOT_SECRET_KEY --endpoint-url http://127.0.0.1:{port}\"\n$ADMIN list-users | awk '{print $1}' | grep -qx \"$AWS_ACCESS_KEY_ID\" ||\n  $ADMIN create-user --access \"$AWS_ACCESS_KEY_ID\" --secret \"$AWS_SECRET_ACCESS_KEY\" --role user\nfor bucket in {buckets}; do\n  $ADMIN list-buckets | awk '{print $1}' | grep -qx \"$bucket\" ||\n    $ADMIN create-bucket --bucket \"$bucket\" --owner \"$AWS_ACCESS_KEY_ID\"\ndone\n",
+        "provision": "set -ef\nexport ADMIN_ACCESS_KEY_ID=\"$ROOT_ACCESS_KEY\"\nexport ADMIN_SECRET_ACCESS_KEY=\"$ROOT_SECRET_KEY\"\nexport ADMIN_ENDPOINT_URL=\"http://127.0.0.1:$STACK_PORT\"\n\nadmin() {\n  \"$STACK_INSTALL_DIR/versitygw\" admin \"$@\"\n}\n\nfor bucket in $STACK_BUCKETS; do\n  admin list-buckets | awk '{print $1}' | grep -qx \"$bucket\" ||\n    admin create-bucket --bucket \"$bucket\" --owner \"$AWS_ACCESS_KEY_ID\"\ndone",
         "published": {
           "root": "buckets",
           "attribute": "user.policy",
           "ownership_attribute": "user.acl",
           "owner": "AWS_ACCESS_KEY_ID"
-        }
+        },
+        "provisioner": "versitygw"
       }
     }
   ]
