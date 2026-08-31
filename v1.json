@@ -61,7 +61,11 @@
         "default_port": 6379,
         "connection": {
           "REDIS_URL": "redis://127.0.0.1:{port}"
-        }
+        },
+        "bin_dir": "bin",
+        "commands": [
+          "valkey-cli"
+        ]
       }
     },
     {
@@ -124,7 +128,23 @@
           "DATABASE_URL": "postgres://{group}@127.0.0.1:{port}/{group}?sslmode=disable",
           "DB_URL": "postgres://{group}@127.0.0.1:{port}/{group}?sslmode=disable"
         },
-        "provision": "set -e\n{install}/bin/psql -h {socket} -p {port} -U {user} -d postgres -q -v ON_ERROR_STOP=1 <<'SQL'\nSELECT 'CREATE ROLE \"{group}\" LOGIN'\n  WHERE NOT EXISTS (SELECT FROM pg_roles WHERE rolname = '{group}')\\gexec\nSELECT 'CREATE DATABASE \"{group}\" OWNER \"{group}\"'\n  WHERE NOT EXISTS (SELECT FROM pg_database WHERE datname = '{group}')\\gexec\nREVOKE CONNECT ON DATABASE \"{group}\" FROM PUBLIC;\nSQL\n"
+        "provision": "set -e\n{install}/bin/psql -h {socket} -p {port} -U {user} -d postgres -q -v ON_ERROR_STOP=1 <<'SQL'\nSELECT 'CREATE ROLE \"{group}\" LOGIN'\n  WHERE NOT EXISTS (SELECT FROM pg_roles WHERE rolname = '{group}')\\gexec\nSELECT 'CREATE DATABASE \"{group}\" OWNER \"{group}\"'\n  WHERE NOT EXISTS (SELECT FROM pg_database WHERE datname = '{group}')\\gexec\nREVOKE CONNECT ON DATABASE \"{group}\" FROM PUBLIC;\nSQL\n",
+        "bin_dir": "bin",
+        "commands": [
+          "psql",
+          "pg_dump",
+          "pg_dumpall",
+          "pg_restore",
+          "createdb",
+          "dropdb",
+          "createuser",
+          "dropuser",
+          "pg_isready",
+          "vacuumdb",
+          "reindexdb",
+          "clusterdb",
+          "pgbench"
+        ]
       }
     },
     {
@@ -187,7 +207,23 @@
           "DATABASE_URL": "postgres://{group}@127.0.0.1:{port}/{group}?sslmode=disable",
           "DB_URL": "postgres://{group}@127.0.0.1:{port}/{group}?sslmode=disable"
         },
-        "provision": "set -e\n{install}/bin/psql -h {socket} -p {port} -U {user} -d postgres -q -v ON_ERROR_STOP=1 <<'SQL'\nSELECT 'CREATE ROLE \"{group}\" LOGIN'\n  WHERE NOT EXISTS (SELECT FROM pg_roles WHERE rolname = '{group}')\\gexec\nSELECT 'CREATE DATABASE \"{group}\" OWNER \"{group}\"'\n  WHERE NOT EXISTS (SELECT FROM pg_database WHERE datname = '{group}')\\gexec\nREVOKE CONNECT ON DATABASE \"{group}\" FROM PUBLIC;\nSQL\n"
+        "provision": "set -e\n{install}/bin/psql -h {socket} -p {port} -U {user} -d postgres -q -v ON_ERROR_STOP=1 <<'SQL'\nSELECT 'CREATE ROLE \"{group}\" LOGIN'\n  WHERE NOT EXISTS (SELECT FROM pg_roles WHERE rolname = '{group}')\\gexec\nSELECT 'CREATE DATABASE \"{group}\" OWNER \"{group}\"'\n  WHERE NOT EXISTS (SELECT FROM pg_database WHERE datname = '{group}')\\gexec\nREVOKE CONNECT ON DATABASE \"{group}\" FROM PUBLIC;\nSQL\n",
+        "bin_dir": "bin",
+        "commands": [
+          "psql",
+          "pg_dump",
+          "pg_dumpall",
+          "pg_restore",
+          "createdb",
+          "dropdb",
+          "createuser",
+          "dropuser",
+          "pg_isready",
+          "vacuumdb",
+          "reindexdb",
+          "clusterdb",
+          "pgbench"
+        ]
       }
     },
     {
@@ -250,7 +286,23 @@
           "DATABASE_URL": "postgres://{group}@127.0.0.1:{port}/{group}?sslmode=disable",
           "DB_URL": "postgres://{group}@127.0.0.1:{port}/{group}?sslmode=disable"
         },
-        "provision": "set -e\n{install}/bin/psql -h {socket} -p {port} -U {user} -d postgres -q -v ON_ERROR_STOP=1 <<'SQL'\nSELECT 'CREATE ROLE \"{group}\" LOGIN'\n  WHERE NOT EXISTS (SELECT FROM pg_roles WHERE rolname = '{group}')\\gexec\nSELECT 'CREATE DATABASE \"{group}\" OWNER \"{group}\"'\n  WHERE NOT EXISTS (SELECT FROM pg_database WHERE datname = '{group}')\\gexec\nREVOKE CONNECT ON DATABASE \"{group}\" FROM PUBLIC;\nSQL\n"
+        "provision": "set -e\n{install}/bin/psql -h {socket} -p {port} -U {user} -d postgres -q -v ON_ERROR_STOP=1 <<'SQL'\nSELECT 'CREATE ROLE \"{group}\" LOGIN'\n  WHERE NOT EXISTS (SELECT FROM pg_roles WHERE rolname = '{group}')\\gexec\nSELECT 'CREATE DATABASE \"{group}\" OWNER \"{group}\"'\n  WHERE NOT EXISTS (SELECT FROM pg_database WHERE datname = '{group}')\\gexec\nREVOKE CONNECT ON DATABASE \"{group}\" FROM PUBLIC;\nSQL\n",
+        "bin_dir": "bin",
+        "commands": [
+          "psql",
+          "pg_dump",
+          "pg_dumpall",
+          "pg_restore",
+          "createdb",
+          "dropdb",
+          "createuser",
+          "dropuser",
+          "pg_isready",
+          "vacuumdb",
+          "reindexdb",
+          "clusterdb",
+          "pgbench"
+        ]
       }
     },
     {

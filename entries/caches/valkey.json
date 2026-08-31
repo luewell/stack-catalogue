@@ -50,7 +50,11 @@
         "default_port": 6379,
         "connection": {
           "REDIS_URL": "redis://127.0.0.1:{port}"
-        }
+        },
+        "bin_dir": "bin",
+        "commands": [
+          "valkey-cli"
+        ]
       }
     }
   ]
