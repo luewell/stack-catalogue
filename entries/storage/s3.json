@@ -53,8 +53,7 @@
         "connection": {
           "AWS_ENDPOINT_URL": "https://s3.{group}.{tld}",
           "AWS_REGION": "us-east-1",
-          "AWS_S3_FORCE_PATH_STYLE": "true",
-          "S3_BUCKET": "{group}"
+          "AWS_S3_FORCE_PATH_STYLE": "true"
         },
         "ready": "{install}/versitygw admin --access $ROOT_ACCESS_KEY --secret $ROOT_SECRET_KEY --endpoint-url http://127.0.0.1:{port} list-buckets",
         "secrets": [
@@ -69,6 +68,7 @@
         "published": {
           "root": "buckets",
           "attribute": "user.policy",
+          "ownership_attribute": "user.acl",
           "owner": "AWS_ACCESS_KEY_ID"
         }
       }

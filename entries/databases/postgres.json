@@ -51,16 +51,16 @@
         }
       },
       "runtime": {
-        "initialise": "{install}/bin/initdb --pgdata={data} --username={user} --auth=trust --encoding=UTF8 --no-sync",
-        "initialised_marker": "PG_VERSION",
-        "start": "{install}/bin/postgres -D {data} -p {port} -k {socket} -c listen_addresses=127.0.0.1",
+        "initialise": "set -e\nif [ -e \"{data}/PG_VERSION\" ]; then\n  printf '%s\\n' 'The existing PostgreSQL cluster uses an unsupported data layout; preserve it and choose an empty instance directory.' >&2\n  exit 1\nfi\nprintf '%s\\n' \"$POSTGRES_ADMIN_PASSWORD\" | \"{install}/bin/initdb\" --pgdata=\"{data}/pgdata\" --username=stack_admin --auth=scram-sha-256 --pwfile=/dev/stdin --encoding=UTF8 --no-sync\n",
+        "initialised_marker": "pgdata/PG_VERSION",
+        "start": "\"{install}/bin/postgres\" -D \"{data}/pgdata\" -p {port} -k \"{socket}\" -c listen_addresses=127.0.0.1",
         "stop_signal": "SIGINT",
         "default_port": 5432,
         "connection": {
-          "DATABASE_URL": "postgres://{group}@127.0.0.1:{port}/{group}?sslmode=disable",
-          "DB_URL": "postgres://{group}@127.0.0.1:{port}/{group}?sslmode=disable"
+          "DATABASE_URL": "postgres://{group}:${DB_PASSWORD}@127.0.0.1:{port}/{group}?sslmode=disable",
+          "DB_URL": "postgres://{group}:${DB_PASSWORD}@127.0.0.1:{port}/{group}?sslmode=disable"
         },
-        "provision": "set -e\n{install}/bin/psql -h {socket} -p {port} -U {user} -d postgres -q -v ON_ERROR_STOP=1 <<'SQL'\nSELECT 'CREATE ROLE \"{group}\" LOGIN'\n  WHERE NOT EXISTS (SELECT FROM pg_roles WHERE rolname = '{group}')\\gexec\nSELECT 'CREATE DATABASE \"{group}\" OWNER \"{group}\"'\n  WHERE NOT EXISTS (SELECT FROM pg_database WHERE datname = '{group}')\\gexec\nREVOKE CONNECT ON DATABASE \"{group}\" FROM PUBLIC;\nSQL\n",
+        "provision": "set -e\nPGPASSWORD=\"$POSTGRES_ADMIN_PASSWORD\" \"{install}/bin/psql\" -h \"{socket}\" -p {port} -U stack_admin -d postgres -X -w -q -v ON_ERROR_STOP=1 -v ECHO=none <<'SQL'\nSET log_statement = 'none';\nSET log_min_error_statement = 'panic';\nSET log_min_duration_statement = -1;\nSET log_min_duration_sample = -1;\nSET log_transaction_sample_rate = 0;\nSET password_encryption = 'scram-sha-256';\nREVOKE ALL ON DATABASE postgres, template0, template1 FROM PUBLIC;\n\\getenv group_password DB_PASSWORD\nSELECT 'CREATE ROLE \"{group}\" LOGIN'\n  WHERE NOT EXISTS (SELECT FROM pg_roles WHERE rolname = '{group}')\\gexec\nALTER ROLE \"{group}\" LOGIN NOSUPERUSER NOCREATEDB NOCREATEROLE NOREPLICATION NOBYPASSRLS PASSWORD :'group_password';\nSELECT 'CREATE DATABASE \"{group}\" OWNER \"{group}\" ALLOW_CONNECTIONS false'\n  WHERE NOT EXISTS (SELECT FROM pg_database WHERE datname = '{group}')\\gexec\nREVOKE CONNECT ON DATABASE \"{group}\" FROM PUBLIC;\nALTER DATABASE \"{group}\" ALLOW_CONNECTIONS true;\nSQL\n",
         "bin_dir": "bin",
         "commands": [
           "psql",
@@ -76,6 +76,13 @@
           "reindexdb",
           "clusterdb",
           "pgbench"
+        ],
+        "ready": "PGPASSWORD=\"$POSTGRES_ADMIN_PASSWORD\" \"{install}/bin/psql\" -h \"{socket}\" -p {port} -U stack_admin -d postgres -X -w -q -v ON_ERROR_STOP=1 -tAc \"SELECT 1\"",
+        "secrets": [
+          "POSTGRES_ADMIN_PASSWORD"
+        ],
+        "group_secrets": [
+          "DB_PASSWORD"
         ]
       }
     },
@@ -130,16 +137,16 @@
         }
       },
       "runtime": {
-        "initialise": "{install}/bin/initdb --pgdata={data} --username={user} --auth=trust --encoding=UTF8 --no-sync",
-        "initialised_marker": "PG_VERSION",
-        "start": "{install}/bin/postgres -D {data} -p {port} -k {socket} -c listen_addresses=127.0.0.1",
+        "initialise": "set -e\nif [ -e \"{data}/PG_VERSION\" ]; then\n  printf '%s\\n' 'The existing PostgreSQL cluster uses an unsupported data layout; preserve it and choose an empty instance directory.' >&2\n  exit 1\nfi\nprintf '%s\\n' \"$POSTGRES_ADMIN_PASSWORD\" | \"{install}/bin/initdb\" --pgdata=\"{data}/pgdata\" --username=stack_admin --auth=scram-sha-256 --pwfile=/dev/stdin --encoding=UTF8 --no-sync\n",
+        "initialised_marker": "pgdata/PG_VERSION",
+        "start": "\"{install}/bin/postgres\" -D \"{data}/pgdata\" -p {port} -k \"{socket}\" -c listen_addresses=127.0.0.1",
         "stop_signal": "SIGINT",
         "default_port": 5432,
         "connection": {
-          "DATABASE_URL": "postgres://{group}@127.0.0.1:{port}/{group}?sslmode=disable",
-          "DB_URL": "postgres://{group}@127.0.0.1:{port}/{group}?sslmode=disable"
+          "DATABASE_URL": "postgres://{group}:${DB_PASSWORD}@127.0.0.1:{port}/{group}?sslmode=disable",
+          "DB_URL": "postgres://{group}:${DB_PASSWORD}@127.0.0.1:{port}/{group}?sslmode=disable"
         },
-        "provision": "set -e\n{install}/bin/psql -h {socket} -p {port} -U {user} -d postgres -q -v ON_ERROR_STOP=1 <<'SQL'\nSELECT 'CREATE ROLE \"{group}\" LOGIN'\n  WHERE NOT EXISTS (SELECT FROM pg_roles WHERE rolname = '{group}')\\gexec\nSELECT 'CREATE DATABASE \"{group}\" OWNER \"{group}\"'\n  WHERE NOT EXISTS (SELECT FROM pg_database WHERE datname = '{group}')\\gexec\nREVOKE CONNECT ON DATABASE \"{group}\" FROM PUBLIC;\nSQL\n",
+        "provision": "set -e\nPGPASSWORD=\"$POSTGRES_ADMIN_PASSWORD\" \"{install}/bin/psql\" -h \"{socket}\" -p {port} -U stack_admin -d postgres -X -w -q -v ON_ERROR_STOP=1 -v ECHO=none <<'SQL'\nSET log_statement = 'none';\nSET log_min_error_statement = 'panic';\nSET log_min_duration_statement = -1;\nSET log_min_duration_sample = -1;\nSET log_transaction_sample_rate = 0;\nSET password_encryption = 'scram-sha-256';\nREVOKE ALL ON DATABASE postgres, template0, template1 FROM PUBLIC;\n\\getenv group_password DB_PASSWORD\nSELECT 'CREATE ROLE \"{group}\" LOGIN'\n  WHERE NOT EXISTS (SELECT FROM pg_roles WHERE rolname = '{group}')\\gexec\nALTER ROLE \"{group}\" LOGIN NOSUPERUSER NOCREATEDB NOCREATEROLE NOREPLICATION NOBYPASSRLS PASSWORD :'group_password';\nSELECT 'CREATE DATABASE \"{group}\" OWNER \"{group}\" ALLOW_CONNECTIONS false'\n  WHERE NOT EXISTS (SELECT FROM pg_database WHERE datname = '{group}')\\gexec\nREVOKE CONNECT ON DATABASE \"{group}\" FROM PUBLIC;\nALTER DATABASE \"{group}\" ALLOW_CONNECTIONS true;\nSQL\n",
         "bin_dir": "bin",
         "commands": [
           "psql",
@@ -155,6 +162,13 @@
           "reindexdb",
           "clusterdb",
           "pgbench"
+        ],
+        "ready": "PGPASSWORD=\"$POSTGRES_ADMIN_PASSWORD\" \"{install}/bin/psql\" -h \"{socket}\" -p {port} -U stack_admin -d postgres -X -w -q -v ON_ERROR_STOP=1 -tAc \"SELECT 1\"",
+        "secrets": [
+          "POSTGRES_ADMIN_PASSWORD"
+        ],
+        "group_secrets": [
+          "DB_PASSWORD"
         ]
       }
     },
@@ -209,16 +223,16 @@
         }
       },
       "runtime": {
-        "initialise": "{install}/bin/initdb --pgdata={data} --username={user} --auth=trust --encoding=UTF8 --no-sync",
-        "initialised_marker": "PG_VERSION",
-        "start": "{install}/bin/postgres -D {data} -p {port} -k {socket} -c listen_addresses=127.0.0.1",
+        "initialise": "set -e\nif [ -e \"{data}/PG_VERSION\" ]; then\n  printf '%s\\n' 'The existing PostgreSQL cluster uses an unsupported data layout; preserve it and choose an empty instance directory.' >&2\n  exit 1\nfi\nprintf '%s\\n' \"$POSTGRES_ADMIN_PASSWORD\" | \"{install}/bin/initdb\" --pgdata=\"{data}/pgdata\" --username=stack_admin --auth=scram-sha-256 --pwfile=/dev/stdin --encoding=UTF8 --no-sync\n",
+        "initialised_marker": "pgdata/PG_VERSION",
+        "start": "\"{install}/bin/postgres\" -D \"{data}/pgdata\" -p {port} -k \"{socket}\" -c listen_addresses=127.0.0.1",
         "stop_signal": "SIGINT",
         "default_port": 5432,
         "connection": {
-          "DATABASE_URL": "postgres://{group}@127.0.0.1:{port}/{group}?sslmode=disable",
-          "DB_URL": "postgres://{group}@127.0.0.1:{port}/{group}?sslmode=disable"
+          "DATABASE_URL": "postgres://{group}:${DB_PASSWORD}@127.0.0.1:{port}/{group}?sslmode=disable",
+          "DB_URL": "postgres://{group}:${DB_PASSWORD}@127.0.0.1:{port}/{group}?sslmode=disable"
         },
-        "provision": "set -e\n{install}/bin/psql -h {socket} -p {port} -U {user} -d postgres -q -v ON_ERROR_STOP=1 <<'SQL'\nSELECT 'CREATE ROLE \"{group}\" LOGIN'\n  WHERE NOT EXISTS (SELECT FROM pg_roles WHERE rolname = '{group}')\\gexec\nSELECT 'CREATE DATABASE \"{group}\" OWNER \"{group}\"'\n  WHERE NOT EXISTS (SELECT FROM pg_database WHERE datname = '{group}')\\gexec\nREVOKE CONNECT ON DATABASE \"{group}\" FROM PUBLIC;\nSQL\n",
+        "provision": "set -e\nPGPASSWORD=\"$POSTGRES_ADMIN_PASSWORD\" \"{install}/bin/psql\" -h \"{socket}\" -p {port} -U stack_admin -d postgres -X -w -q -v ON_ERROR_STOP=1 -v ECHO=none <<'SQL'\nSET log_statement = 'none';\nSET log_min_error_statement = 'panic';\nSET log_min_duration_statement = -1;\nSET log_min_duration_sample = -1;\nSET log_transaction_sample_rate = 0;\nSET password_encryption = 'scram-sha-256';\nREVOKE ALL ON DATABASE postgres, template0, template1 FROM PUBLIC;\n\\getenv group_password DB_PASSWORD\nSELECT 'CREATE ROLE \"{group}\" LOGIN'\n  WHERE NOT EXISTS (SELECT FROM pg_roles WHERE rolname = '{group}')\\gexec\nALTER ROLE \"{group}\" LOGIN NOSUPERUSER NOCREATEDB NOCREATEROLE NOREPLICATION NOBYPASSRLS PASSWORD :'group_password';\nSELECT 'CREATE DATABASE \"{group}\" OWNER \"{group}\" ALLOW_CONNECTIONS false'\n  WHERE NOT EXISTS (SELECT FROM pg_database WHERE datname = '{group}')\\gexec\nREVOKE CONNECT ON DATABASE \"{group}\" FROM PUBLIC;\nALTER DATABASE \"{group}\" ALLOW_CONNECTIONS true;\nSQL\n",
         "bin_dir": "bin",
         "commands": [
           "psql",
@@ -234,6 +248,13 @@
           "reindexdb",
           "clusterdb",
           "pgbench"
+        ],
+        "ready": "PGPASSWORD=\"$POSTGRES_ADMIN_PASSWORD\" \"{install}/bin/psql\" -h \"{socket}\" -p {port} -U stack_admin -d postgres -X -w -q -v ON_ERROR_STOP=1 -tAc \"SELECT 1\"",
+        "secrets": [
+          "POSTGRES_ADMIN_PASSWORD"
+        ],
+        "group_secrets": [
+          "DB_PASSWORD"
         ]
       }
     }
