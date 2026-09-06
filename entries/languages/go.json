@@ -1,0 +1,164 @@
+{
+  "services": [
+    {
+      "type": "go",
+      "kind": "runtime",
+      "category": "language",
+      "support": "current",
+      "version": "1.27.1",
+      "description": "Go 1.27, the current release",
+      "artifacts": {
+        "darwin/arm64": {
+          "url": "https://go.dev/dl/go1.27.1.darwin-arm64.tar.gz",
+          "digest": {
+            "algorithm": "sha256",
+            "value": "ee215d57e0ec269c60cc9ceca68e6bda321ba9ee5afe24f4b0988703c2d87d12"
+          },
+          "archive": "tar.gz",
+          "paths": [
+            "bin",
+            "src",
+            "pkg",
+            "lib",
+            "misc",
+            "api",
+            "go.env",
+            "VERSION",
+            "LICENSE"
+          ],
+          "strip": 1
+        },
+        "linux/amd64": {
+          "url": "https://go.dev/dl/go1.27.1.linux-amd64.tar.gz",
+          "digest": {
+            "algorithm": "sha256",
+            "value": "63d339f0da5ab53635a56f2490a7984dfe12dfcff22ad749f63edaf590168445"
+          },
+          "archive": "tar.gz",
+          "paths": [
+            "bin",
+            "src",
+            "pkg",
+            "lib",
+            "misc",
+            "api",
+            "go.env",
+            "VERSION",
+            "LICENSE"
+          ],
+          "strip": 1
+        },
+        "linux/arm64": {
+          "url": "https://go.dev/dl/go1.27.1.linux-arm64.tar.gz",
+          "digest": {
+            "algorithm": "sha256",
+            "value": "3450b45a3f9ee8568792736a5c5e70a1f2e9b36c35a8f74958c03e51d7d92bec"
+          },
+          "archive": "tar.gz",
+          "paths": [
+            "bin",
+            "src",
+            "pkg",
+            "lib",
+            "misc",
+            "api",
+            "go.env",
+            "VERSION",
+            "LICENSE"
+          ],
+          "strip": 1
+        }
+      },
+      "runtime": {
+        "start": "",
+        "commands": [
+          "go",
+          "gofmt"
+        ],
+        "version_arguments": [
+          "version"
+        ]
+      }
+    },
+    {
+      "type": "go",
+      "kind": "runtime",
+      "category": "language",
+      "support": "current",
+      "version": "1.26.8",
+      "description": "Go 1.26, the previous release, supported until Go 1.28 ships",
+      "artifacts": {
+        "darwin/arm64": {
+          "url": "https://go.dev/dl/go1.26.8.darwin-arm64.tar.gz",
+          "digest": {
+            "algorithm": "sha256",
+            "value": "a012b25b571bd0138a03dcd25375ceba866fe5ca822f426d2c66a4de56fd3f4b"
+          },
+          "archive": "tar.gz",
+          "paths": [
+            "bin",
+            "src",
+            "pkg",
+            "lib",
+            "misc",
+            "api",
+            "go.env",
+            "VERSION",
+            "LICENSE"
+          ],
+          "strip": 1
+        },
+        "linux/amd64": {
+          "url": "https://go.dev/dl/go1.26.8.linux-amd64.tar.gz",
+          "digest": {
+            "algorithm": "sha256",
+            "value": "d0f743b33e8d8945e6b1f432edd15785c70507121d6e2a723b21285eddf8b57b"
+          },
+          "archive": "tar.gz",
+          "paths": [
+            "bin",
+            "src",
+            "pkg",
+            "lib",
+            "misc",
+            "api",
+            "go.env",
+            "VERSION",
+            "LICENSE"
+          ],
+          "strip": 1
+        },
+        "linux/arm64": {
+          "url": "https://go.dev/dl/go1.26.8.linux-arm64.tar.gz",
+          "digest": {
+            "algorithm": "sha256",
+            "value": "211ffced9dcb9633a55eac6364816ec0ddd951389a740e88fa8b3337971bdda0"
+          },
+          "archive": "tar.gz",
+          "paths": [
+            "bin",
+            "src",
+            "pkg",
+            "lib",
+            "misc",
+            "api",
+            "go.env",
+            "VERSION",
+            "LICENSE"
+          ],
+          "strip": 1
+        }
+      },
+      "runtime": {
+        "start": "",
+        "commands": [
+          "go",
+          "gofmt"
+        ],
+        "version_arguments": [
+          "version"
+        ]
+      }
+    }
+  ]
+}

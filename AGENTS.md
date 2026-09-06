@@ -28,6 +28,8 @@ The user's global instructions apply. All project artifacts are English.
   interpolate only declared group secrets. S3 publishing declares both policy
   and ACL ownership attributes. Stack's `internal/service/AGENTS.md` documents
   the matching consumer contracts.
+- A runtime is verified after installation by running its pinned command with
+  `runtime.version_arguments`, `--version` when absent. Go declares `version`.
 - Every downloadable artifact requires an HTTPS URL and pinned digest. Changes
   to runtime commands must not silently alter artifact URLs, digests or versions.
 - Never publish, stage, commit or modify real service data without explicit
