@@ -49,6 +49,10 @@ EVERY_PLATFORM = "every_platform"
 # it. An inherited support status is the worst of them, because the generated
 # file then always carries one and the checks downstream see nothing missing.
 PER_RELEASE = ["version", "digest", "support", "lifecycle"]
+# What a release on its own may state. With no second version to differ from,
+# every other field is a fact about the type, and a file that keeps them beside
+# the release reads differently from every file that has two.
+RELEASE_FIELDS = ["version", "support", "lifecycle", "description", "artifacts"]
 
 
 def expand(value, version):
@@ -102,6 +106,70 @@ def problems_with(defaults, source):
     return problems
 
 
+def alike(values):
+    return len({json.dumps(value, sort_keys=True) for value in values}) == 1
+
+
+def written_twice(entries, skip):
+    """Fields every one of these states, and states identically."""
+    if len(entries) < 2:
+        return []
+    shared = []
+    for field in sorted({field for entry in entries for field in entry}):
+        # What may not be shared may be repeated, so it is not worth reporting.
+        if field in PER_RELEASE or field in skip:
+            continue
+        if all(field in entry for entry in entries) and alike(
+                [entry[field] for entry in entries]):
+            shared.append(field)
+    return shared
+
+
+def out_of_place(document, source):
+    """Type-wide fields a single-release file left beside its release."""
+    services = document["services"]
+    if len(services) != 1:
+        return []
+
+    problems = []
+    for key in sorted(services[0]):
+        if key not in RELEASE_FIELDS:
+            problems.append(f"{source}: the only release states {key!r}, which describes "
+                            "the type and belongs in defaults")
+    for platform, artifact in sorted(services[0].get("artifacts", {}).items()):
+        for field in sorted(artifact):
+            if field != "digest":
+                problems.append(f"{source}: the only release states {field!r} for {platform}, "
+                                "which belongs in defaults")
+    return problems
+
+
+def repeats(document, source):
+    """What a file says more than once and has somewhere to say once.
+
+    Left to a reviewer this drifts: the file that gets a second version keeps
+    the shape it had, and the one nobody touched keeps writing its archive
+    layout three times. Nothing here is a matter of taste, because the fields
+    that must stay per release are the ones this skips.
+    """
+    problems = []
+    services = document["services"]
+
+    for field in written_twice(services, ("artifacts", "runtime")):
+        problems.append(f"{source}: every version repeats {field!r}, which defaults can say once")
+    for field in written_twice([service.get("runtime", {}) for service in services], ()):
+        problems.append(
+            f"{source}: every version repeats runtime.{field}, which defaults can say once")
+
+    platforms = [("defaults", document.get("defaults", {}).get("artifacts", {}))]
+    platforms += [(service.get("version"), service.get("artifacts", {})) for service in services]
+    for where, artifacts in platforms:
+        for field in written_twice(list(artifacts.values()), ()):
+            problems.append(f"{source}: every platform of {where} repeats {field!r}, "
+                            "which every_platform can say once")
+    return problems
+
+
 def main() -> int:
     sources = sorted(ENTRIES.rglob("*.json"))
     if not sources:
@@ -114,7 +182,8 @@ def main() -> int:
         document = json.loads(source.read_text())
         defaults = document.get("defaults", {})
 
-        problems = problems_with(defaults, source)
+        problems = (problems_with(defaults, source) + repeats(document, source)
+                    + out_of_place(document, source))
         for problem in problems:
             print(problem, file=sys.stderr)
         if problems:

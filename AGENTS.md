@@ -5,10 +5,13 @@ The user's global instructions apply. All project artifacts are English.
 
 - Source entries live in `entries/<category>/<type>.json`. Keep versions of one
   type together and preserve the existing readable JSON formatting.
-- A file's optional `defaults` block holds what its versions share, and each
-  entry states only what is its own. `{version}` inside a default is expanded
-  per entry; a version writing its own URL writes it whole. Fields merge one
-  level into `artifacts` platforms and `runtime`, and no deeper.
+- A file's `defaults` block describes the type and each entry under `services`
+  describes one release: its version, support, lifecycle, description and
+  digests, plus anything that release alone does differently. A file with a
+  single version keeps that split too, so the day it gains a second one nothing
+  moves. `{version}` inside a default is expanded per entry; a release writing
+  its own URL writes it whole. Fields merge one level into `artifacts` platforms
+  and `runtime`, and no deeper.
 - `defaults.every_platform` holds what each platform's build says identically,
   which is usually how the download is unpacked, leaving `artifacts` to name one
   URL per platform. A platform stating a field for itself keeps its own.
@@ -23,6 +26,11 @@ The user's global instructions apply. All project artifacts are English.
   duplicate type/version identities. It writes whole entries in one field order,
   so the served file has one shape whatever a source file's order. No dependency
   installation is needed to regenerate the catalogue.
+- It also refuses a file that states the same thing for every version or for
+  every platform when `defaults` or `every_platform` could state it once, and a
+  single-release file that describes its type beside that release. The fields
+  each release states for itself are exempt, so a type whose builds are one file
+  for every platform still writes that digest per platform.
 - `.github/workflows/check.yml` checks generation, required artifact metadata
   and downloaded digests. Local validation also uses Stack's
   `stack catalog check v1.json`; a JSON parser alone does not validate runtime
