@@ -3,30 +3,22 @@
     "type": "php",
     "kind": "runtime",
     "category": "language",
+    "every_platform": {
+      "archive": "tar.gz",
+      "paths": [
+        "bin"
+      ],
+      "strip": 1
+    },
     "artifacts": {
       "darwin/arm64": {
-        "url": "https://github.com/luewell/stack-binaries/releases/download/php-{version}/php-{version}-macos-arm64.tar.gz",
-        "archive": "tar.gz",
-        "paths": [
-          "bin"
-        ],
-        "strip": 1
+        "url": "https://github.com/luewell/stack-binaries/releases/download/php-{version}/php-{version}-macos-arm64.tar.gz"
       },
       "linux/amd64": {
-        "url": "https://github.com/luewell/stack-binaries/releases/download/php-{version}/php-{version}-linux-x86_64.tar.gz",
-        "archive": "tar.gz",
-        "paths": [
-          "bin"
-        ],
-        "strip": 1
+        "url": "https://github.com/luewell/stack-binaries/releases/download/php-{version}/php-{version}-linux-x86_64.tar.gz"
       },
       "linux/arm64": {
-        "url": "https://github.com/luewell/stack-binaries/releases/download/php-{version}/php-{version}-linux-arm64.tar.gz",
-        "archive": "tar.gz",
-        "paths": [
-          "bin"
-        ],
-        "strip": 1
+        "url": "https://github.com/luewell/stack-binaries/releases/download/php-{version}/php-{version}-linux-arm64.tar.gz"
       }
     },
     "runtime": {

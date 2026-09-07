@@ -8,8 +8,9 @@ and fails if the committed one differs.
 
 A type's versions repeat almost everything about each other, so a file may put
 what they share in "defaults" and leave each version saying only what is its
-own. That shorthand is expanded here and never leaves: the served file stays the
-flat list of whole entries every binary already understands.
+own, and a type's platforms repeat how the download is unpacked, which goes in
+"defaults.every_platform". Both are expanded here and neither leaves: the served
+file stays the flat list of whole entries every binary already understands.
 """
 
 import json
@@ -38,6 +39,10 @@ ORDER = ["type", "kind", "category", "support", "version", "description",
 # The same for one platform's build: what is downloaded, what it has to hash to,
 # and then how it is unpacked.
 ARTIFACT_ORDER = ["url", "digest", "archive", "paths", "strip"]
+# What every platform's build is told, unless that platform says otherwise. It
+# sits beside "artifacts" rather than inside it, so no platform key can ever be
+# mistaken for it.
+EVERY_PLATFORM = "every_platform"
 # What a release has to assert for itself. A default is inherited in silence,
 # and every one of these is a claim about one release rather than about the type:
 # which release it is, what its bytes hash to, and whether anybody still fixes
@@ -123,7 +128,13 @@ def main() -> int:
                 return 1
 
             if defaults:
-                entry = merge(expand(defaults, version), entry, DEPTH)
+                shared = expand(defaults, version)
+                platform_wide = shared.pop(EVERY_PLATFORM, {})
+                entry = merge(shared, entry, DEPTH)
+                if platform_wide:
+                    entry["artifacts"] = {
+                        platform: merge(platform_wide, artifact, 0)
+                        for platform, artifact in entry.get("artifacts", {}).items()}
             entry = in_order(entry)
 
             name = f"{entry.get('type')}-{version}"

@@ -9,6 +9,9 @@ The user's global instructions apply. All project artifacts are English.
   entry states only what is its own. `{version}` inside a default is expanded
   per entry; a version writing its own URL writes it whole. Fields merge one
   level into `artifacts` platforms and `runtime`, and no deeper.
+- `defaults.every_platform` holds what each platform's build says identically,
+  which is usually how the download is unpacked, leaving `artifacts` to name one
+  URL per platform. A platform stating a field for itself keeps its own.
 - `defaults` may not carry `version`, `digest`, `support` or `lifecycle`, and
   `build.py` refuses a file that does. Each of those is a claim about one
   release: an inherited checksum is a version claiming another's bytes, and an

@@ -3,33 +3,23 @@
     "type": "pnpm",
     "kind": "runtime",
     "category": "packages",
+    "every_platform": {
+      "archive": "tar.gz",
+      "paths": [
+        "pnpm",
+        "dist"
+      ],
+      "strip": 0
+    },
     "artifacts": {
       "darwin/arm64": {
-        "url": "https://github.com/pnpm/pnpm/releases/download/v{version}/pnpm-darwin-arm64.tar.gz",
-        "archive": "tar.gz",
-        "paths": [
-          "pnpm",
-          "dist"
-        ],
-        "strip": 0
+        "url": "https://github.com/pnpm/pnpm/releases/download/v{version}/pnpm-darwin-arm64.tar.gz"
       },
       "linux/amd64": {
-        "url": "https://github.com/pnpm/pnpm/releases/download/v{version}/pnpm-linux-x64.tar.gz",
-        "archive": "tar.gz",
-        "paths": [
-          "pnpm",
-          "dist"
-        ],
-        "strip": 0
+        "url": "https://github.com/pnpm/pnpm/releases/download/v{version}/pnpm-linux-x64.tar.gz"
       },
       "linux/arm64": {
-        "url": "https://github.com/pnpm/pnpm/releases/download/v{version}/pnpm-linux-arm64.tar.gz",
-        "archive": "tar.gz",
-        "paths": [
-          "pnpm",
-          "dist"
-        ],
-        "strip": 0
+        "url": "https://github.com/pnpm/pnpm/releases/download/v{version}/pnpm-linux-arm64.tar.gz"
       }
     },
     "runtime": {

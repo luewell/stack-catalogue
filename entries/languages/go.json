@@ -3,54 +3,30 @@
     "type": "go",
     "kind": "runtime",
     "category": "language",
+    "every_platform": {
+      "archive": "tar.gz",
+      "paths": [
+        "bin",
+        "src",
+        "pkg",
+        "lib",
+        "misc",
+        "api",
+        "go.env",
+        "VERSION",
+        "LICENSE"
+      ],
+      "strip": 1
+    },
     "artifacts": {
       "darwin/arm64": {
-        "url": "https://go.dev/dl/go{version}.darwin-arm64.tar.gz",
-        "archive": "tar.gz",
-        "paths": [
-          "bin",
-          "src",
-          "pkg",
-          "lib",
-          "misc",
-          "api",
-          "go.env",
-          "VERSION",
-          "LICENSE"
-        ],
-        "strip": 1
+        "url": "https://go.dev/dl/go{version}.darwin-arm64.tar.gz"
       },
       "linux/amd64": {
-        "url": "https://go.dev/dl/go{version}.linux-amd64.tar.gz",
-        "archive": "tar.gz",
-        "paths": [
-          "bin",
-          "src",
-          "pkg",
-          "lib",
-          "misc",
-          "api",
-          "go.env",
-          "VERSION",
-          "LICENSE"
-        ],
-        "strip": 1
+        "url": "https://go.dev/dl/go{version}.linux-amd64.tar.gz"
       },
       "linux/arm64": {
-        "url": "https://go.dev/dl/go{version}.linux-arm64.tar.gz",
-        "archive": "tar.gz",
-        "paths": [
-          "bin",
-          "src",
-          "pkg",
-          "lib",
-          "misc",
-          "api",
-          "go.env",
-          "VERSION",
-          "LICENSE"
-        ],
-        "strip": 1
+        "url": "https://go.dev/dl/go{version}.linux-arm64.tar.gz"
       }
     },
     "runtime": {

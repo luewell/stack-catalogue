@@ -3,9 +3,10 @@
 This repository publishes native service and language runtime metadata for Stack.
 Source entries live under `entries/`; `python3 build.py` validates identities and
 combines them into the committed `v1.json`. A source file may share what its
-versions have in common through a `defaults` block, which is expanded at build
-time: the served document stays a flat list of whole entries, each carrying its
-own URL and digest. Version, digest, support and lifecycle are refused there,
+versions have in common through a `defaults` block, and what its platforms have
+in common through `defaults.every_platform`; both are expanded at build time, so
+the served document stays a flat list of whole entries, each carrying its own
+URL and digest. Version, digest, support and lifecycle are refused there,
 because each states something about one release. The consumer validates runtime
 and artifact contracts with `stack catalog check v1.json`.
 
