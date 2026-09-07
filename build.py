@@ -5,6 +5,11 @@ The tool fetches a single URL: it cannot walk a directory, so the combined file
 has to exist and be committed. Keeping it generated rather than hand-written is
 what stops it drifting from its sources, and the check workflow regenerates it
 and fails if the committed one differs.
+
+A type's versions repeat almost everything about each other, so a file may put
+what they share in "defaults" and leave each version saying only what is its
+own. That shorthand is expanded here and never leaves: the served file stays the
+flat list of whole entries every binary already understands.
 """
 
 import json
@@ -16,6 +21,80 @@ ENTRIES = Path("entries")
 # built with, so the day the format changes incompatibly the old ones have to
 # keep finding a file they understand.
 OUTPUT = Path("v1.json")
+# What a shared URL says instead of the version it is missing. Expanded only in
+# values coming from "defaults": a version that writes its own URL writes it
+# whole, and what is served is always the literal URL its digest was taken from.
+PLACEHOLDER = "{version}"
+# artifacts and runtime are one level under an entry, and their platforms and
+# fields one more. Deeper than that lies a digest, and a checksum inherited
+# field by field is how a version quietly ends up claiming another's bytes.
+DEPTH = 2
+# What an entry reads like, so the served file has one shape whatever order a
+# source file happened to use: what it is, then which release, then what to
+# download. This decides reading order and nothing else, and a key it does not
+# name keeps its place after these.
+ORDER = ["type", "kind", "category", "support", "version", "description",
+         "artifacts", "runtime", "lifecycle"]
+# The same for one platform's build: what is downloaded, what it has to hash to,
+# and then how it is unpacked.
+ARTIFACT_ORDER = ["url", "digest", "archive", "paths", "strip"]
+# What a release has to assert for itself. A default is inherited in silence,
+# and every one of these is a claim about one release rather than about the type:
+# which release it is, what its bytes hash to, and whether anybody still fixes
+# it. An inherited support status is the worst of them, because the generated
+# file then always carries one and the checks downstream see nothing missing.
+PER_RELEASE = ["version", "digest", "support", "lifecycle"]
+
+
+def expand(value, version):
+    if isinstance(value, str):
+        return value.replace(PLACEHOLDER, version)
+    if isinstance(value, list):
+        return [expand(item, version) for item in value]
+    if isinstance(value, dict):
+        return {key: expand(item, version) for key, item in value.items()}
+    return value
+
+
+def merge(defaults, entry, depth):
+    merged = dict(defaults)
+    for key, value in entry.items():
+        shared = merged.get(key)
+        if depth > 0 and isinstance(value, dict) and isinstance(shared, dict):
+            merged[key] = merge(shared, value, depth - 1)
+        else:
+            merged[key] = value
+    return merged
+
+
+def ordered(order, entry):
+    named = [key for key in order if key in entry]
+    return {key: entry[key] for key in named + [key for key in entry if key not in named]}
+
+
+def in_order(entry):
+    entry = ordered(ORDER, entry)
+    if isinstance(entry.get("artifacts"), dict):
+        entry["artifacts"] = {platform: ordered(ARTIFACT_ORDER, artifact)
+                              for platform, artifact in entry["artifacts"].items()}
+    return entry
+
+
+def carries(value, name):
+    if isinstance(value, dict):
+        return name in value or any(carries(item, name) for item in value.values())
+    if isinstance(value, list):
+        return any(carries(item, name) for item in value)
+    return False
+
+
+def problems_with(defaults, source):
+    problems = []
+    for name in PER_RELEASE:
+        if carries(defaults, name):
+            problems.append(
+                f"{source}: defaults carries {name}, which each release states for itself")
+    return problems
 
 
 def main() -> int:
@@ -28,8 +107,26 @@ def main() -> int:
     seen = {}
     for source in sources:
         document = json.loads(source.read_text())
+        defaults = document.get("defaults", {})
+
+        problems = problems_with(defaults, source)
+        for problem in problems:
+            print(problem, file=sys.stderr)
+        if problems:
+            return 1
+
         for entry in document.get("services", []):
-            name = f"{entry.get('type')}-{entry.get('version')}"
+            version = entry.get("version")
+            if defaults and not version:
+                print(f"{source}: an entry has no version to expand its defaults with",
+                      file=sys.stderr)
+                return 1
+
+            if defaults:
+                entry = merge(expand(defaults, version), entry, DEPTH)
+            entry = in_order(entry)
+
+            name = f"{entry.get('type')}-{version}"
             if name in seen:
                 print(f"{name} is in both {seen[name]} and {source}", file=sys.stderr)
                 return 1

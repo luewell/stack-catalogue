@@ -5,10 +5,21 @@ The user's global instructions apply. All project artifacts are English.
 
 - Source entries live in `entries/<category>/<type>.json`. Keep versions of one
   type together and preserve the existing readable JSON formatting.
+- A file's optional `defaults` block holds what its versions share, and each
+  entry states only what is its own. `{version}` inside a default is expanded
+  per entry; a version writing its own URL writes it whole. Fields merge one
+  level into `artifacts` platforms and `runtime`, and no deeper.
+- `defaults` may not carry `version`, `digest`, `support` or `lifecycle`, and
+  `build.py` refuses a file that does. Each of those is a claim about one
+  release: an inherited checksum is a version claiming another's bytes, and an
+  inherited support status leaves the generated file always carrying one, so
+  nothing downstream can see that nobody chose it.
 - `v1.json` is generated and committed. Edit source entries, then run
   `python3 build.py`; never maintain the combined file independently.
-- `build.py` uses Python's standard library and rejects duplicate type/version
-  identities. No dependency installation is needed to regenerate the catalogue.
+- `build.py` uses Python's standard library, expands `defaults` and rejects
+  duplicate type/version identities. It writes whole entries in one field order,
+  so the served file has one shape whatever a source file's order. No dependency
+  installation is needed to regenerate the catalogue.
 - `.github/workflows/check.yml` checks generation, required artifact metadata
   and downloaded digests. Local validation also uses Stack's
   `stack catalog check v1.json`; a JSON parser alone does not validate runtime

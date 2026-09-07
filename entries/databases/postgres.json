@@ -1,299 +1,161 @@
 {
+  "defaults": {
+    "type": "postgres",
+    "category": "database",
+    "artifacts": {
+      "darwin/arm64": {
+        "url": "https://github.com/theseus-rs/postgresql-binaries/releases/download/{version}/postgresql-{version}-aarch64-apple-darwin.tar.gz",
+        "archive": "tar.gz",
+        "paths": [
+          "bin",
+          "lib",
+          "share"
+        ],
+        "strip": 1
+      },
+      "linux/amd64": {
+        "url": "https://github.com/theseus-rs/postgresql-binaries/releases/download/{version}/postgresql-{version}-x86_64-unknown-linux-gnu.tar.gz",
+        "archive": "tar.gz",
+        "paths": [
+          "bin",
+          "lib",
+          "share"
+        ],
+        "strip": 1
+      },
+      "linux/arm64": {
+        "url": "https://github.com/theseus-rs/postgresql-binaries/releases/download/{version}/postgresql-{version}-aarch64-unknown-linux-gnu.tar.gz",
+        "archive": "tar.gz",
+        "paths": [
+          "bin",
+          "lib",
+          "share"
+        ],
+        "strip": 1
+      }
+    },
+    "runtime": {
+      "initialise": "set -e\nif [ -e \"$STACK_DATA_DIR/PG_VERSION\" ]; then\n  printf '%s\\n' 'The existing PostgreSQL cluster uses an unsupported data layout; preserve it and choose an empty instance directory.' >&2\n  exit 1\nfi\nprintf '%s\\n' \"$POSTGRES_ADMIN_PASSWORD\" | \"$STACK_INSTALL_DIR/bin/initdb\" --pgdata=\"$STACK_DATA_DIR/pgdata\" --username=stack_admin --auth=scram-sha-256 --pwfile=/dev/stdin --encoding=UTF8 --no-sync\n",
+      "initialised_marker": "pgdata/PG_VERSION",
+      "start": "\"$STACK_INSTALL_DIR/bin/postgres\" -D \"$STACK_DATA_DIR/pgdata\" -p \"$STACK_PORT\" -k \"$STACK_SOCKET_DIR\" -c listen_addresses=127.0.0.1",
+      "stop_signal": "SIGINT",
+      "default_port": 5432,
+      "connection": {
+        "DATABASE_URL": "postgres://{group}:${DB_PASSWORD}@127.0.0.1:{port}/{group}?sslmode=disable",
+        "DB_URL": "postgres://{group}:${DB_PASSWORD}@127.0.0.1:{port}/{group}?sslmode=disable",
+        "DB_HOST": "127.0.0.1",
+        "DB_PORT": "{port}",
+        "DB_USERNAME": "{group}",
+        "DB_DATABASE": "{group}"
+      },
+      "provision": "set -e\nPGPASSWORD=\"$POSTGRES_ADMIN_PASSWORD\" \"$STACK_INSTALL_DIR/bin/psql\" -h \"$STACK_SOCKET_DIR\" -p \"$STACK_PORT\" -U stack_admin -d postgres -X -w -q -v ON_ERROR_STOP=1 -v ECHO=none <<'SQL'\nSET log_statement = 'none';\nSET log_min_error_statement = 'panic';\nSET log_min_duration_statement = -1;\nSET log_min_duration_sample = -1;\nSET log_transaction_sample_rate = 0;\nSET password_encryption = 'scram-sha-256';\nREVOKE ALL ON DATABASE postgres, template0, template1 FROM PUBLIC;\n\\getenv group_password DB_PASSWORD\n\\getenv group_name STACK_GROUP\nSELECT format('CREATE ROLE %I LOGIN', :'group_name')\n  WHERE NOT EXISTS (SELECT FROM pg_roles WHERE rolname = :'group_name')\\gexec\nALTER ROLE :\"group_name\" LOGIN NOSUPERUSER NOCREATEDB NOCREATEROLE NOREPLICATION NOBYPASSRLS PASSWORD :'group_password';\nSELECT format('CREATE DATABASE %I OWNER %I ALLOW_CONNECTIONS false', :'group_name', :'group_name')\n  WHERE NOT EXISTS (SELECT FROM pg_database WHERE datname = :'group_name')\\gexec\nREVOKE CONNECT ON DATABASE :\"group_name\" FROM PUBLIC;\nALTER DATABASE :\"group_name\" ALLOW_CONNECTIONS true;\nSQL\n",
+      "bin_dir": "bin",
+      "commands": [
+        "psql",
+        "pg_dump",
+        "pg_dumpall",
+        "pg_restore",
+        "createdb",
+        "dropdb",
+        "createuser",
+        "dropuser",
+        "pg_isready",
+        "vacuumdb",
+        "reindexdb",
+        "clusterdb",
+        "pgbench"
+      ],
+      "ready": "PGPASSWORD=\"$POSTGRES_ADMIN_PASSWORD\" \"$STACK_INSTALL_DIR/bin/psql\" -h \"$STACK_SOCKET_DIR\" -p \"$STACK_PORT\" -U stack_admin -d postgres -X -w -q -v ON_ERROR_STOP=1 -tAc \"SELECT 1\"",
+      "secrets": [
+        "POSTGRES_ADMIN_PASSWORD"
+      ],
+      "group_secrets": [
+        "DB_PASSWORD"
+      ],
+      "database_provision": "set -e\nPGPASSWORD=\"$POSTGRES_ADMIN_PASSWORD\" \"$STACK_INSTALL_DIR/bin/psql\" -h \"$STACK_SOCKET_DIR\" -p \"$STACK_PORT\" -U stack_admin -d postgres -X -w -q -v ON_ERROR_STOP=1 -v ECHO=none <<'SQL'\nSET log_statement = 'none';\nSET log_min_error_statement = 'panic';\nSET log_min_duration_statement = -1;\nSET log_min_duration_sample = -1;\nSET log_transaction_sample_rate = 0;\nSET password_encryption = 'scram-sha-256';\n\\getenv database_password DB_PASSWORD\n\\getenv database_name STACK_DATABASE\n\\getenv database_user STACK_DATABASE_USER\nSELECT set_config('stack.database_name', :'database_name', false), set_config('stack.database_user', :'database_user', false) \\gset\nDO $provision$\nDECLARE\n  database_name text := current_setting('stack.database_name');\n  database_user text := current_setting('stack.database_user');\n  role_oid oid;\nBEGIN\n  SELECT oid INTO role_oid FROM pg_roles WHERE rolname = database_user;\n  IF role_oid IS NOT NULL AND (\n    shobj_description(role_oid, 'pg_authid') IS DISTINCT FROM 'stack:database:' || database_user\n    OR EXISTS (SELECT FROM pg_roles WHERE oid = role_oid AND\n      (rolsuper OR rolcreatedb OR rolcreaterole OR rolreplication OR rolbypassrls OR NOT rolcanlogin))\n    OR EXISTS (SELECT FROM pg_auth_members WHERE roleid = role_oid OR member = role_oid)\n  ) THEN\n    RAISE EXCEPTION 'database role ownership or privileges conflict; inspect existing state';\n  END IF;\n  IF EXISTS (SELECT FROM pg_database WHERE datname = database_name AND\n    (role_oid IS NULL OR datdba <> role_oid)) THEN\n    RAISE EXCEPTION 'database belongs to another owner; inspect existing state';\n  END IF;\n  IF EXISTS (\n    SELECT FROM pg_database AS database_entry,\n      LATERAL aclexplode(COALESCE(database_entry.datacl, acldefault('d', database_entry.datdba))) AS access_entry\n    WHERE database_entry.datname = database_name\n      AND access_entry.grantee <> role_oid\n      AND access_entry.grantee <> (SELECT oid FROM pg_roles WHERE rolname = 'stack_admin')\n  ) THEN\n    RAISE EXCEPTION 'database access grants conflict; inspect existing state';\n  END IF;\n  IF role_oid IS NULL THEN\n    EXECUTE format('CREATE ROLE %I LOGIN NOSUPERUSER NOCREATEDB NOCREATEROLE NOREPLICATION NOBYPASSRLS', database_user);\n    EXECUTE format('COMMENT ON ROLE %I IS %L', database_user, 'stack:database:' || database_user);\n  END IF;\nEND\n$provision$;\nALTER ROLE :\"database_user\" PASSWORD :'database_password';\nREVOKE ALL ON DATABASE postgres, template0, template1 FROM PUBLIC;\nSELECT format('CREATE DATABASE %I OWNER %I ALLOW_CONNECTIONS false', :'database_name', :'database_user')\n  WHERE NOT EXISTS (SELECT FROM pg_database WHERE datname = :'database_name')\\gexec\nREVOKE ALL ON DATABASE :\"database_name\" FROM PUBLIC;\nALTER DATABASE :\"database_name\" ALLOW_CONNECTIONS true;\nSQL\n",
+      "database_connection": {
+        "DATABASE_URL": "postgres://{database_user}:${DB_PASSWORD}@127.0.0.1:{port}/{database}?sslmode=disable",
+        "DB_URL": "postgres://{database_user}:${DB_PASSWORD}@127.0.0.1:{port}/{database}?sslmode=disable",
+        "DB_HOST": "127.0.0.1",
+        "DB_PORT": "{port}",
+        "DB_USERNAME": "{database_user}",
+        "DB_DATABASE": "{database}"
+      }
+    }
+  },
   "services": [
     {
-      "type": "postgres",
-      "category": "database",
       "support": "lts",
       "version": "18.6.0",
       "description": "PostgreSQL 18, supported until November 2030",
       "artifacts": {
         "darwin/arm64": {
-          "url": "https://github.com/theseus-rs/postgresql-binaries/releases/download/18.6.0/postgresql-18.6.0-aarch64-apple-darwin.tar.gz",
           "digest": {
             "algorithm": "sha256",
             "value": "a257bcdb8aa3301a13d6a5bcec48f8c9517045b7cbae71e50788b2615539e95b"
-          },
-          "archive": "tar.gz",
-          "paths": [
-            "bin",
-            "lib",
-            "share"
-          ],
-          "strip": 1
+          }
         },
         "linux/amd64": {
-          "url": "https://github.com/theseus-rs/postgresql-binaries/releases/download/18.6.0/postgresql-18.6.0-x86_64-unknown-linux-gnu.tar.gz",
           "digest": {
             "algorithm": "sha256",
             "value": "bb3d09f876b2383e25a8c9ce09e32d185a03656a23d074f5195542b1b1b3ca61"
-          },
-          "archive": "tar.gz",
-          "paths": [
-            "bin",
-            "lib",
-            "share"
-          ],
-          "strip": 1
+          }
         },
         "linux/arm64": {
-          "url": "https://github.com/theseus-rs/postgresql-binaries/releases/download/18.6.0/postgresql-18.6.0-aarch64-unknown-linux-gnu.tar.gz",
           "digest": {
             "algorithm": "sha256",
             "value": "5d2b5e8be9e96bfc3d7f22090057a836ec36d5d092542d8d3b93cc145cf4ee13"
-          },
-          "archive": "tar.gz",
-          "paths": [
-            "bin",
-            "lib",
-            "share"
-          ],
-          "strip": 1
-        }
-      },
-      "runtime": {
-        "initialise": "set -e\nif [ -e \"$STACK_DATA_DIR/PG_VERSION\" ]; then\n  printf '%s\\n' 'The existing PostgreSQL cluster uses an unsupported data layout; preserve it and choose an empty instance directory.' >&2\n  exit 1\nfi\nprintf '%s\\n' \"$POSTGRES_ADMIN_PASSWORD\" | \"$STACK_INSTALL_DIR/bin/initdb\" --pgdata=\"$STACK_DATA_DIR/pgdata\" --username=stack_admin --auth=scram-sha-256 --pwfile=/dev/stdin --encoding=UTF8 --no-sync\n",
-        "initialised_marker": "pgdata/PG_VERSION",
-        "start": "\"$STACK_INSTALL_DIR/bin/postgres\" -D \"$STACK_DATA_DIR/pgdata\" -p \"$STACK_PORT\" -k \"$STACK_SOCKET_DIR\" -c listen_addresses=127.0.0.1",
-        "stop_signal": "SIGINT",
-        "default_port": 5432,
-        "connection": {
-          "DATABASE_URL": "postgres://{group}:${DB_PASSWORD}@127.0.0.1:{port}/{group}?sslmode=disable",
-          "DB_URL": "postgres://{group}:${DB_PASSWORD}@127.0.0.1:{port}/{group}?sslmode=disable",
-          "DB_HOST": "127.0.0.1",
-          "DB_PORT": "{port}",
-          "DB_USERNAME": "{group}",
-          "DB_DATABASE": "{group}"
-        },
-        "provision": "set -e\nPGPASSWORD=\"$POSTGRES_ADMIN_PASSWORD\" \"$STACK_INSTALL_DIR/bin/psql\" -h \"$STACK_SOCKET_DIR\" -p \"$STACK_PORT\" -U stack_admin -d postgres -X -w -q -v ON_ERROR_STOP=1 -v ECHO=none <<'SQL'\nSET log_statement = 'none';\nSET log_min_error_statement = 'panic';\nSET log_min_duration_statement = -1;\nSET log_min_duration_sample = -1;\nSET log_transaction_sample_rate = 0;\nSET password_encryption = 'scram-sha-256';\nREVOKE ALL ON DATABASE postgres, template0, template1 FROM PUBLIC;\n\\getenv group_password DB_PASSWORD\n\\getenv group_name STACK_GROUP\nSELECT format('CREATE ROLE %I LOGIN', :'group_name')\n  WHERE NOT EXISTS (SELECT FROM pg_roles WHERE rolname = :'group_name')\\gexec\nALTER ROLE :\"group_name\" LOGIN NOSUPERUSER NOCREATEDB NOCREATEROLE NOREPLICATION NOBYPASSRLS PASSWORD :'group_password';\nSELECT format('CREATE DATABASE %I OWNER %I ALLOW_CONNECTIONS false', :'group_name', :'group_name')\n  WHERE NOT EXISTS (SELECT FROM pg_database WHERE datname = :'group_name')\\gexec\nREVOKE CONNECT ON DATABASE :\"group_name\" FROM PUBLIC;\nALTER DATABASE :\"group_name\" ALLOW_CONNECTIONS true;\nSQL\n",
-        "bin_dir": "bin",
-        "commands": [
-          "psql",
-          "pg_dump",
-          "pg_dumpall",
-          "pg_restore",
-          "createdb",
-          "dropdb",
-          "createuser",
-          "dropuser",
-          "pg_isready",
-          "vacuumdb",
-          "reindexdb",
-          "clusterdb",
-          "pgbench"
-        ],
-        "ready": "PGPASSWORD=\"$POSTGRES_ADMIN_PASSWORD\" \"$STACK_INSTALL_DIR/bin/psql\" -h \"$STACK_SOCKET_DIR\" -p \"$STACK_PORT\" -U stack_admin -d postgres -X -w -q -v ON_ERROR_STOP=1 -tAc \"SELECT 1\"",
-        "secrets": [
-          "POSTGRES_ADMIN_PASSWORD"
-        ],
-        "group_secrets": [
-          "DB_PASSWORD"
-        ],
-        "database_provision": "set -e\nPGPASSWORD=\"$POSTGRES_ADMIN_PASSWORD\" \"$STACK_INSTALL_DIR/bin/psql\" -h \"$STACK_SOCKET_DIR\" -p \"$STACK_PORT\" -U stack_admin -d postgres -X -w -q -v ON_ERROR_STOP=1 -v ECHO=none <<'SQL'\nSET log_statement = 'none';\nSET log_min_error_statement = 'panic';\nSET log_min_duration_statement = -1;\nSET log_min_duration_sample = -1;\nSET log_transaction_sample_rate = 0;\nSET password_encryption = 'scram-sha-256';\n\\getenv database_password DB_PASSWORD\n\\getenv database_name STACK_DATABASE\n\\getenv database_user STACK_DATABASE_USER\nSELECT set_config('stack.database_name', :'database_name', false), set_config('stack.database_user', :'database_user', false) \\gset\nDO $provision$\nDECLARE\n  database_name text := current_setting('stack.database_name');\n  database_user text := current_setting('stack.database_user');\n  role_oid oid;\nBEGIN\n  SELECT oid INTO role_oid FROM pg_roles WHERE rolname = database_user;\n  IF role_oid IS NOT NULL AND (\n    shobj_description(role_oid, 'pg_authid') IS DISTINCT FROM 'stack:database:' || database_user\n    OR EXISTS (SELECT FROM pg_roles WHERE oid = role_oid AND\n      (rolsuper OR rolcreatedb OR rolcreaterole OR rolreplication OR rolbypassrls OR NOT rolcanlogin))\n    OR EXISTS (SELECT FROM pg_auth_members WHERE roleid = role_oid OR member = role_oid)\n  ) THEN\n    RAISE EXCEPTION 'database role ownership or privileges conflict; inspect existing state';\n  END IF;\n  IF EXISTS (SELECT FROM pg_database WHERE datname = database_name AND\n    (role_oid IS NULL OR datdba <> role_oid)) THEN\n    RAISE EXCEPTION 'database belongs to another owner; inspect existing state';\n  END IF;\n  IF EXISTS (\n    SELECT FROM pg_database AS database_entry,\n      LATERAL aclexplode(COALESCE(database_entry.datacl, acldefault('d', database_entry.datdba))) AS access_entry\n    WHERE database_entry.datname = database_name\n      AND access_entry.grantee <> role_oid\n      AND access_entry.grantee <> (SELECT oid FROM pg_roles WHERE rolname = 'stack_admin')\n  ) THEN\n    RAISE EXCEPTION 'database access grants conflict; inspect existing state';\n  END IF;\n  IF role_oid IS NULL THEN\n    EXECUTE format('CREATE ROLE %I LOGIN NOSUPERUSER NOCREATEDB NOCREATEROLE NOREPLICATION NOBYPASSRLS', database_user);\n    EXECUTE format('COMMENT ON ROLE %I IS %L', database_user, 'stack:database:' || database_user);\n  END IF;\nEND\n$provision$;\nALTER ROLE :\"database_user\" PASSWORD :'database_password';\nREVOKE ALL ON DATABASE postgres, template0, template1 FROM PUBLIC;\nSELECT format('CREATE DATABASE %I OWNER %I ALLOW_CONNECTIONS false', :'database_name', :'database_user')\n  WHERE NOT EXISTS (SELECT FROM pg_database WHERE datname = :'database_name')\\gexec\nREVOKE ALL ON DATABASE :\"database_name\" FROM PUBLIC;\nALTER DATABASE :\"database_name\" ALLOW_CONNECTIONS true;\nSQL\n",
-        "database_connection": {
-          "DATABASE_URL": "postgres://{database_user}:${DB_PASSWORD}@127.0.0.1:{port}/{database}?sslmode=disable",
-          "DB_URL": "postgres://{database_user}:${DB_PASSWORD}@127.0.0.1:{port}/{database}?sslmode=disable",
-          "DB_HOST": "127.0.0.1",
-          "DB_PORT": "{port}",
-          "DB_USERNAME": "{database_user}",
-          "DB_DATABASE": "{database}"
+          }
         }
       }
     },
     {
-      "type": "postgres",
-      "category": "database",
       "support": "lts",
       "version": "17.11.0",
       "description": "PostgreSQL 17, supported until November 2029",
       "artifacts": {
         "darwin/arm64": {
-          "url": "https://github.com/theseus-rs/postgresql-binaries/releases/download/17.11.0/postgresql-17.11.0-aarch64-apple-darwin.tar.gz",
           "digest": {
             "algorithm": "sha256",
             "value": "fd4b62794b160e26973a768a1eef3248aef9d2ff23ebd6d884a4299485e28e57"
-          },
-          "archive": "tar.gz",
-          "paths": [
-            "bin",
-            "lib",
-            "share"
-          ],
-          "strip": 1
+          }
         },
         "linux/amd64": {
-          "url": "https://github.com/theseus-rs/postgresql-binaries/releases/download/17.11.0/postgresql-17.11.0-x86_64-unknown-linux-gnu.tar.gz",
           "digest": {
             "algorithm": "sha256",
             "value": "b7a1ba6bae6499d8296e3e81b0171eecfd1766ca9aaa0057e41ad3e844e5e2e0"
-          },
-          "archive": "tar.gz",
-          "paths": [
-            "bin",
-            "lib",
-            "share"
-          ],
-          "strip": 1
+          }
         },
         "linux/arm64": {
-          "url": "https://github.com/theseus-rs/postgresql-binaries/releases/download/17.11.0/postgresql-17.11.0-aarch64-unknown-linux-gnu.tar.gz",
           "digest": {
             "algorithm": "sha256",
             "value": "abffda09209280ec1502b73720dc4d254fb7fff9a072e324926c600a5b16c221"
-          },
-          "archive": "tar.gz",
-          "paths": [
-            "bin",
-            "lib",
-            "share"
-          ],
-          "strip": 1
-        }
-      },
-      "runtime": {
-        "initialise": "set -e\nif [ -e \"$STACK_DATA_DIR/PG_VERSION\" ]; then\n  printf '%s\\n' 'The existing PostgreSQL cluster uses an unsupported data layout; preserve it and choose an empty instance directory.' >&2\n  exit 1\nfi\nprintf '%s\\n' \"$POSTGRES_ADMIN_PASSWORD\" | \"$STACK_INSTALL_DIR/bin/initdb\" --pgdata=\"$STACK_DATA_DIR/pgdata\" --username=stack_admin --auth=scram-sha-256 --pwfile=/dev/stdin --encoding=UTF8 --no-sync\n",
-        "initialised_marker": "pgdata/PG_VERSION",
-        "start": "\"$STACK_INSTALL_DIR/bin/postgres\" -D \"$STACK_DATA_DIR/pgdata\" -p \"$STACK_PORT\" -k \"$STACK_SOCKET_DIR\" -c listen_addresses=127.0.0.1",
-        "stop_signal": "SIGINT",
-        "default_port": 5432,
-        "connection": {
-          "DATABASE_URL": "postgres://{group}:${DB_PASSWORD}@127.0.0.1:{port}/{group}?sslmode=disable",
-          "DB_URL": "postgres://{group}:${DB_PASSWORD}@127.0.0.1:{port}/{group}?sslmode=disable",
-          "DB_HOST": "127.0.0.1",
-          "DB_PORT": "{port}",
-          "DB_USERNAME": "{group}",
-          "DB_DATABASE": "{group}"
-        },
-        "provision": "set -e\nPGPASSWORD=\"$POSTGRES_ADMIN_PASSWORD\" \"$STACK_INSTALL_DIR/bin/psql\" -h \"$STACK_SOCKET_DIR\" -p \"$STACK_PORT\" -U stack_admin -d postgres -X -w -q -v ON_ERROR_STOP=1 -v ECHO=none <<'SQL'\nSET log_statement = 'none';\nSET log_min_error_statement = 'panic';\nSET log_min_duration_statement = -1;\nSET log_min_duration_sample = -1;\nSET log_transaction_sample_rate = 0;\nSET password_encryption = 'scram-sha-256';\nREVOKE ALL ON DATABASE postgres, template0, template1 FROM PUBLIC;\n\\getenv group_password DB_PASSWORD\n\\getenv group_name STACK_GROUP\nSELECT format('CREATE ROLE %I LOGIN', :'group_name')\n  WHERE NOT EXISTS (SELECT FROM pg_roles WHERE rolname = :'group_name')\\gexec\nALTER ROLE :\"group_name\" LOGIN NOSUPERUSER NOCREATEDB NOCREATEROLE NOREPLICATION NOBYPASSRLS PASSWORD :'group_password';\nSELECT format('CREATE DATABASE %I OWNER %I ALLOW_CONNECTIONS false', :'group_name', :'group_name')\n  WHERE NOT EXISTS (SELECT FROM pg_database WHERE datname = :'group_name')\\gexec\nREVOKE CONNECT ON DATABASE :\"group_name\" FROM PUBLIC;\nALTER DATABASE :\"group_name\" ALLOW_CONNECTIONS true;\nSQL\n",
-        "bin_dir": "bin",
-        "commands": [
-          "psql",
-          "pg_dump",
-          "pg_dumpall",
-          "pg_restore",
-          "createdb",
-          "dropdb",
-          "createuser",
-          "dropuser",
-          "pg_isready",
-          "vacuumdb",
-          "reindexdb",
-          "clusterdb",
-          "pgbench"
-        ],
-        "ready": "PGPASSWORD=\"$POSTGRES_ADMIN_PASSWORD\" \"$STACK_INSTALL_DIR/bin/psql\" -h \"$STACK_SOCKET_DIR\" -p \"$STACK_PORT\" -U stack_admin -d postgres -X -w -q -v ON_ERROR_STOP=1 -tAc \"SELECT 1\"",
-        "secrets": [
-          "POSTGRES_ADMIN_PASSWORD"
-        ],
-        "group_secrets": [
-          "DB_PASSWORD"
-        ],
-        "database_provision": "set -e\nPGPASSWORD=\"$POSTGRES_ADMIN_PASSWORD\" \"$STACK_INSTALL_DIR/bin/psql\" -h \"$STACK_SOCKET_DIR\" -p \"$STACK_PORT\" -U stack_admin -d postgres -X -w -q -v ON_ERROR_STOP=1 -v ECHO=none <<'SQL'\nSET log_statement = 'none';\nSET log_min_error_statement = 'panic';\nSET log_min_duration_statement = -1;\nSET log_min_duration_sample = -1;\nSET log_transaction_sample_rate = 0;\nSET password_encryption = 'scram-sha-256';\n\\getenv database_password DB_PASSWORD\n\\getenv database_name STACK_DATABASE\n\\getenv database_user STACK_DATABASE_USER\nSELECT set_config('stack.database_name', :'database_name', false), set_config('stack.database_user', :'database_user', false) \\gset\nDO $provision$\nDECLARE\n  database_name text := current_setting('stack.database_name');\n  database_user text := current_setting('stack.database_user');\n  role_oid oid;\nBEGIN\n  SELECT oid INTO role_oid FROM pg_roles WHERE rolname = database_user;\n  IF role_oid IS NOT NULL AND (\n    shobj_description(role_oid, 'pg_authid') IS DISTINCT FROM 'stack:database:' || database_user\n    OR EXISTS (SELECT FROM pg_roles WHERE oid = role_oid AND\n      (rolsuper OR rolcreatedb OR rolcreaterole OR rolreplication OR rolbypassrls OR NOT rolcanlogin))\n    OR EXISTS (SELECT FROM pg_auth_members WHERE roleid = role_oid OR member = role_oid)\n  ) THEN\n    RAISE EXCEPTION 'database role ownership or privileges conflict; inspect existing state';\n  END IF;\n  IF EXISTS (SELECT FROM pg_database WHERE datname = database_name AND\n    (role_oid IS NULL OR datdba <> role_oid)) THEN\n    RAISE EXCEPTION 'database belongs to another owner; inspect existing state';\n  END IF;\n  IF EXISTS (\n    SELECT FROM pg_database AS database_entry,\n      LATERAL aclexplode(COALESCE(database_entry.datacl, acldefault('d', database_entry.datdba))) AS access_entry\n    WHERE database_entry.datname = database_name\n      AND access_entry.grantee <> role_oid\n      AND access_entry.grantee <> (SELECT oid FROM pg_roles WHERE rolname = 'stack_admin')\n  ) THEN\n    RAISE EXCEPTION 'database access grants conflict; inspect existing state';\n  END IF;\n  IF role_oid IS NULL THEN\n    EXECUTE format('CREATE ROLE %I LOGIN NOSUPERUSER NOCREATEDB NOCREATEROLE NOREPLICATION NOBYPASSRLS', database_user);\n    EXECUTE format('COMMENT ON ROLE %I IS %L', database_user, 'stack:database:' || database_user);\n  END IF;\nEND\n$provision$;\nALTER ROLE :\"database_user\" PASSWORD :'database_password';\nREVOKE ALL ON DATABASE postgres, template0, template1 FROM PUBLIC;\nSELECT format('CREATE DATABASE %I OWNER %I ALLOW_CONNECTIONS false', :'database_name', :'database_user')\n  WHERE NOT EXISTS (SELECT FROM pg_database WHERE datname = :'database_name')\\gexec\nREVOKE ALL ON DATABASE :\"database_name\" FROM PUBLIC;\nALTER DATABASE :\"database_name\" ALLOW_CONNECTIONS true;\nSQL\n",
-        "database_connection": {
-          "DATABASE_URL": "postgres://{database_user}:${DB_PASSWORD}@127.0.0.1:{port}/{database}?sslmode=disable",
-          "DB_URL": "postgres://{database_user}:${DB_PASSWORD}@127.0.0.1:{port}/{database}?sslmode=disable",
-          "DB_HOST": "127.0.0.1",
-          "DB_PORT": "{port}",
-          "DB_USERNAME": "{database_user}",
-          "DB_DATABASE": "{database}"
+          }
         }
       }
     },
     {
-      "type": "postgres",
-      "category": "database",
       "support": "lts",
       "version": "16.15.0",
       "description": "PostgreSQL 16, supported until November 2028",
       "artifacts": {
         "darwin/arm64": {
-          "url": "https://github.com/theseus-rs/postgresql-binaries/releases/download/16.15.0/postgresql-16.15.0-aarch64-apple-darwin.tar.gz",
           "digest": {
             "algorithm": "sha256",
             "value": "46f6382024d9b633d1f4b4903ffef8c2404e00ae83098d628c00591048cb0512"
-          },
-          "archive": "tar.gz",
-          "paths": [
-            "bin",
-            "lib",
-            "share"
-          ],
-          "strip": 1
+          }
         },
         "linux/amd64": {
-          "url": "https://github.com/theseus-rs/postgresql-binaries/releases/download/16.15.0/postgresql-16.15.0-x86_64-unknown-linux-gnu.tar.gz",
           "digest": {
             "algorithm": "sha256",
             "value": "77dd669eda3985ea8be26256f6af28d3c8414152ada713797555bb7423b4486a"
-          },
-          "archive": "tar.gz",
-          "paths": [
-            "bin",
-            "lib",
-            "share"
-          ],
-          "strip": 1
+          }
         },
         "linux/arm64": {
-          "url": "https://github.com/theseus-rs/postgresql-binaries/releases/download/16.15.0/postgresql-16.15.0-aarch64-unknown-linux-gnu.tar.gz",
           "digest": {
             "algorithm": "sha256",
             "value": "f6d49ffbaea28cf8732785b18afb75bded905667d4ec8e2308a13a30fe0a24d1"
-          },
-          "archive": "tar.gz",
-          "paths": [
-            "bin",
-            "lib",
-            "share"
-          ],
-          "strip": 1
-        }
-      },
-      "runtime": {
-        "initialise": "set -e\nif [ -e \"$STACK_DATA_DIR/PG_VERSION\" ]; then\n  printf '%s\\n' 'The existing PostgreSQL cluster uses an unsupported data layout; preserve it and choose an empty instance directory.' >&2\n  exit 1\nfi\nprintf '%s\\n' \"$POSTGRES_ADMIN_PASSWORD\" | \"$STACK_INSTALL_DIR/bin/initdb\" --pgdata=\"$STACK_DATA_DIR/pgdata\" --username=stack_admin --auth=scram-sha-256 --pwfile=/dev/stdin --encoding=UTF8 --no-sync\n",
-        "initialised_marker": "pgdata/PG_VERSION",
-        "start": "\"$STACK_INSTALL_DIR/bin/postgres\" -D \"$STACK_DATA_DIR/pgdata\" -p \"$STACK_PORT\" -k \"$STACK_SOCKET_DIR\" -c listen_addresses=127.0.0.1",
-        "stop_signal": "SIGINT",
-        "default_port": 5432,
-        "connection": {
-          "DATABASE_URL": "postgres://{group}:${DB_PASSWORD}@127.0.0.1:{port}/{group}?sslmode=disable",
-          "DB_URL": "postgres://{group}:${DB_PASSWORD}@127.0.0.1:{port}/{group}?sslmode=disable",
-          "DB_HOST": "127.0.0.1",
-          "DB_PORT": "{port}",
-          "DB_USERNAME": "{group}",
-          "DB_DATABASE": "{group}"
-        },
-        "provision": "set -e\nPGPASSWORD=\"$POSTGRES_ADMIN_PASSWORD\" \"$STACK_INSTALL_DIR/bin/psql\" -h \"$STACK_SOCKET_DIR\" -p \"$STACK_PORT\" -U stack_admin -d postgres -X -w -q -v ON_ERROR_STOP=1 -v ECHO=none <<'SQL'\nSET log_statement = 'none';\nSET log_min_error_statement = 'panic';\nSET log_min_duration_statement = -1;\nSET log_min_duration_sample = -1;\nSET log_transaction_sample_rate = 0;\nSET password_encryption = 'scram-sha-256';\nREVOKE ALL ON DATABASE postgres, template0, template1 FROM PUBLIC;\n\\getenv group_password DB_PASSWORD\n\\getenv group_name STACK_GROUP\nSELECT format('CREATE ROLE %I LOGIN', :'group_name')\n  WHERE NOT EXISTS (SELECT FROM pg_roles WHERE rolname = :'group_name')\\gexec\nALTER ROLE :\"group_name\" LOGIN NOSUPERUSER NOCREATEDB NOCREATEROLE NOREPLICATION NOBYPASSRLS PASSWORD :'group_password';\nSELECT format('CREATE DATABASE %I OWNER %I ALLOW_CONNECTIONS false', :'group_name', :'group_name')\n  WHERE NOT EXISTS (SELECT FROM pg_database WHERE datname = :'group_name')\\gexec\nREVOKE CONNECT ON DATABASE :\"group_name\" FROM PUBLIC;\nALTER DATABASE :\"group_name\" ALLOW_CONNECTIONS true;\nSQL\n",
-        "bin_dir": "bin",
-        "commands": [
-          "psql",
-          "pg_dump",
-          "pg_dumpall",
-          "pg_restore",
-          "createdb",
-          "dropdb",
-          "createuser",
-          "dropuser",
-          "pg_isready",
-          "vacuumdb",
-          "reindexdb",
-          "clusterdb",
-          "pgbench"
-        ],
-        "ready": "PGPASSWORD=\"$POSTGRES_ADMIN_PASSWORD\" \"$STACK_INSTALL_DIR/bin/psql\" -h \"$STACK_SOCKET_DIR\" -p \"$STACK_PORT\" -U stack_admin -d postgres -X -w -q -v ON_ERROR_STOP=1 -tAc \"SELECT 1\"",
-        "secrets": [
-          "POSTGRES_ADMIN_PASSWORD"
-        ],
-        "group_secrets": [
-          "DB_PASSWORD"
-        ],
-        "database_provision": "set -e\nPGPASSWORD=\"$POSTGRES_ADMIN_PASSWORD\" \"$STACK_INSTALL_DIR/bin/psql\" -h \"$STACK_SOCKET_DIR\" -p \"$STACK_PORT\" -U stack_admin -d postgres -X -w -q -v ON_ERROR_STOP=1 -v ECHO=none <<'SQL'\nSET log_statement = 'none';\nSET log_min_error_statement = 'panic';\nSET log_min_duration_statement = -1;\nSET log_min_duration_sample = -1;\nSET log_transaction_sample_rate = 0;\nSET password_encryption = 'scram-sha-256';\n\\getenv database_password DB_PASSWORD\n\\getenv database_name STACK_DATABASE\n\\getenv database_user STACK_DATABASE_USER\nSELECT set_config('stack.database_name', :'database_name', false), set_config('stack.database_user', :'database_user', false) \\gset\nDO $provision$\nDECLARE\n  database_name text := current_setting('stack.database_name');\n  database_user text := current_setting('stack.database_user');\n  role_oid oid;\nBEGIN\n  SELECT oid INTO role_oid FROM pg_roles WHERE rolname = database_user;\n  IF role_oid IS NOT NULL AND (\n    shobj_description(role_oid, 'pg_authid') IS DISTINCT FROM 'stack:database:' || database_user\n    OR EXISTS (SELECT FROM pg_roles WHERE oid = role_oid AND\n      (rolsuper OR rolcreatedb OR rolcreaterole OR rolreplication OR rolbypassrls OR NOT rolcanlogin))\n    OR EXISTS (SELECT FROM pg_auth_members WHERE roleid = role_oid OR member = role_oid)\n  ) THEN\n    RAISE EXCEPTION 'database role ownership or privileges conflict; inspect existing state';\n  END IF;\n  IF EXISTS (SELECT FROM pg_database WHERE datname = database_name AND\n    (role_oid IS NULL OR datdba <> role_oid)) THEN\n    RAISE EXCEPTION 'database belongs to another owner; inspect existing state';\n  END IF;\n  IF EXISTS (\n    SELECT FROM pg_database AS database_entry,\n      LATERAL aclexplode(COALESCE(database_entry.datacl, acldefault('d', database_entry.datdba))) AS access_entry\n    WHERE database_entry.datname = database_name\n      AND access_entry.grantee <> role_oid\n      AND access_entry.grantee <> (SELECT oid FROM pg_roles WHERE rolname = 'stack_admin')\n  ) THEN\n    RAISE EXCEPTION 'database access grants conflict; inspect existing state';\n  END IF;\n  IF role_oid IS NULL THEN\n    EXECUTE format('CREATE ROLE %I LOGIN NOSUPERUSER NOCREATEDB NOCREATEROLE NOREPLICATION NOBYPASSRLS', database_user);\n    EXECUTE format('COMMENT ON ROLE %I IS %L', database_user, 'stack:database:' || database_user);\n  END IF;\nEND\n$provision$;\nALTER ROLE :\"database_user\" PASSWORD :'database_password';\nREVOKE ALL ON DATABASE postgres, template0, template1 FROM PUBLIC;\nSELECT format('CREATE DATABASE %I OWNER %I ALLOW_CONNECTIONS false', :'database_name', :'database_user')\n  WHERE NOT EXISTS (SELECT FROM pg_database WHERE datname = :'database_name')\\gexec\nREVOKE ALL ON DATABASE :\"database_name\" FROM PUBLIC;\nALTER DATABASE :\"database_name\" ALLOW_CONNECTIONS true;\nSQL\n",
-        "database_connection": {
-          "DATABASE_URL": "postgres://{database_user}:${DB_PASSWORD}@127.0.0.1:{port}/{database}?sslmode=disable",
-          "DB_URL": "postgres://{database_user}:${DB_PASSWORD}@127.0.0.1:{port}/{database}?sslmode=disable",
-          "DB_HOST": "127.0.0.1",
-          "DB_PORT": "{port}",
-          "DB_USERNAME": "{database_user}",
-          "DB_DATABASE": "{database}"
+          }
         }
       }
     }
