@@ -1,0 +1,110 @@
+{
+  "services": [
+    {
+      "type": "bun",
+      "kind": "runtime",
+      "category": "language",
+      "support": "end of life",
+      "version": "1.1.18",
+      "description": "Bun 1.1, past end of life: Bun fixes only its newest release",
+      "artifacts": {
+        "darwin/arm64": {
+          "url": "https://github.com/oven-sh/bun/releases/download/bun-v1.1.18/bun-darwin-aarch64.zip",
+          "digest": {
+            "algorithm": "sha256",
+            "value": "51237884c7538e88a3d49437956ced93db9ee2907e92a698bc3ec0bb15b3e22b"
+          },
+          "archive": "zip",
+          "paths": [
+            "bun"
+          ],
+          "strip": 1
+        },
+        "linux/amd64": {
+          "url": "https://github.com/oven-sh/bun/releases/download/bun-v1.1.18/bun-linux-x64-baseline.zip",
+          "digest": {
+            "algorithm": "sha256",
+            "value": "e114deeca7f77e12d5cacb4448fd29392d049f04653e88c2de42bfd1e04c1e01"
+          },
+          "archive": "zip",
+          "paths": [
+            "bun"
+          ],
+          "strip": 1
+        },
+        "linux/arm64": {
+          "url": "https://github.com/oven-sh/bun/releases/download/bun-v1.1.18/bun-linux-aarch64.zip",
+          "digest": {
+            "algorithm": "sha256",
+            "value": "2486a9ad9937e985bea147ba0cb59b6b43882baf4bba156cabc7239d0f68ef60"
+          },
+          "archive": "zip",
+          "paths": [
+            "bun"
+          ],
+          "strip": 1
+        }
+      },
+      "runtime": {
+        "start": "",
+        "commands": [
+          "bun"
+        ],
+        "bin_dir": "."
+      }
+    },
+    {
+      "type": "bun",
+      "kind": "runtime",
+      "category": "language",
+      "support": "current",
+      "version": "1.4.2",
+      "description": "Bun 1.4, the only line Bun backports anything to",
+      "artifacts": {
+        "darwin/arm64": {
+          "url": "https://github.com/oven-sh/bun/releases/download/bun-v1.4.2/bun-darwin-aarch64.zip",
+          "digest": {
+            "algorithm": "sha256",
+            "value": "90987a3a16d7db556d886ac3d551e7b6d3edf0a1cf43acaed622e8676be1d12f"
+          },
+          "archive": "zip",
+          "paths": [
+            "bun"
+          ],
+          "strip": 1
+        },
+        "linux/amd64": {
+          "url": "https://github.com/oven-sh/bun/releases/download/bun-v1.4.2/bun-linux-x64-baseline.zip",
+          "digest": {
+            "algorithm": "sha256",
+            "value": "c678040f14fe0440eb839d37cbd0ce4c051a32da72806ac97de6a6aab6bf728f"
+          },
+          "archive": "zip",
+          "paths": [
+            "bun"
+          ],
+          "strip": 1
+        },
+        "linux/arm64": {
+          "url": "https://github.com/oven-sh/bun/releases/download/bun-v1.4.2/bun-linux-aarch64.zip",
+          "digest": {
+            "algorithm": "sha256",
+            "value": "54328bbc2d9c8e0c9f892c544d66c57a83b84139e34909e5ee81758f1ac8fda7"
+          },
+          "archive": "zip",
+          "paths": [
+            "bun"
+          ],
+          "strip": 1
+        }
+      },
+      "runtime": {
+        "start": "",
+        "commands": [
+          "bun"
+        ],
+        "bin_dir": "."
+      }
+    }
+  ]
+}
