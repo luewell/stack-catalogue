@@ -8,6 +8,7 @@
     "entries/languages/node.json",
     "entries/languages/php.json",
     "entries/languages/python.json",
+    "entries/languages/ruby.json",
     "entries/packages/composer.json",
     "entries/packages/pnpm.json",
     "entries/storage/s3.json"
@@ -1280,6 +1281,207 @@
           "python3",
           "pip",
           "pip3"
+        ]
+      }
+    },
+    {
+      "type": "ruby",
+      "kind": "runtime",
+      "category": "language",
+      "support": "current",
+      "version": "3.3.12",
+      "description": "Ruby 3.3, security fixes only, and they end 31 March 2027",
+      "artifacts": {
+        "darwin/arm64": {
+          "url": "https://github.com/jdx/ruby/releases/download/3.3.12/ruby-3.3.12.macos.tar.gz",
+          "digest": {
+            "algorithm": "sha256",
+            "value": "63d8668a5ff595fb82ee54328ee9c6166923967fedd1dbd7f2961099fd462da2"
+          },
+          "archive": "tar.gz",
+          "paths": [
+            "bin",
+            "include",
+            "lib",
+            "libexec"
+          ],
+          "strip": 1
+        },
+        "linux/amd64": {
+          "url": "https://github.com/jdx/ruby/releases/download/3.3.12/ruby-3.3.12.x86_64_linux.tar.gz",
+          "digest": {
+            "algorithm": "sha256",
+            "value": "9f85eb7bce31098ba8d81081e047c795ab161a785b163b30eb1ce973b0e6c186"
+          },
+          "archive": "tar.gz",
+          "paths": [
+            "bin",
+            "include",
+            "lib",
+            "libexec"
+          ],
+          "strip": 1
+        },
+        "linux/arm64": {
+          "url": "https://github.com/jdx/ruby/releases/download/3.3.12/ruby-3.3.12.arm64_linux.tar.gz",
+          "digest": {
+            "algorithm": "sha256",
+            "value": "9778fc285dca3ae4ff19213355e549c30ba7fb02635338df342969017d5ac141"
+          },
+          "archive": "tar.gz",
+          "paths": [
+            "bin",
+            "include",
+            "lib",
+            "libexec"
+          ],
+          "strip": 1
+        }
+      },
+      "runtime": {
+        "start": "",
+        "commands": [
+          "ruby",
+          "gem",
+          "bundle",
+          "bundler",
+          "rake",
+          "irb",
+          "erb"
+        ]
+      }
+    },
+    {
+      "type": "ruby",
+      "kind": "runtime",
+      "category": "language",
+      "support": "current",
+      "version": "3.4.10",
+      "description": "Ruby 3.4, in normal maintenance: it still takes bug fixes",
+      "artifacts": {
+        "darwin/arm64": {
+          "url": "https://github.com/jdx/ruby/releases/download/3.4.10/ruby-3.4.10.macos.tar.gz",
+          "digest": {
+            "algorithm": "sha256",
+            "value": "5aac8b6e16b0938a14f6d23346b5487020d1fea6b5856a33392e5eb37fa1ef62"
+          },
+          "archive": "tar.gz",
+          "paths": [
+            "bin",
+            "include",
+            "lib",
+            "libexec"
+          ],
+          "strip": 1
+        },
+        "linux/amd64": {
+          "url": "https://github.com/jdx/ruby/releases/download/3.4.10/ruby-3.4.10.x86_64_linux.tar.gz",
+          "digest": {
+            "algorithm": "sha256",
+            "value": "81ce58b056ee2765e46785b4c6befb9852d9c3e50ff9385e7eb1cf3e0314d0bd"
+          },
+          "archive": "tar.gz",
+          "paths": [
+            "bin",
+            "include",
+            "lib",
+            "libexec"
+          ],
+          "strip": 1
+        },
+        "linux/arm64": {
+          "url": "https://github.com/jdx/ruby/releases/download/3.4.10/ruby-3.4.10.arm64_linux.tar.gz",
+          "digest": {
+            "algorithm": "sha256",
+            "value": "c0a3e9f1d7847e66b044aeeab394ba5d41f63c3da7ad99017c4b2578e31b205a"
+          },
+          "archive": "tar.gz",
+          "paths": [
+            "bin",
+            "include",
+            "lib",
+            "libexec"
+          ],
+          "strip": 1
+        }
+      },
+      "runtime": {
+        "start": "",
+        "commands": [
+          "ruby",
+          "gem",
+          "bundle",
+          "bundler",
+          "rake",
+          "irb",
+          "erb"
+        ]
+      }
+    },
+    {
+      "type": "ruby",
+      "kind": "runtime",
+      "category": "language",
+      "support": "current",
+      "version": "4.0.6",
+      "description": "Ruby 4.0, the current release",
+      "artifacts": {
+        "darwin/arm64": {
+          "url": "https://github.com/jdx/ruby/releases/download/4.0.6/ruby-4.0.6.macos.tar.gz",
+          "digest": {
+            "algorithm": "sha256",
+            "value": "518c5849d7ab337790943963ded4f0b402d2d4ededea265288a5a19d4c8fee18"
+          },
+          "archive": "tar.gz",
+          "paths": [
+            "bin",
+            "include",
+            "lib",
+            "libexec"
+          ],
+          "strip": 1
+        },
+        "linux/amd64": {
+          "url": "https://github.com/jdx/ruby/releases/download/4.0.6/ruby-4.0.6.x86_64_linux.tar.gz",
+          "digest": {
+            "algorithm": "sha256",
+            "value": "aefa111873bac3b15c5c416bfaaca84e793d5312d4496d651ad79c44521b200a"
+          },
+          "archive": "tar.gz",
+          "paths": [
+            "bin",
+            "include",
+            "lib",
+            "libexec"
+          ],
+          "strip": 1
+        },
+        "linux/arm64": {
+          "url": "https://github.com/jdx/ruby/releases/download/4.0.6/ruby-4.0.6.arm64_linux.tar.gz",
+          "digest": {
+            "algorithm": "sha256",
+            "value": "6144c26cd5a1ff85358beb7e68e592ada6d0319aa8093cf353465d60f10aa970"
+          },
+          "archive": "tar.gz",
+          "paths": [
+            "bin",
+            "include",
+            "lib",
+            "libexec"
+          ],
+          "strip": 1
+        }
+      },
+      "runtime": {
+        "start": "",
+        "commands": [
+          "ruby",
+          "gem",
+          "bundle",
+          "bundler",
+          "rake",
+          "irb",
+          "erb"
         ]
       }
     },
