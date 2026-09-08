@@ -1,6 +1,10 @@
 # Stack catalogue context
 
 This repository publishes native service and language runtime metadata for Stack.
+A runtime entry separates the commands it can offer from the ones every pin gets:
+`node`, `go`, `ruby` and `python3` are exposed, and `npm`, `npx`, `corepack`,
+`gofmt`, `gem`, `bundle`, `rake`, `pip` and the rest are named by a repository
+that wants them.
 Source entries live under `entries/`; `python3 build.py` validates identities and
 combines them into the committed `v1.json`. A source file may share what its
 versions have in common through a `defaults` block, and what its platforms have

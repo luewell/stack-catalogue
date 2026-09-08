@@ -35,6 +35,9 @@
         "go",
         "gofmt"
       ],
+      "exposed": [
+        "go"
+      ],
       "version_arguments": [
         "version"
       ]

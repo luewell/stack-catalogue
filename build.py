@@ -144,6 +144,17 @@ def out_of_place(document, source):
     return problems
 
 
+def unexposed(entry, source):
+    """A runtime offering several commands has to say which a pin gets."""
+    runtime = entry.get("runtime") or {}
+    if entry.get("kind") != "runtime" or len(runtime.get("commands") or []) < 2:
+        return []
+    if runtime.get("exposed"):
+        return []
+    return [f"{source}: {entry.get('type')} offers several commands and does not say "
+            "which of them every pin gets; name them in runtime.exposed"]
+
+
 def repeats(document, source):
     """What a file says more than once and has somewhere to say once.
 
@@ -205,6 +216,12 @@ def main() -> int:
                         platform: merge(platform_wide, artifact, 0)
                         for platform, artifact in entry.get("artifacts", {}).items()}
             entry = in_order(entry)
+
+            problems = unexposed(entry, source)
+            for problem in problems:
+                print(problem, file=sys.stderr)
+            if problems:
+                return 1
 
             name = f"{entry.get('type')}-{version}"
             if name in seen:

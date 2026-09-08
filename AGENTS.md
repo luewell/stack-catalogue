@@ -52,6 +52,12 @@ The user's global instructions apply. All project artifacts are English.
   the matching consumer contracts.
 - A runtime is verified after installation by running its pinned command with
   `runtime.version_arguments`, `--version` when absent. Go declares `version`.
+- `runtime.commands` is everything an entry can put in a shell and
+  `runtime.exposed` is which of them every pin gets; the rest are opt-in per
+  repository, so pinning Node does not hand somebody three package managers.
+  Exposed names must be among the commands, and `build.py` refuses a runtime
+  offering several commands that does not say. An entry naming none exposes all
+  of them, which keeps an older catalogue working.
 - Every downloadable artifact requires an HTTPS URL and pinned digest. Changes
   to runtime commands must not silently alter artifact URLs, digests or versions.
 - Never publish, stage, commit or modify real service data without explicit

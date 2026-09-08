@@ -549,6 +549,9 @@
           "go",
           "gofmt"
         ],
+        "exposed": [
+          "go"
+        ],
         "version_arguments": [
           "version"
         ]
@@ -629,6 +632,9 @@
           "go",
           "gofmt"
         ],
+        "exposed": [
+          "go"
+        ],
         "version_arguments": [
           "version"
         ]
@@ -692,6 +698,9 @@
           "npm",
           "npx",
           "corepack"
+        ],
+        "exposed": [
+          "node"
         ]
       },
       "lifecycle": {
@@ -756,6 +765,9 @@
           "node",
           "npm",
           "npx"
+        ],
+        "exposed": [
+          "node"
         ]
       },
       "lifecycle": {
@@ -821,6 +833,9 @@
           "npm",
           "npx",
           "corepack"
+        ],
+        "exposed": [
+          "node"
         ]
       },
       "lifecycle": {
@@ -886,6 +901,9 @@
           "npm",
           "npx",
           "corepack"
+        ],
+        "exposed": [
+          "node"
         ]
       },
       "lifecycle": {
@@ -951,6 +969,9 @@
           "npm",
           "npx",
           "corepack"
+        ],
+        "exposed": [
+          "node"
         ]
       },
       "lifecycle": {
@@ -1281,6 +1302,9 @@
           "python3",
           "pip",
           "pip3"
+        ],
+        "exposed": [
+          "python3"
         ]
       }
     },
@@ -1348,6 +1372,9 @@
           "rake",
           "irb",
           "erb"
+        ],
+        "exposed": [
+          "ruby"
         ]
       }
     },
@@ -1415,6 +1442,9 @@
           "rake",
           "irb",
           "erb"
+        ],
+        "exposed": [
+          "ruby"
         ]
       }
     },
@@ -1482,6 +1512,9 @@
           "rake",
           "irb",
           "erb"
+        ],
+        "exposed": [
+          "ruby"
         ]
       }
     },
