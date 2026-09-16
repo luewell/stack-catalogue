@@ -38,19 +38,19 @@
         "darwin/arm64": {
           "digest": {
             "algorithm": "sha256",
-            "value": "d1a6fc3f595b13a8675d0fe17c61553e6e767700f5c4edd75069a79eb3b83d46"
+            "value": "321b74690f5cc7572824ab85669697681f86a9040f363a6532126ec62e0029fd"
           }
         },
         "linux/amd64": {
           "digest": {
             "algorithm": "sha256",
-            "value": "3fc2726390c0b0c92e2c9d9788961ce1f044530161aa6f5bc952bf11018a52a2"
+            "value": "1557b08a22fd97f9fb2df3d977fc2570ba0a127b2758c298c0d0b733b54c5a54"
           }
         },
         "linux/arm64": {
           "digest": {
             "algorithm": "sha256",
-            "value": "408143caaaecb14d063a3ec18a6b831e2f7013e0c864626570dd3839b44fab43"
+            "value": "1e11cfb1f4673c4a5750d045f7dfb0a4ad9eb8118c06d0c48f8677b6a4257854"
           }
         }
       }
@@ -63,19 +63,19 @@
         "darwin/arm64": {
           "digest": {
             "algorithm": "sha256",
-            "value": "6bd46333aa51723d7b884f813734f1fe4cdbe6d9aaef43fc12010871bea47945"
+            "value": "0a7e793f4be49b15748748cc1688e67936c40bfbcc2ca961094e097f77bd37b5"
           }
         },
         "linux/amd64": {
           "digest": {
             "algorithm": "sha256",
-            "value": "c9a34988670150a6df0653d6bbf15b5c7d8d14ecb9987469ae76ce7694011a1a"
+            "value": "77124b920f2a3b64ca44c4d998f9da08b75eb3ab31eb996edacc6d7930ebc2c5"
           }
         },
         "linux/arm64": {
           "digest": {
             "algorithm": "sha256",
-            "value": "d10e9a351e939da50d797d5c35f9d5062a7711a0258e59150b7bfa5cb8f8e5d5"
+            "value": "9150dc1c23554956293f8311ac2d2d4b99a162f1529babc487378eafe4d314fb"
           }
         }
       }
@@ -88,19 +88,19 @@
         "darwin/arm64": {
           "digest": {
             "algorithm": "sha256",
-            "value": "480df8d3e7d2b1b7cd1e5055cba0cc814cf36a12f763ef5ef15f4a1ea57f3c5e"
+            "value": "1e12a615bc766b367fbba22ddf739f93b0e93657f16865f0e6c642f7d5534359"
           }
         },
         "linux/amd64": {
           "digest": {
             "algorithm": "sha256",
-            "value": "bf29d5a160297be7c0dabca40a0f24219331f2b1ed109d01f6e6f6130bc63d54"
+            "value": "896c6a973b83070f0c8ad701b8d27e366fc260eb16cdba2f7617c3272d34f8d0"
           }
         },
         "linux/arm64": {
           "digest": {
             "algorithm": "sha256",
-            "value": "1635630cdced7e0c994f7d1cc67d1427253daff620be65be7504ddf4e2ec2801"
+            "value": "44131702e87fe85200a3985930bdf936c8b9adfc3bd2d48bb47d8e20ad97e920"
           }
         }
       }
@@ -113,19 +113,19 @@
         "darwin/arm64": {
           "digest": {
             "algorithm": "sha256",
-            "value": "3c20392ee020eabf36ff33b4cc7f7973dfd9829ef84d2a26fbb55423db1abe69"
+            "value": "cba5682dacf199a8309fa6068fc8787e762cf570723268ce161e109ce0502ef8"
           }
         },
         "linux/amd64": {
           "digest": {
             "algorithm": "sha256",
-            "value": "63ee24ed6b731cd6958439afac4b2e49bf2aa4e6727cb2431878bfe207d5293e"
+            "value": "80f60fc5c41ec13f4991aa1e7a914b4c62c20b57a52aad59c1c80baff3d82197"
           }
         },
         "linux/arm64": {
           "digest": {
             "algorithm": "sha256",
-            "value": "8111bab308214c2e021ea54f0fbb897de5a29322081b4b1360df762cbfee52cc"
+            "value": "1b114aa752dcc6529634ecd37eaea2f645d26b1e362d0d1d6c490b3125209c4c"
           }
         }
       }
@@ -138,19 +138,19 @@
         "darwin/arm64": {
           "digest": {
             "algorithm": "sha256",
-            "value": "074d2657dff6cd62cdd3f1c82dd3d88fdf4aaf96dca591dd42db32d1d9719374"
+            "value": "8181b3b08c31832df2329481c8b5fb4730a8298b6310a5b96aed5dee83a0ee41"
           }
         },
         "linux/amd64": {
           "digest": {
             "algorithm": "sha256",
-            "value": "4f796f7fc9b03c8d9fed0274dd6a1d8999ea6facc7b9ed9bf142a5f10f9d597e"
+            "value": "c0509588a6a01bf76fc719135721f0f0b6d7e1d26ffe848410ee5d2773af531b"
           }
         },
         "linux/arm64": {
           "digest": {
             "algorithm": "sha256",
-            "value": "e59c7001bb7f46cbd70ebc3e82125088205ea2cbb9e3418a626f84cd71ed1719"
+            "value": "251c1309ad51ea9dc1592e9c7becee3f9ca68f7ad07b7db432f66bf196381fd4"
           }
         }
       }
