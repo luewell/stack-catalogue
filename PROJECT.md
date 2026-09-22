@@ -36,7 +36,8 @@ pinned index and Linux amd64/arm64 manifests, its thirteen client commands under
 `/usr/bin` and `/bin/sh` as the process shell. Its `runtime.container_connection`
 states the same variables as `runtime.connection` with `{host}` and `{port}` in
 place of the loopback address a native instance listens on, for a service its
-sites reach by name.
+sites reach by name. Its `runtime.client_environment` states the `PG*` values a
+client command needs to reach that service without arguments.
 
 Native artifacts and image manifests are distinct release records;
 an image digest does not assert native extension parity. `stack docker image`

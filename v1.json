@@ -175,6 +175,13 @@
           "DB_PORT": "{port}",
           "DB_USERNAME": "{group}",
           "DB_DATABASE": "{group}"
+        },
+        "client_environment": {
+          "PGHOST": "{host}",
+          "PGPORT": "{port}",
+          "PGUSER": "{group}",
+          "PGPASSWORD": "${DB_PASSWORD}",
+          "PGDATABASE": "{group}"
         }
       },
       "image": {
@@ -319,6 +326,13 @@
           "DB_PORT": "{port}",
           "DB_USERNAME": "{group}",
           "DB_DATABASE": "{group}"
+        },
+        "client_environment": {
+          "PGHOST": "{host}",
+          "PGPORT": "{port}",
+          "PGUSER": "{group}",
+          "PGPASSWORD": "${DB_PASSWORD}",
+          "PGDATABASE": "{group}"
         }
       }
     },
@@ -426,6 +440,13 @@
           "DB_PORT": "{port}",
           "DB_USERNAME": "{group}",
           "DB_DATABASE": "{group}"
+        },
+        "client_environment": {
+          "PGHOST": "{host}",
+          "PGPORT": "{port}",
+          "PGUSER": "{group}",
+          "PGPASSWORD": "${DB_PASSWORD}",
+          "PGDATABASE": "{group}"
         }
       }
     },
