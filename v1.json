@@ -555,6 +555,32 @@
         "version_arguments": [
           "version"
         ]
+      },
+      "image": {
+        "repository": "docker.io/library/golang",
+        "tag": "1.27.1-bookworm",
+        "source": "https://hub.docker.com/_/golang",
+        "digest": {
+          "algorithm": "sha256",
+          "value": "69a7b9788769bec032d238959b61854e9ae87f57be9029ec04e9885fabf99195"
+        },
+        "platforms": {
+          "linux/amd64": {
+            "algorithm": "sha256",
+            "value": "966278043a40889499db9b0cd196fc789c37c385d41bd9a10cb1e7764af60cdc"
+          },
+          "linux/arm64": {
+            "algorithm": "sha256",
+            "value": "1668bbf856490c9bd0b77204ae1cdaebe273dc459b5eeb3a31a4ddc78ca6fae1"
+          }
+        },
+        "commands": {
+          "go": "/usr/local/go/bin/go",
+          "gofmt": "/usr/local/go/bin/gofmt"
+        },
+        "processes": {
+          "shell": "/bin/sh"
+        }
       }
     },
     {
@@ -638,6 +664,32 @@
         "version_arguments": [
           "version"
         ]
+      },
+      "image": {
+        "repository": "docker.io/library/golang",
+        "tag": "1.26.8-bookworm",
+        "source": "https://hub.docker.com/_/golang",
+        "digest": {
+          "algorithm": "sha256",
+          "value": "a688600ca24f8a4d3ca77f95b0dd40704a9fc787c826660eb7ba0b641b8b175d"
+        },
+        "platforms": {
+          "linux/amd64": {
+            "algorithm": "sha256",
+            "value": "abe4f87f354c4f6d7ee3fb11b241c6b6c24a32ca50a2ebcc30493a2168e14048"
+          },
+          "linux/arm64": {
+            "algorithm": "sha256",
+            "value": "37a6d96e606ca410603609f2c235f182ff13060266d7626688b21f132ae338d4"
+          }
+        },
+        "commands": {
+          "go": "/usr/local/go/bin/go",
+          "gofmt": "/usr/local/go/bin/gofmt"
+        },
+        "processes": {
+          "shell": "/bin/sh"
+        }
       }
     },
     {

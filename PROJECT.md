@@ -23,6 +23,10 @@ HTTPS source and provenance tag, with SHA-256 digests for the image index and
 Linux amd64/arm64 manifests. Command paths name only commands the runtime entry
 offers. Image process capabilities separately name the verified shell in both
 images and PHP-FPM in the PHP image; they do not add native runtime commands.
+Go 1.27.1 and 1.26.8 carry official Bookworm image metadata with pinned index and
+Linux amd64/arm64 manifests. Their commands are `/usr/local/go/bin/go` and
+`/usr/local/go/bin/gofmt`, with `/bin/sh` as the process shell. Native Go archives
+remain available for relocatable tools inside another runtime's image.
 Native artifacts and image manifests are distinct release records;
 an image digest does not assert native extension parity. `stack docker image`
 selects these records without downloading or executing them. Only Linux arm64
