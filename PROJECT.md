@@ -16,7 +16,9 @@ because each states something about one release. The consumer validates runtime
 and artifact contracts with `stack catalog check v1.json`.
 
 Node 24.20.0 and PHP 8.4.25 carry `image` metadata for the official Bookworm
-slim and FPM images respectively. It names the qualified repository, upstream
+and FPM images respectively. The complete Node Bookworm image includes
+`libatomic.so.1`, which the catalogue's standalone pnpm binary requires.
+The metadata names the qualified repository, upstream
 HTTPS source and provenance tag, with SHA-256 digests for the image index and
 Linux amd64/arm64 manifests. Command paths name only commands the runtime entry
 offers. Native artifacts and image manifests are distinct release records;
