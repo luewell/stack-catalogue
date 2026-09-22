@@ -99,6 +99,10 @@
         },
         "commands": {
           "php": "/usr/local/bin/php"
+        },
+        "processes": {
+          "shell": "/bin/sh",
+          "php-fpm": "/usr/local/sbin/php-fpm"
         }
       }
     },

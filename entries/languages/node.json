@@ -88,6 +88,9 @@
           "npm": "/usr/local/bin/npm",
           "npx": "/usr/local/bin/npx",
           "corepack": "/usr/local/bin/corepack"
+        },
+        "processes": {
+          "shell": "/bin/sh"
         }
       }
     },

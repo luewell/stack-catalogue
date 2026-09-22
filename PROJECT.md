@@ -21,7 +21,9 @@ and FPM images respectively. The complete Node Bookworm image includes
 The metadata names the qualified repository, upstream
 HTTPS source and provenance tag, with SHA-256 digests for the image index and
 Linux amd64/arm64 manifests. Command paths name only commands the runtime entry
-offers. Native artifacts and image manifests are distinct release records;
+offers. Image process capabilities separately name the verified shell in both
+images and PHP-FPM in the PHP image; they do not add native runtime commands.
+Native artifacts and image manifests are distinct release records;
 an image digest does not assert native extension parity. `stack docker image`
 selects these records without downloading or executing them. Only Linux arm64
 runtime versions and declared command paths have execution verification.
