@@ -706,6 +706,31 @@
       "lifecycle": {
         "lts": "2025-10-28",
         "end": "2028-04-30"
+      },
+      "image": {
+        "repository": "docker.io/library/node",
+        "tag": "24.20.0-bookworm-slim",
+        "source": "https://hub.docker.com/_/node",
+        "digest": {
+          "algorithm": "sha256",
+          "value": "ba849c60be29959425b8734d57b8b4b7d56f98edd9504c9af091d5281095a71e"
+        },
+        "platforms": {
+          "linux/amd64": {
+            "algorithm": "sha256",
+            "value": "6642ef280aebc09c4541bee0b15c9f89f0f3f3c247ddee79ae1d37eddfdcbbaa"
+          },
+          "linux/arm64": {
+            "algorithm": "sha256",
+            "value": "e9b5516b06baeaea9a8e65a7aec6a85fbb960a30b52b66968f2c8092b3e2a3eb"
+          }
+        },
+        "commands": {
+          "node": "/usr/local/bin/node",
+          "npm": "/usr/local/bin/npm",
+          "npx": "/usr/local/bin/npx",
+          "corepack": "/usr/local/bin/corepack"
+        }
       }
     },
     {
@@ -1083,6 +1108,28 @@
           "php"
         ],
         "bin_dir": "bin"
+      },
+      "image": {
+        "repository": "docker.io/library/php",
+        "tag": "8.4.25-fpm-bookworm",
+        "source": "https://hub.docker.com/_/php",
+        "digest": {
+          "algorithm": "sha256",
+          "value": "0a5638c2c48eb04987107ae448a398dd18345bcf659e15fd99a422617e754264"
+        },
+        "platforms": {
+          "linux/amd64": {
+            "algorithm": "sha256",
+            "value": "b49d25a8ab87efa1635018dd83c277d38d8321d2bfd30cafb3a41d5a6a28c5b0"
+          },
+          "linux/arm64": {
+            "algorithm": "sha256",
+            "value": "5675bb97a8606722eaf9c9e565de4fc624129a5b4bcef7610341562b89da2ea8"
+          }
+        },
+        "commands": {
+          "php": "/usr/local/bin/php"
+        }
       }
     },
     {

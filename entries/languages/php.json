@@ -78,6 +78,28 @@
             "value": "9150dc1c23554956293f8311ac2d2d4b99a162f1529babc487378eafe4d314fb"
           }
         }
+      },
+      "image": {
+        "repository": "docker.io/library/php",
+        "tag": "8.4.25-fpm-bookworm",
+        "source": "https://hub.docker.com/_/php",
+        "digest": {
+          "algorithm": "sha256",
+          "value": "0a5638c2c48eb04987107ae448a398dd18345bcf659e15fd99a422617e754264"
+        },
+        "platforms": {
+          "linux/amd64": {
+            "algorithm": "sha256",
+            "value": "b49d25a8ab87efa1635018dd83c277d38d8321d2bfd30cafb3a41d5a6a28c5b0"
+          },
+          "linux/arm64": {
+            "algorithm": "sha256",
+            "value": "5675bb97a8606722eaf9c9e565de4fc624129a5b4bcef7610341562b89da2ea8"
+          }
+        },
+        "commands": {
+          "php": "/usr/local/bin/php"
+        }
       }
     },
     {

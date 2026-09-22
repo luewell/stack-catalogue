@@ -1,6 +1,7 @@
 # Stack catalogue context
 
-This repository publishes native service and language runtime metadata for Stack.
+This repository publishes native service and language runtime metadata for Stack,
+with optional immutable Docker image metadata on selected releases.
 A runtime entry separates the commands it can offer from the ones every pin gets:
 `node`, `go`, `ruby` and `python3` are exposed, and `npm`, `npx`, `corepack`,
 `gofmt`, `gem`, `bundle`, `rake`, `pip` and the rest are named by a repository
@@ -13,6 +14,15 @@ the served document stays a flat list of whole entries, each carrying its own
 URL and digest. Version, digest, support and lifecycle are refused there,
 because each states something about one release. The consumer validates runtime
 and artifact contracts with `stack catalog check v1.json`.
+
+Node 24.20.0 and PHP 8.4.25 carry `image` metadata for the official Bookworm
+slim and FPM images respectively. It names the qualified repository, upstream
+HTTPS source and provenance tag, with SHA-256 digests for the image index and
+Linux amd64/arm64 manifests. Command paths name only commands the runtime entry
+offers. Native artifacts and image manifests are distinct release records;
+an image digest does not assert native extension parity. `stack docker image`
+selects these records without downloading or executing them. Only Linux arm64
+runtime versions and declared command paths have execution verification.
 
 PostgreSQL entries provision an implicit database per group or explicit named
 databases through `runtime.database_provision`. Explicit databases have distinct

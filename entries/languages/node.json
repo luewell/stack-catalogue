@@ -64,6 +64,31 @@
       "lifecycle": {
         "lts": "2025-10-28",
         "end": "2028-04-30"
+      },
+      "image": {
+        "repository": "docker.io/library/node",
+        "tag": "24.20.0-bookworm-slim",
+        "source": "https://hub.docker.com/_/node",
+        "digest": {
+          "algorithm": "sha256",
+          "value": "ba849c60be29959425b8734d57b8b4b7d56f98edd9504c9af091d5281095a71e"
+        },
+        "platforms": {
+          "linux/amd64": {
+            "algorithm": "sha256",
+            "value": "6642ef280aebc09c4541bee0b15c9f89f0f3f3c247ddee79ae1d37eddfdcbbaa"
+          },
+          "linux/arm64": {
+            "algorithm": "sha256",
+            "value": "e9b5516b06baeaea9a8e65a7aec6a85fbb960a30b52b66968f2c8092b3e2a3eb"
+          }
+        },
+        "commands": {
+          "node": "/usr/local/bin/node",
+          "npm": "/usr/local/bin/npm",
+          "npx": "/usr/local/bin/npx",
+          "corepack": "/usr/local/bin/corepack"
+        }
       }
     },
     {
