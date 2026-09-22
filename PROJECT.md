@@ -31,6 +31,13 @@ Bun 1.4.2 and 1.1.18 carry official `oven/bun` Debian image metadata with pinned
 Linux amd64/arm64 manifests, `/usr/local/bin/bun` and `/bin/sh`. Native Bun
 archives retain their independently pinned release bytes. The image node fallback
 and bunx alias do not extend the catalogue command allowlist.
+PostgreSQL 18.6.0 carries official `postgres` Bookworm image metadata with
+pinned index and Linux amd64/arm64 manifests, its thirteen client commands under
+`/usr/bin` and `/bin/sh` as the process shell. Its `runtime.container_connection`
+states the same variables as `runtime.connection` with `{host}` and `{port}` in
+place of the loopback address a native instance listens on, for a service its
+sites reach by name.
+
 Native artifacts and image manifests are distinct release records;
 an image digest does not assert native extension parity. `stack docker image`
 selects these records without downloading or executing them. Only Linux arm64
