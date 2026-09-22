@@ -27,6 +27,10 @@ Go 1.27.1 and 1.26.8 carry official Bookworm image metadata with pinned index an
 Linux amd64/arm64 manifests. Their commands are `/usr/local/go/bin/go` and
 `/usr/local/go/bin/gofmt`, with `/bin/sh` as the process shell. Native Go archives
 remain available for relocatable tools inside another runtime's image.
+Bun 1.4.2 and 1.1.18 carry official `oven/bun` Debian image metadata with pinned
+Linux amd64/arm64 manifests, `/usr/local/bin/bun` and `/bin/sh`. Native Bun
+archives retain their independently pinned release bytes. The image node fallback
+and bunx alias do not extend the catalogue command allowlist.
 Native artifacts and image manifests are distinct release records;
 an image digest does not assert native extension parity. `stack docker image`
 selects these records without downloading or executing them. Only Linux arm64

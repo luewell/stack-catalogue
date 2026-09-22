@@ -53,6 +53,31 @@
             "value": "2486a9ad9937e985bea147ba0cb59b6b43882baf4bba156cabc7239d0f68ef60"
           }
         }
+      },
+      "image": {
+        "repository": "docker.io/oven/bun",
+        "tag": "1.1.18-debian",
+        "source": "https://hub.docker.com/r/oven/bun",
+        "digest": {
+          "algorithm": "sha256",
+          "value": "8c99507fce50938a5a8856051d39a9f711d3faea0d625bb3943f09adc4bf8a43"
+        },
+        "platforms": {
+          "linux/amd64": {
+            "algorithm": "sha256",
+            "value": "2b2729551f4522a3b9721ce53f9a6e7bc422d801888a19b19eca918a2a163612"
+          },
+          "linux/arm64": {
+            "algorithm": "sha256",
+            "value": "bef93407a59eac82dba3476024a96fba5bc9e7001a81ace440e21e7c391bf37a"
+          }
+        },
+        "commands": {
+          "bun": "/usr/local/bin/bun"
+        },
+        "processes": {
+          "shell": "/bin/sh"
+        }
       }
     },
     {
@@ -77,6 +102,31 @@
             "algorithm": "sha256",
             "value": "54328bbc2d9c8e0c9f892c544d66c57a83b84139e34909e5ee81758f1ac8fda7"
           }
+        }
+      },
+      "image": {
+        "repository": "docker.io/oven/bun",
+        "tag": "1.4.2-debian",
+        "source": "https://hub.docker.com/r/oven/bun",
+        "digest": {
+          "algorithm": "sha256",
+          "value": "4f6e31d1a54d6a3dd312daef655fc998101b5043d52e12592ac293ef04b9bc73"
+        },
+        "platforms": {
+          "linux/amd64": {
+            "algorithm": "sha256",
+            "value": "53710ce0f14eef8312521c586a7ae1d9aeab4011840f09f1966073b68fc2e2ab"
+          },
+          "linux/arm64": {
+            "algorithm": "sha256",
+            "value": "e71ccf1409e3e68195e67170db0941fd6d54e1391ee4928890be3dcb2c43c9d9"
+          }
+        },
+        "commands": {
+          "bun": "/usr/local/bin/bun"
+        },
+        "processes": {
+          "shell": "/bin/sh"
         }
       }
     }
