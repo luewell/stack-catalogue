@@ -52,7 +52,7 @@ PER_RELEASE = ["version", "digest", "support", "lifecycle"]
 # What a release on its own may state. With no second version to differ from,
 # every other field is a fact about the type, and a file that keeps them beside
 # the release reads differently from every file that has two.
-RELEASE_FIELDS = ["version", "support", "lifecycle", "description", "artifacts"]
+RELEASE_FIELDS = ["version", "support", "lifecycle", "description", "artifacts", "image"]
 
 
 def expand(value, version):

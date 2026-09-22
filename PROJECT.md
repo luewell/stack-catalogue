@@ -31,6 +31,11 @@ Bun 1.4.2 and 1.1.18 carry official `oven/bun` Debian image metadata with pinned
 Linux amd64/arm64 manifests, `/usr/local/bin/bun` and `/bin/sh`. Native Bun
 archives retain their independently pinned release bytes. The image node fallback
 and bunx alias do not extend the catalogue command allowlist.
+S3 1.7.0 carries official `versity/versitygw` v1.7.0 image metadata with pinned
+index and Linux amd64/arm64 manifests and `/bin/sh` as its process shell; it
+declares no image commands because the entry exposes none, and its
+`container_connection` repeats the endpoint its sites already use.
+
 PostgreSQL 18.6.0 carries official `postgres` Bookworm image metadata with
 pinned index and Linux amd64/arm64 manifests, its thirteen client commands under
 `/usr/bin` and `/bin/sh` as the process shell. Its `runtime.container_connection`
