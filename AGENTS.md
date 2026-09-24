@@ -52,7 +52,11 @@ The user's global instructions apply. All project artifacts are English.
   catalogue holds one.
 - `runtime.shareable` marks an entry whose one instance keeps each group's data
   apart behind its own credentials; Stack refuses `shared:` for any other. Only
-  PostgreSQL, S3 and MongoDB set it.
+  PostgreSQL, S3, MongoDB and NATS set it.
+- The NATS entry selects `provisioner: nats` and has no `initialise`: Stack writes
+  `accounts.conf` itself, so the entry must keep `NATS_ADMIN_PASSWORD`,
+  `NATS_PASSWORD` and `initialised_marker`, and its start command must include
+  `./accounts.conf` from the `nats.conf` it writes.
 - The MongoDB entry selects `provisioner: mongodb` and has no `initialise`: Stack
   creates the administrator and group accounts itself, so the entry must keep
   `MONGODB_ADMIN_PASSWORD`, `MONGODB_PASSWORD` and `initialised_marker`. Its

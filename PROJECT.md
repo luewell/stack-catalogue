@@ -62,7 +62,14 @@ an account per explicit database, whose connection
 `mongosh` 2.12.0 is a runtime from the mongodb-js/mongosh GitHub releases,
 pinned to the digests GitHub records.
 
-PostgreSQL, S3 and MongoDB set `runtime.shareable`: one instance keeps each
+NATS 2.15.0 (the default) and 2.14.7 come from the nats-io/nats-server GitHub
+releases for macOS arm64 and Linux amd64 and arm64, pinned to the `SHA256SUMS`
+each release publishes. The entry is in the `messaging` category; its start
+command writes `nats.conf` with `max_payload: 64MB` and runs `nats-server` on the
+loopback address with JetStream in the instance's data, and the `nats`
+provisioner in Stack writes the accounts that file includes.
+
+PostgreSQL, S3, MongoDB and NATS set `runtime.shareable`: one instance keeps each
 group's data apart behind its own credentials, so Stack lets several groups
 share it. Valkey does not set it. Each Valkey instance locks its `default` user with the
 instance secret `VALKEY_ADMIN_PASSWORD` in a private `users.acl`, provisions one
