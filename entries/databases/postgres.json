@@ -84,6 +84,13 @@
         "PGPASSWORD": "${DB_PASSWORD}",
         "PGDATABASE": "{group}"
       },
+      "database_client_environment": {
+        "PGHOST": "{host}",
+        "PGPORT": "{port}",
+        "PGUSER": "{database_user}",
+        "PGPASSWORD": "${DB_PASSWORD}",
+        "PGDATABASE": "{database}"
+      },
       "shareable": true
     }
   },
