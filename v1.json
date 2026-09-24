@@ -141,6 +141,14 @@
           "MONGODB_USERNAME": "{group}",
           "MONGODB_PASSWORD": "${MONGODB_PASSWORD}"
         },
+        "provisioned_database_connection": {
+          "MONGODB_URI": "mongodb://{database_user}:${MONGODB_PASSWORD}@127.0.0.1:{port}/{database}?authSource={database}",
+          "MONGODB_HOST": "127.0.0.1",
+          "MONGODB_PORT": "{port}",
+          "MONGODB_DATABASE": "{database}",
+          "MONGODB_USERNAME": "{database_user}",
+          "MONGODB_PASSWORD": "${MONGODB_PASSWORD}"
+        },
         "bin_dir": "bin",
         "secrets": [
           "MONGODB_ADMIN_PASSWORD"
@@ -207,6 +215,14 @@
           "MONGODB_PORT": "{port}",
           "MONGODB_DATABASE": "{group}",
           "MONGODB_USERNAME": "{group}",
+          "MONGODB_PASSWORD": "${MONGODB_PASSWORD}"
+        },
+        "provisioned_database_connection": {
+          "MONGODB_URI": "mongodb://{database_user}:${MONGODB_PASSWORD}@127.0.0.1:{port}/{database}?authSource={database}",
+          "MONGODB_HOST": "127.0.0.1",
+          "MONGODB_PORT": "{port}",
+          "MONGODB_DATABASE": "{database}",
+          "MONGODB_USERNAME": "{database_user}",
           "MONGODB_PASSWORD": "${MONGODB_PASSWORD}"
         },
         "bin_dir": "bin",

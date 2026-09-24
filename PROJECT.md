@@ -55,7 +55,10 @@ MongoDB 8.0.32 (the default, long-term release) and 8.3.11 come from MongoDB's
 own downloads: macOS arm64 and the Ubuntu 24.04 builds for Linux amd64 and
 arm64, which also run on Ubuntu 26.04, pinned to the sha256 its `full.json`
 publishes. The entry has no shell lifecycle beyond `start`: the `mongodb`
-provisioner in Stack creates the administrator and each group's account.
+provisioner in Stack creates the administrator and each group's account, and
+an account per explicit database, whose connection
+`runtime.provisioned_database_connection` states with `{database}` and
+`{database_user}`.
 `mongosh` 2.12.0 is a runtime from the mongodb-js/mongosh GitHub releases,
 pinned to the digests GitHub records.
 
