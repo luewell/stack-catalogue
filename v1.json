@@ -2,6 +2,8 @@
   "version": 1,
   "generated_from": [
     "entries/caches/valkey.json",
+    "entries/databases/mongodb.json",
+    "entries/databases/mongosh.json",
     "entries/databases/postgres.json",
     "entries/languages/bun.json",
     "entries/languages/go.json",
@@ -77,6 +79,195 @@
           "REDIS_PASSWORD"
         ],
         "provision": "set -eu\nresult=\"$(printf 'ACL SETUSER %s reset on >%s ~* &* +@all -@admin\\nACL SAVE\\n' \"$STACK_GROUP\" \"$REDIS_PASSWORD\" | VALKEYCLI_AUTH=\"$VALKEY_ADMIN_PASSWORD\" \"$STACK_INSTALL_DIR/bin/valkey-cli\" -s \"$STACK_SOCKET_DIR/valkey.sock\" --no-auth-warning 2>&1)\"\nif [ \"$result\" != \"$(printf 'OK\\nOK')\" ]; then\n  printf 'Valkey refused the group account: %s\\n' \"$result\" >&2\n  exit 1\nfi\n"
+      }
+    },
+    {
+      "type": "mongodb",
+      "category": "database",
+      "support": "lts",
+      "version": "8.0.32",
+      "description": "MongoDB 8.0, the long-term release",
+      "artifacts": {
+        "darwin/arm64": {
+          "url": "https://fastdl.mongodb.org/osx/mongodb-macos-arm64-8.0.32.tgz",
+          "digest": {
+            "algorithm": "sha256",
+            "value": "f81cb258434d548dca7244d599c82eb339043d8dedd0b1b807870c9d263117f2"
+          },
+          "archive": "tar.gz",
+          "paths": [
+            "bin"
+          ],
+          "strip": 1
+        },
+        "linux/amd64": {
+          "url": "https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-ubuntu2404-8.0.32.tgz",
+          "digest": {
+            "algorithm": "sha256",
+            "value": "b411be17c31ef249767ed91974d876e007c91afd5f45e1534057d247eada9f0d"
+          },
+          "archive": "tar.gz",
+          "paths": [
+            "bin"
+          ],
+          "strip": 1
+        },
+        "linux/arm64": {
+          "url": "https://fastdl.mongodb.org/linux/mongodb-linux-aarch64-ubuntu2404-8.0.32.tgz",
+          "digest": {
+            "algorithm": "sha256",
+            "value": "8cca3993520a7f189790264ee57fb5d55a91094fb4be5f06bbbaf67c974d273f"
+          },
+          "archive": "tar.gz",
+          "paths": [
+            "bin"
+          ],
+          "strip": 1
+        }
+      },
+      "runtime": {
+        "initialised_marker": "stack-administrator",
+        "start": "\"$STACK_INSTALL_DIR/bin/mongod\" --dbpath \"$STACK_DATA_DIR/db\" --auth --bind_ip 127.0.0.1 --port \"$STACK_PORT\" --unixSocketPrefix \"$STACK_SOCKET_DIR\" --filePermissions 0700 --setParameter enableLocalhostAuthBypass=false",
+        "stop_signal": "SIGTERM",
+        "default_port": 27017,
+        "connection": {
+          "MONGODB_URI": "mongodb://{group}:${MONGODB_PASSWORD}@127.0.0.1:{port}/{group}?authSource={group}",
+          "MONGODB_HOST": "127.0.0.1",
+          "MONGODB_PORT": "{port}",
+          "MONGODB_DATABASE": "{group}",
+          "MONGODB_USERNAME": "{group}",
+          "MONGODB_PASSWORD": "${MONGODB_PASSWORD}"
+        },
+        "bin_dir": "bin",
+        "secrets": [
+          "MONGODB_ADMIN_PASSWORD"
+        ],
+        "group_secrets": [
+          "MONGODB_PASSWORD"
+        ],
+        "provisioner": "mongodb",
+        "shareable": true
+      }
+    },
+    {
+      "type": "mongodb",
+      "category": "database",
+      "support": "current",
+      "version": "8.3.11",
+      "description": "MongoDB 8.3, the newest release",
+      "artifacts": {
+        "darwin/arm64": {
+          "url": "https://fastdl.mongodb.org/osx/mongodb-macos-arm64-8.3.11.tgz",
+          "digest": {
+            "algorithm": "sha256",
+            "value": "b586c3972880fcdea90690a6d22c22cd260b0972de717ca710c0bc77c64b039e"
+          },
+          "archive": "tar.gz",
+          "paths": [
+            "bin"
+          ],
+          "strip": 1
+        },
+        "linux/amd64": {
+          "url": "https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-ubuntu2404-8.3.11.tgz",
+          "digest": {
+            "algorithm": "sha256",
+            "value": "a8aa4f75dc0f2a66ab421529bb1452485222c6c98909b047a98d90981c34eabe"
+          },
+          "archive": "tar.gz",
+          "paths": [
+            "bin"
+          ],
+          "strip": 1
+        },
+        "linux/arm64": {
+          "url": "https://fastdl.mongodb.org/linux/mongodb-linux-aarch64-ubuntu2404-8.3.11.tgz",
+          "digest": {
+            "algorithm": "sha256",
+            "value": "52540bfb1de7ad415524c6a5117d434fcd84f24f23e3db56e71977e9fed28f2e"
+          },
+          "archive": "tar.gz",
+          "paths": [
+            "bin"
+          ],
+          "strip": 1
+        }
+      },
+      "runtime": {
+        "initialised_marker": "stack-administrator",
+        "start": "\"$STACK_INSTALL_DIR/bin/mongod\" --dbpath \"$STACK_DATA_DIR/db\" --auth --bind_ip 127.0.0.1 --port \"$STACK_PORT\" --unixSocketPrefix \"$STACK_SOCKET_DIR\" --filePermissions 0700 --setParameter enableLocalhostAuthBypass=false",
+        "stop_signal": "SIGTERM",
+        "default_port": 27017,
+        "connection": {
+          "MONGODB_URI": "mongodb://{group}:${MONGODB_PASSWORD}@127.0.0.1:{port}/{group}?authSource={group}",
+          "MONGODB_HOST": "127.0.0.1",
+          "MONGODB_PORT": "{port}",
+          "MONGODB_DATABASE": "{group}",
+          "MONGODB_USERNAME": "{group}",
+          "MONGODB_PASSWORD": "${MONGODB_PASSWORD}"
+        },
+        "bin_dir": "bin",
+        "secrets": [
+          "MONGODB_ADMIN_PASSWORD"
+        ],
+        "group_secrets": [
+          "MONGODB_PASSWORD"
+        ],
+        "provisioner": "mongodb",
+        "shareable": true
+      }
+    },
+    {
+      "type": "mongosh",
+      "kind": "runtime",
+      "category": "database",
+      "support": "current",
+      "version": "2.12.0",
+      "description": "The MongoDB Shell, the current line",
+      "artifacts": {
+        "darwin/arm64": {
+          "url": "https://github.com/mongodb-js/mongosh/releases/download/v2.12.0/mongosh-2.12.0-darwin-arm64.zip",
+          "digest": {
+            "algorithm": "sha256",
+            "value": "1b385d3dd6e29624e94616e6d1015bc8e17eb337a187cc6db8a8a8a1d60763fe"
+          },
+          "archive": "zip",
+          "paths": [
+            "bin"
+          ],
+          "strip": 1
+        },
+        "linux/amd64": {
+          "url": "https://github.com/mongodb-js/mongosh/releases/download/v2.12.0/mongosh-2.12.0-linux-x64.tgz",
+          "digest": {
+            "algorithm": "sha256",
+            "value": "aa42cb826b7b8e655c5481293f5365ddaf1a23e43af07520326e5bbc957838ad"
+          },
+          "archive": "tar.gz",
+          "paths": [
+            "bin"
+          ],
+          "strip": 1
+        },
+        "linux/arm64": {
+          "url": "https://github.com/mongodb-js/mongosh/releases/download/v2.12.0/mongosh-2.12.0-linux-arm64.tgz",
+          "digest": {
+            "algorithm": "sha256",
+            "value": "99f8d38d41c510e7d4c685b71022ea1db113245968d5d933b5333fb3835e64ae"
+          },
+          "archive": "tar.gz",
+          "paths": [
+            "bin"
+          ],
+          "strip": 1
+        }
+      },
+      "runtime": {
+        "start": "",
+        "commands": [
+          "mongosh"
+        ],
+        "bin_dir": "bin"
       }
     },
     {

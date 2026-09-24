@@ -51,9 +51,17 @@ an image digest does not assert native extension parity. `stack docker image`
 selects these records without downloading or executing them. Only Linux arm64
 runtime versions and declared command paths have execution verification.
 
-PostgreSQL and S3 set `runtime.shareable`: one instance keeps each group's data
-apart behind its own credentials, so Stack lets several groups share it. Valkey
-does not set it. Each Valkey instance locks its `default` user with the
+MongoDB 8.0.32 (the default, long-term release) and 8.3.11 come from MongoDB's
+own downloads: macOS arm64 and the Ubuntu 24.04 builds for Linux amd64 and
+arm64, which also run on Ubuntu 26.04, pinned to the sha256 its `full.json`
+publishes. The entry has no shell lifecycle beyond `start`: the `mongodb`
+provisioner in Stack creates the administrator and each group's account.
+`mongosh` 2.12.0 is a runtime from the mongodb-js/mongosh GitHub releases,
+pinned to the digests GitHub records.
+
+PostgreSQL, S3 and MongoDB set `runtime.shareable`: one instance keeps each
+group's data apart behind its own credentials, so Stack lets several groups
+share it. Valkey does not set it. Each Valkey instance locks its `default` user with the
 instance secret `VALKEY_ADMIN_PASSWORD` in a private `users.acl`, provisions one
 ACL account per group from the group secret `REDIS_PASSWORD` without `@admin`
 commands, and states that account in `REDIS_URL`.

@@ -1,0 +1,61 @@
+{
+  "defaults": {
+    "type": "mongosh",
+    "kind": "runtime",
+    "category": "database",
+    "every_platform": {
+      "paths": [
+        "bin"
+      ],
+      "strip": 1
+    },
+    "artifacts": {
+      "darwin/arm64": {
+        "url": "https://github.com/mongodb-js/mongosh/releases/download/v{version}/mongosh-{version}-darwin-arm64.zip",
+        "archive": "zip"
+      },
+      "linux/amd64": {
+        "url": "https://github.com/mongodb-js/mongosh/releases/download/v{version}/mongosh-{version}-linux-x64.tgz",
+        "archive": "tar.gz"
+      },
+      "linux/arm64": {
+        "url": "https://github.com/mongodb-js/mongosh/releases/download/v{version}/mongosh-{version}-linux-arm64.tgz",
+        "archive": "tar.gz"
+      }
+    },
+    "runtime": {
+      "start": "",
+      "commands": [
+        "mongosh"
+      ],
+      "bin_dir": "bin"
+    }
+  },
+  "services": [
+    {
+      "support": "current",
+      "version": "2.12.0",
+      "description": "The MongoDB Shell, the current line",
+      "artifacts": {
+        "darwin/arm64": {
+          "digest": {
+            "algorithm": "sha256",
+            "value": "1b385d3dd6e29624e94616e6d1015bc8e17eb337a187cc6db8a8a8a1d60763fe"
+          }
+        },
+        "linux/amd64": {
+          "digest": {
+            "algorithm": "sha256",
+            "value": "aa42cb826b7b8e655c5481293f5365ddaf1a23e43af07520326e5bbc957838ad"
+          }
+        },
+        "linux/arm64": {
+          "digest": {
+            "algorithm": "sha256",
+            "value": "99f8d38d41c510e7d4c685b71022ea1db113245968d5d933b5333fb3835e64ae"
+          }
+        }
+      }
+    }
+  ]
+}

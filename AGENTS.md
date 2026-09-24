@@ -48,7 +48,10 @@ The user's global instructions apply. All project artifacts are English.
   root/group credentials must not appear in administrative command arguments.
 - `runtime.shareable` marks an entry whose one instance keeps each group's data
   apart behind its own credentials; Stack refuses `shared:` for any other. Only
-  PostgreSQL and S3 set it.
+  PostgreSQL, S3 and MongoDB set it.
+- The MongoDB entry selects `provisioner: mongodb` and has no `initialise`: Stack
+  creates the administrator and group accounts itself, so the entry must keep
+  `MONGODB_ADMIN_PASSWORD`, `MONGODB_PASSWORD` and `initialised_marker`.
 - Valkey locks its `default` user with `VALKEY_ADMIN_PASSWORD` in a private
   `users.acl` and provisions one ACL account per group from `REDIS_PASSWORD`
   through `valkey-cli` stdin with `VALKEYCLI_AUTH`, never argv. Provisioning
