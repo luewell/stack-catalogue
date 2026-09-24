@@ -58,6 +58,10 @@ instance secret `VALKEY_ADMIN_PASSWORD` in a private `users.acl`, provisions one
 ACL account per group from the group secret `REDIS_PASSWORD` without `@admin`
 commands, and states that account in `REDIS_URL`.
 
+PostgreSQL's Linux artifacts come from the `luewell/stack-binaries` release
+`postgresql-<version>`: the theseus-rs build with a `libxml2.so.2` added to `lib/`,
+because Ubuntu 26.04 no longer ships that library. macOS stays upstream.
+
 PostgreSQL entries refuse an implicit group database another role owns, and
 complete an explicit database whose creation stopped before PUBLIC's grants were
 revoked, recognised by its connections still being disabled.

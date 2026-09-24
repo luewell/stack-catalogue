@@ -16,10 +16,10 @@
         "url": "https://github.com/theseus-rs/postgresql-binaries/releases/download/{version}/postgresql-{version}-aarch64-apple-darwin.tar.gz"
       },
       "linux/amd64": {
-        "url": "https://github.com/theseus-rs/postgresql-binaries/releases/download/{version}/postgresql-{version}-x86_64-unknown-linux-gnu.tar.gz"
+        "url": "https://github.com/luewell/stack-binaries/releases/download/postgresql-{version}/postgresql-{version}-x86_64-unknown-linux-gnu.tar.gz"
       },
       "linux/arm64": {
-        "url": "https://github.com/theseus-rs/postgresql-binaries/releases/download/{version}/postgresql-{version}-aarch64-unknown-linux-gnu.tar.gz"
+        "url": "https://github.com/luewell/stack-binaries/releases/download/postgresql-{version}/postgresql-{version}-aarch64-unknown-linux-gnu.tar.gz"
       }
     },
     "runtime": {
@@ -102,13 +102,13 @@
         "linux/amd64": {
           "digest": {
             "algorithm": "sha256",
-            "value": "bb3d09f876b2383e25a8c9ce09e32d185a03656a23d074f5195542b1b1b3ca61"
+            "value": "bd898a97614109a79ecf03d7c458203985e52a919dd3fff71f1b48b80f57d27e"
           }
         },
         "linux/arm64": {
           "digest": {
             "algorithm": "sha256",
-            "value": "5d2b5e8be9e96bfc3d7f22090057a836ec36d5d092542d8d3b93cc145cf4ee13"
+            "value": "56dcb58a0bd6f29f868e90f2415674500969b153f59368fdf70b0e2933a24e21"
           }
         }
       },
@@ -164,13 +164,13 @@
         "linux/amd64": {
           "digest": {
             "algorithm": "sha256",
-            "value": "b7a1ba6bae6499d8296e3e81b0171eecfd1766ca9aaa0057e41ad3e844e5e2e0"
+            "value": "b147d3e8b5545074cf582118b1a4b1e5b70a8021a7c0f06aeb27fcde8b872f19"
           }
         },
         "linux/arm64": {
           "digest": {
             "algorithm": "sha256",
-            "value": "abffda09209280ec1502b73720dc4d254fb7fff9a072e324926c600a5b16c221"
+            "value": "76697696414c0f17fb68b627ff41f3984df7fd9b1aa8153905f86a4623b263b2"
           }
         }
       }
@@ -189,13 +189,13 @@
         "linux/amd64": {
           "digest": {
             "algorithm": "sha256",
-            "value": "77dd669eda3985ea8be26256f6af28d3c8414152ada713797555bb7423b4486a"
+            "value": "60ae21fd3aff4c327abdd154ff93508d47269ddd001a3235573b1053623608ac"
           }
         },
         "linux/arm64": {
           "digest": {
             "algorithm": "sha256",
-            "value": "f6d49ffbaea28cf8732785b18afb75bded905667d4ec8e2308a13a30fe0a24d1"
+            "value": "f7fd2c1fc8a3455811f22ec6eaf36d9fe52332f70830ff601a736b658d8e3498"
           }
         }
       }
