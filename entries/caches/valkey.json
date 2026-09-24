@@ -21,16 +21,24 @@
       }
     },
     "runtime": {
-      "start": "\"$STACK_INSTALL_DIR/bin/valkey-server\" --port \"$STACK_PORT\" --bind 127.0.0.1 --dir \"$STACK_DATA_DIR\" --unixsocket \"$STACK_SOCKET_DIR/valkey.sock\" --appendonly no",
+      "start": "umask 077\nacl=\"$STACK_DATA_DIR/users.acl\"\nif [ ! -e \"$acl\" ]; then\n  printf 'user default on >%s ~* &* +@all\\n' \"$VALKEY_ADMIN_PASSWORD\" > \"$acl\"\nfi\nexec \"$STACK_INSTALL_DIR/bin/valkey-server\" --port \"$STACK_PORT\" --bind 127.0.0.1 --dir \"$STACK_DATA_DIR\" --unixsocket \"$STACK_SOCKET_DIR/valkey.sock\" --appendonly no --aclfile \"$acl\"\n",
       "stop_signal": "SIGTERM",
       "default_port": 6379,
       "connection": {
-        "REDIS_URL": "redis://127.0.0.1:{port}"
+        "REDIS_URL": "redis://{group}:${REDIS_PASSWORD}@127.0.0.1:{port}"
       },
       "bin_dir": "bin",
       "commands": [
         "valkey-cli"
-      ]
+      ],
+      "ready": "VALKEYCLI_AUTH=\"$VALKEY_ADMIN_PASSWORD\" \"$STACK_INSTALL_DIR/bin/valkey-cli\" -s \"$STACK_SOCKET_DIR/valkey.sock\" --no-auth-warning ping | grep -qx PONG",
+      "secrets": [
+        "VALKEY_ADMIN_PASSWORD"
+      ],
+      "group_secrets": [
+        "REDIS_PASSWORD"
+      ],
+      "provision": "set -eu\nresult=\"$(printf 'ACL SETUSER %s reset on >%s ~* &* +@all -@admin\\nACL SAVE\\n' \"$STACK_GROUP\" \"$REDIS_PASSWORD\" | VALKEYCLI_AUTH=\"$VALKEY_ADMIN_PASSWORD\" \"$STACK_INSTALL_DIR/bin/valkey-cli\" -s \"$STACK_SOCKET_DIR/valkey.sock\" --no-auth-warning 2>&1)\"\nif [ \"$result\" != \"$(printf 'OK\\nOK')\" ]; then\n  printf 'Valkey refused the group account: %s\\n' \"$result\" >&2\n  exit 1\nfi\n"
     }
   },
   "services": [

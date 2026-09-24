@@ -49,6 +49,13 @@ an image digest does not assert native extension parity. `stack docker image`
 selects these records without downloading or executing them. Only Linux arm64
 runtime versions and declared command paths have execution verification.
 
+PostgreSQL and S3 set `runtime.shareable`: one instance keeps each group's data
+apart behind its own credentials, so Stack lets several groups share it. Valkey
+does not set it. Each Valkey instance locks its `default` user with the
+instance secret `VALKEY_ADMIN_PASSWORD` in a private `users.acl`, provisions one
+ACL account per group from the group secret `REDIS_PASSWORD` without `@admin`
+commands, and states that account in `REDIS_URL`.
+
 PostgreSQL entries provision an implicit database per group or explicit named
 databases through `runtime.database_provision`. Explicit databases have distinct
 stable credentials and generated roles. The provisioner verifies existing role

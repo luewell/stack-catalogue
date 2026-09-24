@@ -83,7 +83,8 @@
         "PGUSER": "{group}",
         "PGPASSWORD": "${DB_PASSWORD}",
         "PGDATABASE": "{group}"
-      }
+      },
+      "shareable": true
     }
   },
   "services": [

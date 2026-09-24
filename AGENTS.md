@@ -45,6 +45,13 @@ The user's global instructions apply. All project artifacts are English.
   status from those dates. Update source and generated metadata together.
 - The S3 entry selects `provisioner: versitygw` for native signed account creation;
   root/group credentials must not appear in administrative command arguments.
+- `runtime.shareable` marks an entry whose one instance keeps each group's data
+  apart behind its own credentials; Stack refuses `shared:` for any other. Only
+  PostgreSQL and S3 set it.
+- Valkey locks its `default` user with `VALKEY_ADMIN_PASSWORD` in a private
+  `users.acl` and provisions one ACL account per group from `REDIS_PASSWORD`
+  through `valkey-cli` stdin with `VALKEYCLI_AUTH`, never argv. Provisioning
+  compares the exact `OK` replies, because `-e` does not fail on stdin errors.
 - PostgreSQL uses SCRAM for TCP and Unix sockets, a reserved administrator,
   per-group passwords and a `pgdata` cluster directory. Connection templates may
   interpolate only declared group secrets. S3 publishing declares both policy

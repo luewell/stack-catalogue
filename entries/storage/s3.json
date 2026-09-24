@@ -58,7 +58,8 @@
         "S3_ENDPOINT": "https://s3.{group}.{tld}",
         "S3_ACCESS_KEY_ID": "${AWS_ACCESS_KEY_ID}",
         "S3_SECRET_ACCESS_KEY": "${AWS_SECRET_ACCESS_KEY}"
-      }
+      },
+      "shareable": true
     }
   },
   "services": [
