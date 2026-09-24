@@ -25,7 +25,10 @@
       "stop_signal": "SIGTERM",
       "default_port": 6379,
       "connection": {
-        "REDIS_URL": "redis://{group}:${REDIS_PASSWORD}@127.0.0.1:{port}"
+        "REDIS_URL": "redis://{group}:${REDIS_PASSWORD}@127.0.0.1:{port}",
+        "REDIS_HOST": "127.0.0.1",
+        "REDIS_PORT": "{port}",
+        "REDIS_USERNAME": "{group}"
       },
       "bin_dir": "bin",
       "commands": [

@@ -64,7 +64,8 @@ group's data apart behind its own credentials, so Stack lets several groups
 share it. Valkey does not set it. Each Valkey instance locks its `default` user with the
 instance secret `VALKEY_ADMIN_PASSWORD` in a private `users.acl`, provisions one
 ACL account per group from the group secret `REDIS_PASSWORD` without `@admin`
-commands, and states that account in `REDIS_URL`.
+commands, and states that account in `REDIS_URL` and in the discrete `REDIS_HOST`,
+`REDIS_PORT` and `REDIS_USERNAME` beside the exported `REDIS_PASSWORD`.
 
 PostgreSQL's Linux artifacts come from the `luewell/stack-binaries` release
 `postgresql-<version>`: the theseus-rs build with a `libxml2.so.2` added to `lib/`,
