@@ -6,10 +6,12 @@ A runtime entry separates the commands it can offer from the ones every pin gets
 `node`, `go`, `ruby` and `python3` are exposed, and `npm`, `npx`, `corepack`,
 `gofmt`, `gem`, `bundle`, `rake`, `pip` and the rest are named by a repository
 that wants them.
-Source entries live under `entries/`; `python3 build.py` validates identities and
-combines them into the committed `v1.json`. A source file may share what its
-versions have in common through a `defaults` block, and what its platforms have
-in common through `defaults.every_platform`; both are expanded at build time, so
+Source entries live under `entries/`; `python3 build.py` validates identities,
+HTTPS artifact URLs and digests (lowercase `sha256` or `sha512` for artifacts,
+`sha256` for image indexes and manifests) and combines them into the committed
+`v1.json`. A source file may share what its versions have in common through a
+`defaults` block, and what its platforms have in common through
+`defaults.every_platform`; both are expanded at build time, so
 the served document stays a flat list of whole entries, each carrying its own
 URL and digest. Version, digest, support and lifecycle are refused there,
 because each states something about one release. The consumer validates runtime
@@ -55,6 +57,10 @@ does not set it. Each Valkey instance locks its `default` user with the
 instance secret `VALKEY_ADMIN_PASSWORD` in a private `users.acl`, provisions one
 ACL account per group from the group secret `REDIS_PASSWORD` without `@admin`
 commands, and states that account in `REDIS_URL`.
+
+PostgreSQL entries refuse an implicit group database another role owns, and
+complete an explicit database whose creation stopped before PUBLIC's grants were
+revoked, recognised by its connections still being disabled.
 
 PostgreSQL entries provision an implicit database per group or explicit named
 databases through `runtime.database_provision`. Explicit databases have distinct

@@ -14,6 +14,7 @@ file stays the flat list of whole entries every binary already understands.
 """
 
 import json
+import re
 import sys
 from pathlib import Path
 
@@ -53,6 +54,12 @@ PER_RELEASE = ["version", "digest", "support", "lifecycle"]
 # every other field is a fact about the type, and a file that keeps them beside
 # the release reads differently from every file that has two.
 RELEASE_FIELDS = ["version", "support", "lifecycle", "description", "artifacts", "image"]
+# The digests a machine can recompute, and how many lowercase hexadecimal
+# characters each is written with. An image is pinned by its registry digest,
+# which is always sha256.
+DIGEST_LENGTHS = {"sha256": 64, "sha512": 128}
+ARTIFACT_ALGORITHMS = ("sha256", "sha512")
+IMAGE_ALGORITHMS = ("sha256",)
 
 
 def expand(value, version):
@@ -155,6 +162,48 @@ def unexposed(entry, source):
             "which of them every pin gets; name them in runtime.exposed"]
 
 
+def digest_problem(digest, algorithms):
+    """Why a digest cannot check what it pins, or None when it can."""
+    if not isinstance(digest, dict) or not digest.get("algorithm") or not digest.get("value"):
+        return "has no digest, and a download nobody can check is not something to run"
+
+    algorithm = digest["algorithm"]
+    if algorithm not in algorithms:
+        return f"names digest algorithm {algorithm!r}, which is not {' or '.join(algorithms)}"
+
+    length = DIGEST_LENGTHS[algorithm]
+    value = digest["value"]
+    if not isinstance(value, str) or not re.fullmatch(f"[0-9a-f]{{{length}}}", value):
+        return f"has a {algorithm} digest that is not {length} lowercase hexadecimal characters"
+    return None
+
+
+def unverifiable(entry, source):
+    """Builds a machine could not check, and images it could not pin."""
+    name = f"{entry.get('type')}-{entry.get('version')}"
+    problems = []
+
+    for platform, artifact in sorted((entry.get("artifacts") or {}).items()):
+        url = artifact.get("url")
+        if not isinstance(url, str) or not url.startswith("https://"):
+            problems.append(f"{source}: {name} {platform} is not fetched over https")
+
+        reason = digest_problem(artifact.get("digest"), ARTIFACT_ALGORITHMS)
+        if reason:
+            problems.append(f"{source}: {name} {platform} {reason}")
+
+    image = entry.get("image")
+    if image is not None:
+        pinned = [("image index", image.get("digest"))]
+        pinned += [(f"{platform} image", digest)
+                   for platform, digest in sorted((image.get("platforms") or {}).items())]
+        for what, digest in pinned:
+            reason = digest_problem(digest, IMAGE_ALGORITHMS)
+            if reason:
+                problems.append(f"{source}: {name} {what} {reason}")
+    return problems
+
+
 def repeats(document, source):
     """What a file says more than once and has somewhere to say once.
 
@@ -217,7 +266,7 @@ def main() -> int:
                         for platform, artifact in entry.get("artifacts", {}).items()}
             entry = in_order(entry)
 
-            problems = unexposed(entry, source)
+            problems = unexposed(entry, source) + unverifiable(entry, source)
             for problem in problems:
                 print(problem, file=sys.stderr)
             if problems:

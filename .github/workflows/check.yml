@@ -84,23 +84,48 @@ jobs:
       - name: Every digest matches what its URL serves
         run: |
           set -euo pipefail
-          python3 - <<'PY' > urls.txt
-          import json
+          python3 - <<'PY' > downloads.txt
+          import json, re, sys
           with open("v1.json") as handle:
               document = json.load(handle)
           for entry in document.get("services", []):
               for artifact in (entry.get("artifacts") or {}).values():
-                  print(artifact["url"], artifact["digest"]["value"])
+                  digest = artifact["digest"]
+                  fields = [digest["algorithm"], digest["value"], artifact["url"]]
+                  # One line of three words each, or the loop below would check
+                  # a different URL from the one a machine downloads.
+                  if any(not field or re.search(r"\s", field) for field in fields):
+                      sys.exit(f"{artifact['url']!r}: its URL or digest is empty or has whitespace")
+                  print(*fields)
           PY
 
-          while read -r url expected; do
-            [ -n "$url" ] || continue
-            actual="$(curl -fsSL "$url" | sha256sum | awk '{print $1}')"
+          while read -r algorithm expected url; do
+            [ -n "$algorithm" ] || continue
+            case "$algorithm" in
+              sha256) hasher=sha256sum ;;
+              sha512) hasher=sha512sum ;;
+              *)
+                echo "${url}: the catalogue names ${algorithm}, which is not sha256 or sha512" >&2
+                exit 1
+                ;;
+            esac
+            case "$url" in
+              https://*) ;;
+              *)
+                echo "${url}: not fetched over https" >&2
+                exit 1
+                ;;
+            esac
+
+            # A redirect is held to https as well, or a server could hand the
+            # download to plain http after the first hop.
+            actual="$(curl -fsSL --proto '=https' --proto-redir '=https' "$url" \
+              | "$hasher" | awk '{print $1}')"
             if [ "$actual" != "$expected" ]; then
               echo "${url}" >&2
-              echo "  the catalogue says ${expected}" >&2
-              echo "  the server serves  ${actual}" >&2
+              echo "  the catalogue says ${algorithm} ${expected}" >&2
+              echo "  the server serves  ${algorithm} ${actual}" >&2
               exit 1
             fi
-            echo "ok  ${url}"
-          done < urls.txt
+            echo "ok  ${algorithm}  ${url}"
+          done < downloads.txt

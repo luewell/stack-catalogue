@@ -32,9 +32,10 @@ The user's global instructions apply. All project artifacts are English.
   each release states for itself are exempt, so a type whose builds are one file
   for every platform still writes that digest per platform.
 - `.github/workflows/check.yml` checks generation, required artifact metadata
-  and downloaded digests. Local validation also uses Stack's
-  `stack catalog check v1.json`; a JSON parser alone does not validate runtime
-  commands or security behavior.
+  and downloaded digests, hashing each download with the algorithm its digest
+  names and refusing a URL or redirect that is not HTTPS. Local validation also
+  uses Stack's `stack catalog check v1.json`; a JSON parser alone does not
+  validate runtime commands or security behavior.
 - Runtime templates execute with the consuming user's privileges. Validate
   authentication and isolation with the matching Stack integration tests before
   changing initialization, provisioning or access policies.
@@ -65,7 +66,9 @@ The user's global instructions apply. All project artifacts are English.
   Exposed names must be among the commands, and `build.py` refuses a runtime
   offering several commands that does not say. An entry naming none exposes all
   of them, which keeps an older catalogue working.
-- Every downloadable artifact requires an HTTPS URL and pinned digest. Changes
-  to runtime commands must not silently alter artifact URLs, digests or versions.
+- Every downloadable artifact requires an HTTPS URL and a pinned lowercase
+  `sha256` or `sha512` digest, and every image digest is `sha256`; `build.py`
+  refuses an entry without them. Changes to runtime commands must not silently
+  alter artifact URLs, digests or versions.
 - Never publish, stage, commit or modify real service data without explicit
   authorization.
