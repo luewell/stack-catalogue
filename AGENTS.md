@@ -46,6 +46,10 @@ The user's global instructions apply. All project artifacts are English.
   status from those dates. Update source and generated metadata together.
 - The S3 entry selects `provisioner: versitygw` for native signed account creation;
   root/group credentials must not appear in administrative command arguments.
+- A new `provisioner` or archive format needs a Stack release that implements it
+  before the entry is published. Stack 2.11.0 and later skip such an entry with
+  a warning; 2.10.0 and earlier refuse every service and command once their
+  catalogue holds one.
 - `runtime.shareable` marks an entry whose one instance keeps each group's data
   apart behind its own credentials; Stack refuses `shared:` for any other. Only
   PostgreSQL, S3 and MongoDB set it.
