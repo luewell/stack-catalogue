@@ -19,6 +19,22 @@
       },
       "linux/arm64": {
         "url": "https://github.com/nats-io/nats-server/releases/download/v{version}/nats-server-v{version}-linux-arm64.tar.gz"
+      },
+      "windows/amd64": {
+        "url": "https://github.com/nats-io/nats-server/releases/download/v{version}/nats-server-v{version}-windows-amd64.zip",
+        "archive": "zip",
+        "paths": [
+          "nats-server.exe",
+          "LICENSE"
+        ]
+      },
+      "windows/arm64": {
+        "url": "https://github.com/nats-io/nats-server/releases/download/v{version}/nats-server-v{version}-windows-arm64.zip",
+        "archive": "zip",
+        "paths": [
+          "nats-server.exe",
+          "LICENSE"
+        ]
       }
     },
     "runtime": {
@@ -41,7 +57,24 @@
         "NATS_PASSWORD"
       ],
       "provisioner": "nats",
-      "shareable": true
+      "shareable": true,
+      "windows": {
+        "initialise": "printf 'max_payload: 64MB\\ninclude ./accounts.conf\\n' > \"$STACK_DATA_DIR/nats.conf\"\n",
+        "start": {
+          "arguments": [
+            "${STACK_INSTALL_DIR}/nats-server.exe",
+            "-c",
+            "${STACK_DATA_DIR}/nats.conf",
+            "-a",
+            "127.0.0.1",
+            "-p",
+            "${STACK_PORT}",
+            "-js",
+            "-sd",
+            "${STACK_DATA_DIR}/jetstream"
+          ]
+        }
+      }
     }
   },
   "services": [
@@ -67,6 +100,18 @@
             "algorithm": "sha256",
             "value": "cdc208f5a3f42963a52b6ab06ef65626bb870315dc936e26ba571780c6351112"
           }
+        },
+        "windows/amd64": {
+          "digest": {
+            "algorithm": "sha256",
+            "value": "2d0861dc2ca3567d17f7d19611d7b346cc2ccbd7086a0a77cc957a2c71663200"
+          }
+        },
+        "windows/arm64": {
+          "digest": {
+            "algorithm": "sha256",
+            "value": "d468fa3f0ac953bed2219e37a2b5977d87cb8d705d5bbdc70b9f960e12fb7c38"
+          }
         }
       }
     },
@@ -91,6 +136,18 @@
           "digest": {
             "algorithm": "sha256",
             "value": "50e0258a1b7290f3fe2e4f17506b74a90ffb1dd77867ae3a402eb0c9e2b0d40f"
+          }
+        },
+        "windows/amd64": {
+          "digest": {
+            "algorithm": "sha256",
+            "value": "ef6b4604cc84cd37192e6407ce1bb975f380a5293dccfdb126eaf11311c58ac6"
+          }
+        },
+        "windows/arm64": {
+          "digest": {
+            "algorithm": "sha256",
+            "value": "783903719e550953d2993620c2f932fbb00c25ca238a7a19b77a5855374d11c9"
           }
         }
       }

@@ -56,7 +56,10 @@ The user's global instructions apply. All project artifacts are English.
 - The NATS entry selects `provisioner: nats` and has no `initialise`: Stack writes
   `accounts.conf` itself, so the entry must keep `NATS_ADMIN_PASSWORD`,
   `NATS_PASSWORD` and `initialised_marker`, and its start command must include
-  `./accounts.conf` from the `nats.conf` it writes.
+  `./accounts.conf` from the `nats.conf` it writes. On Windows, whose `start`
+  runs without a shell, its Windows `initialise` writes that `nats.conf` once,
+  before Stack writes the accounts; it has no Windows `stop`, since
+  nats-server takes stop requests there only from the service manager.
 - The MongoDB entry selects `provisioner: mongodb` and has no `initialise`: Stack
   creates the administrator and group accounts itself, so the entry must keep
   `MONGODB_ADMIN_PASSWORD`, `MONGODB_PASSWORD` and `initialised_marker`. Its
