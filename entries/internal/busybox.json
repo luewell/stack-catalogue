@@ -12,10 +12,10 @@
     },
     "artifacts": {
       "windows/amd64": {
-        "url": "https://frippery.org/files/busybox/busybox-w64-FRP-6075-g169694ebd.exe"
+        "url": "https://github.com/luewell/stack-binaries/releases/download/busybox-w32-FRP-6075-g169694ebd/busybox-w64-FRP-6075-g169694ebd.exe"
       },
       "windows/arm64": {
-        "url": "https://frippery.org/files/busybox/busybox-w64a-FRP-6075-g169694ebd.exe"
+        "url": "https://github.com/luewell/stack-binaries/releases/download/busybox-w32-FRP-6075-g169694ebd/busybox-w64a-FRP-6075-g169694ebd.exe"
       }
     }
   },
