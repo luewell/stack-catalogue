@@ -16,7 +16,10 @@
       "commands": [
         "composer"
       ],
-      "bin_dir": "."
+      "bin_dir": ".",
+      "windows": {
+        "run_with": "php"
+      }
     }
   },
   "services": [
@@ -38,6 +41,18 @@
           }
         },
         "linux/arm64": {
+          "digest": {
+            "algorithm": "sha256",
+            "value": "7a2d379d5b8ffdaa028580ef26494c36d2feef4b178d3dd1473a4dbc5e17c8d6"
+          }
+        },
+        "windows/amd64": {
+          "digest": {
+            "algorithm": "sha256",
+            "value": "7a2d379d5b8ffdaa028580ef26494c36d2feef4b178d3dd1473a4dbc5e17c8d6"
+          }
+        },
+        "windows/arm64": {
           "digest": {
             "algorithm": "sha256",
             "value": "7a2d379d5b8ffdaa028580ef26494c36d2feef4b178d3dd1473a4dbc5e17c8d6"
