@@ -20,6 +20,12 @@
       },
       "linux/arm64": {
         "url": "https://github.com/luewell/stack-binaries/releases/download/postgresql-{version}/postgresql-{version}-aarch64-unknown-linux-gnu.tar.gz"
+      },
+      "windows/amd64": {
+        "url": "https://github.com/theseus-rs/postgresql-binaries/releases/download/{version}/postgresql-{version}-x86_64-pc-windows-msvc.tar.gz"
+      },
+      "windows/arm64": {
+        "url": "https://github.com/theseus-rs/postgresql-binaries/releases/download/{version}/postgresql-{version}-x86_64-pc-windows-msvc.tar.gz"
       }
     },
     "runtime": {
@@ -91,7 +97,33 @@
         "PGPASSWORD": "${DB_PASSWORD}",
         "PGDATABASE": "{database}"
       },
-      "shareable": true
+      "shareable": true,
+      "windows": {
+        "initialise": "set -e\nif [ -e \"$STACK_DATA_DIR/PG_VERSION\" ]; then\n  printf '%s\\n' 'The existing PostgreSQL cluster uses an unsupported data layout; preserve it and choose an empty instance directory.' >&2\n  exit 1\nfi\npassword_file=\"$STACK_DATA_DIR/initdb-password\"\ntrap 'rm -f \"$password_file\"' EXIT\nprintf '%s\\n' \"$POSTGRES_ADMIN_PASSWORD\" > \"$password_file\"\n\"$STACK_INSTALL_DIR/bin/initdb.exe\" --pgdata=\"$STACK_DATA_DIR/pgdata\" --username=stack_admin --auth=scram-sha-256 --pwfile=\"$password_file\" --encoding=UTF8 --locale=C --no-sync\n",
+        "start": {
+          "arguments": [
+            "${STACK_INSTALL_DIR}/bin/postgres.exe",
+            "-D",
+            "${STACK_DATA_DIR}/pgdata",
+            "-p",
+            "${STACK_PORT}",
+            "-k",
+            "${STACK_SOCKET_DIR}",
+            "-c",
+            "listen_addresses=127.0.0.1"
+          ],
+          "restricted": true
+        },
+        "stop": {
+          "arguments": [
+            "${STACK_INSTALL_DIR}/bin/pg_ctl.exe",
+            "kill",
+            "INT",
+            "${STACK_PID}"
+          ],
+          "restricted": true
+        }
+      }
     }
   },
   "services": [
@@ -116,6 +148,18 @@
           "digest": {
             "algorithm": "sha256",
             "value": "56dcb58a0bd6f29f868e90f2415674500969b153f59368fdf70b0e2933a24e21"
+          }
+        },
+        "windows/amd64": {
+          "digest": {
+            "algorithm": "sha256",
+            "value": "7da44c2dbcda3b49688ea08ce8cf99cfe677adf565f53a9145bf9002c74db7d5"
+          }
+        },
+        "windows/arm64": {
+          "digest": {
+            "algorithm": "sha256",
+            "value": "7da44c2dbcda3b49688ea08ce8cf99cfe677adf565f53a9145bf9002c74db7d5"
           }
         }
       },
@@ -179,6 +223,18 @@
             "algorithm": "sha256",
             "value": "76697696414c0f17fb68b627ff41f3984df7fd9b1aa8153905f86a4623b263b2"
           }
+        },
+        "windows/amd64": {
+          "digest": {
+            "algorithm": "sha256",
+            "value": "a013f0e082826f53985c7bc2a0fe1c2dcc47a9f3797023938cf1ff8c9d6d1792"
+          }
+        },
+        "windows/arm64": {
+          "digest": {
+            "algorithm": "sha256",
+            "value": "a013f0e082826f53985c7bc2a0fe1c2dcc47a9f3797023938cf1ff8c9d6d1792"
+          }
         }
       }
     },
@@ -203,6 +259,18 @@
           "digest": {
             "algorithm": "sha256",
             "value": "f7fd2c1fc8a3455811f22ec6eaf36d9fe52332f70830ff601a736b658d8e3498"
+          }
+        },
+        "windows/amd64": {
+          "digest": {
+            "algorithm": "sha256",
+            "value": "157bd7322f8c653f06b0373d1b2280e9cb238b6a6d3bd05541aeb8f33885a8ad"
+          }
+        },
+        "windows/arm64": {
+          "digest": {
+            "algorithm": "sha256",
+            "value": "157bd7322f8c653f06b0373d1b2280e9cb238b6a6d3bd05541aeb8f33885a8ad"
           }
         }
       }

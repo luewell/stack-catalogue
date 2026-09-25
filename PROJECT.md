@@ -38,6 +38,14 @@ index and Linux amd64/arm64 manifests and `/bin/sh` as its process shell; it
 declares no image commands because the entry exposes none, and its
 `container_connection` repeats the endpoint its sites already use.
 
+PostgreSQL 16, 17 and 18 run on Windows from theseus-rs's
+`x86_64-pc-windows-msvc` archives, pinned to the SHA-256 each sidecar states
+and GitHub records, under both `windows/amd64` and `windows/arm64` (Windows on
+ARM runs them under emulation). Their `runtime.windows` initialises with a
+password file and `--locale=C`, starts `postgres.exe` restricted and stops it
+with `pg_ctl kill INT ${STACK_PID}`; readiness and provisioning are the shared
+scripts, run by BusyBox.
+
 PostgreSQL 18.6.0 carries official `postgres` Bookworm image metadata with
 pinned index and Linux amd64/arm64 manifests, its thirteen client commands under
 `/usr/bin` and `/bin/sh` as the process shell. Its `runtime.container_connection`
