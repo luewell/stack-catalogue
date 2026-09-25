@@ -18,10 +18,19 @@
       },
       "linux/arm64": {
         "url": "https://download.valkey.io/releases/valkey-{version}-noble-arm64.tar.gz"
+      },
+      "windows/amd64": {
+        "url": "https://github.com/luewell/stack-binaries/releases/download/valkey-{version}-windows/valkey-{version}-windows-x86_64.zip",
+        "archive": "zip"
+      },
+      "windows/arm64": {
+        "url": "https://github.com/luewell/stack-binaries/releases/download/valkey-{version}-windows/valkey-{version}-windows-x86_64.zip",
+        "archive": "zip"
       }
     },
     "runtime": {
       "start": "umask 077\nacl=\"$STACK_DATA_DIR/users.acl\"\nif [ ! -e \"$acl\" ]; then\n  printf 'user default on >%s ~* &* +@all\\n' \"$VALKEY_ADMIN_PASSWORD\" > \"$acl\"\nfi\nexec \"$STACK_INSTALL_DIR/bin/valkey-server\" --port \"$STACK_PORT\" --bind 127.0.0.1 --dir \"$STACK_DATA_DIR\" --unixsocket \"$STACK_SOCKET_DIR/valkey.sock\" --appendonly no --aclfile \"$acl\"\n",
+      "initialised_marker": "users.acl",
       "stop_signal": "SIGTERM",
       "default_port": 6379,
       "connection": {
@@ -41,7 +50,27 @@
       "group_secrets": [
         "REDIS_PASSWORD"
       ],
-      "provision": "set -eu\nresult=\"$(printf 'ACL SETUSER %s reset on >%s ~* &* +@all -@admin\\nACL SAVE\\n' \"$STACK_GROUP\" \"$REDIS_PASSWORD\" | VALKEYCLI_AUTH=\"$VALKEY_ADMIN_PASSWORD\" \"$STACK_INSTALL_DIR/bin/valkey-cli\" -s \"$STACK_SOCKET_DIR/valkey.sock\" --no-auth-warning 2>&1)\"\nif [ \"$result\" != \"$(printf 'OK\\nOK')\" ]; then\n  printf 'Valkey refused the group account: %s\\n' \"$result\" >&2\n  exit 1\nfi\n"
+      "provision": "set -eu\nresult=\"$(printf 'ACL SETUSER %s reset on >%s ~* &* +@all -@admin\\nACL SAVE\\n' \"$STACK_GROUP\" \"$REDIS_PASSWORD\" | VALKEYCLI_AUTH=\"$VALKEY_ADMIN_PASSWORD\" \"$STACK_INSTALL_DIR/bin/valkey-cli\" -s \"$STACK_SOCKET_DIR/valkey.sock\" --no-auth-warning 2>&1)\"\nif [ \"$result\" != \"$(printf 'OK\\nOK')\" ]; then\n  printf 'Valkey refused the group account: %s\\n' \"$result\" >&2\n  exit 1\nfi\n",
+      "windows": {
+        "initialise": "printf 'user default on >%s ~* &* +@all\\n' \"$VALKEY_ADMIN_PASSWORD\" > \"$STACK_DATA_DIR/users.acl\"\n",
+        "start": {
+          "arguments": [
+            "${STACK_INSTALL_DIR}/bin/valkey-server.exe",
+            "--port",
+            "${STACK_PORT}",
+            "--bind",
+            "127.0.0.1",
+            "--dir",
+            "${STACK_DATA_DIR}",
+            "--unixsocket",
+            "${STACK_SOCKET_DIR}/valkey.sock",
+            "--appendonly",
+            "no",
+            "--aclfile",
+            "${STACK_DATA_DIR}/users.acl"
+          ]
+        }
+      }
     }
   },
   "services": [
@@ -66,6 +95,18 @@
           "digest": {
             "algorithm": "sha256",
             "value": "f1477b12c36832dcb8e3e2f83c1a1554a18ab94b204d017e1d8443bff1dade21"
+          }
+        },
+        "windows/amd64": {
+          "digest": {
+            "algorithm": "sha256",
+            "value": "f6a476ebfc9a2c2fca7caf1c2c2342a9d9f87029ff6006451922a240aedcecf0"
+          }
+        },
+        "windows/arm64": {
+          "digest": {
+            "algorithm": "sha256",
+            "value": "f6a476ebfc9a2c2fca7caf1c2c2342a9d9f87029ff6006451922a240aedcecf0"
           }
         }
       }

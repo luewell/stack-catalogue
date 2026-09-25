@@ -74,6 +74,11 @@ The user's global instructions apply. All project artifacts are English.
   `users.acl` and provisions one ACL account per group from `REDIS_PASSWORD`
   through `valkey-cli` stdin with `VALKEYCLI_AUTH`, never argv. Provisioning
   compares the exact `OK` replies, because `-e` does not fail on stdin errors.
+  `initialised_marker: users.acl` lets its Windows `initialise` write that file
+  once, since the Windows start runs without the shell that writes it on Unix;
+  Stack consults the marker only to decide whether to initialise. Windows takes
+  the foundry's MSYS2 build (`valkey-<version>-windows`), x64 under both
+  Windows platforms, and has no Windows `stop`: Stack asks it to shut down.
 - PostgreSQL uses SCRAM for TCP and Unix sockets, a reserved administrator,
   per-group passwords and a `pgdata` cluster directory. Connection templates may
   interpolate only declared group secrets. S3 publishing declares both policy
