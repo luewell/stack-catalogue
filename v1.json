@@ -2464,6 +2464,52 @@
             "include"
           ],
           "strip": 1
+        },
+        "windows/amd64": {
+          "url": "https://github.com/astral-sh/python-build-standalone/releases/download/20260825/cpython-3.14.7+20260825-x86_64-pc-windows-msvc-install_only.tar.gz",
+          "digest": {
+            "algorithm": "sha256",
+            "value": "a8a93fcf897f4c6ea4d120cf4a7ee4f98779d33a432a65b1af36a589c2f3d36c"
+          },
+          "archive": "tar.gz",
+          "paths": [
+            "python.exe",
+            "pythonw.exe",
+            "python3.dll",
+            "python314.dll",
+            "vcruntime140.dll",
+            "vcruntime140_1.dll",
+            "DLLs",
+            "Lib",
+            "Scripts",
+            "include",
+            "libs",
+            "LICENSE.txt"
+          ],
+          "strip": 1
+        },
+        "windows/arm64": {
+          "url": "https://github.com/astral-sh/python-build-standalone/releases/download/20260825/cpython-3.14.7+20260825-aarch64-pc-windows-msvc-install_only.tar.gz",
+          "digest": {
+            "algorithm": "sha256",
+            "value": "6984ef86cc3389bf7fa6b2376a3adaaca33cbd19e155bab9fcd2ed9c0ae96a79"
+          },
+          "archive": "tar.gz",
+          "paths": [
+            "python.exe",
+            "pythonw.exe",
+            "python3.dll",
+            "python314.dll",
+            "vcruntime140.dll",
+            "vcruntime140_1.dll",
+            "DLLs",
+            "Lib",
+            "Scripts",
+            "include",
+            "libs",
+            "LICENSE.txt"
+          ],
+          "strip": 1
         }
       },
       "runtime": {
@@ -2476,7 +2522,13 @@
         ],
         "exposed": [
           "python3"
-        ]
+        ],
+        "windows": {
+          "bin_dir": ".",
+          "exposed": [
+            "python"
+          ]
+        }
       }
     },
     {

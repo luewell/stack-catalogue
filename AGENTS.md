@@ -113,6 +113,8 @@ The user's global instructions apply. All project artifacts are English.
   `--sidecar`, since it refuses to start without extended attributes.
   `bin_dir` replaces a runtime's `bin_dir` there, for a Windows build that keeps
   its commands elsewhere: Node's zip keeps `node.exe` and `npm.cmd` at its root.
+  `exposed` replaces a runtime's `exposed` there, for a Windows build naming
+  its commands differently: Python's has `python.exe` and no `python3`.
 - The internal `busybox` entry is the POSIX shell Stack uses on Windows and
   offers only Windows builds. Take its digests from frippery.org's
   `SHA256SUM` only after `SHA256SUM.sig` verifies against the author's key.

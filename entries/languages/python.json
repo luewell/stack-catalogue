@@ -21,6 +21,40 @@
       },
       "linux/arm64": {
         "url": "https://github.com/astral-sh/python-build-standalone/releases/download/20260825/cpython-{version}+20260825-aarch64-unknown-linux-gnu-install_only.tar.gz"
+      },
+      "windows/amd64": {
+        "url": "https://github.com/astral-sh/python-build-standalone/releases/download/20260825/cpython-{version}+20260825-x86_64-pc-windows-msvc-install_only.tar.gz",
+        "paths": [
+          "python.exe",
+          "pythonw.exe",
+          "python3.dll",
+          "python314.dll",
+          "vcruntime140.dll",
+          "vcruntime140_1.dll",
+          "DLLs",
+          "Lib",
+          "Scripts",
+          "include",
+          "libs",
+          "LICENSE.txt"
+        ]
+      },
+      "windows/arm64": {
+        "url": "https://github.com/astral-sh/python-build-standalone/releases/download/20260825/cpython-{version}+20260825-aarch64-pc-windows-msvc-install_only.tar.gz",
+        "paths": [
+          "python.exe",
+          "pythonw.exe",
+          "python3.dll",
+          "python314.dll",
+          "vcruntime140.dll",
+          "vcruntime140_1.dll",
+          "DLLs",
+          "Lib",
+          "Scripts",
+          "include",
+          "libs",
+          "LICENSE.txt"
+        ]
       }
     },
     "runtime": {
@@ -33,7 +67,13 @@
       ],
       "exposed": [
         "python3"
-      ]
+      ],
+      "windows": {
+        "bin_dir": ".",
+        "exposed": [
+          "python"
+        ]
+      }
     }
   },
   "services": [
@@ -58,6 +98,18 @@
           "digest": {
             "algorithm": "sha256",
             "value": "bd5e9541a62fd1143270a38c2c1cdb94c7a1015c6d104aefa9e12ab5f80370b2"
+          }
+        },
+        "windows/amd64": {
+          "digest": {
+            "algorithm": "sha256",
+            "value": "a8a93fcf897f4c6ea4d120cf4a7ee4f98779d33a432a65b1af36a589c2f3d36c"
+          }
+        },
+        "windows/arm64": {
+          "digest": {
+            "algorithm": "sha256",
+            "value": "6984ef86cc3389bf7fa6b2376a3adaaca33cbd19e155bab9fcd2ed9c0ae96a79"
           }
         }
       }
