@@ -84,5 +84,10 @@ The user's global instructions apply. All project artifacts are English.
   `sha256` or `sha512` digest, and every image digest is `sha256`; `build.py`
   refuses an entry without them. Changes to runtime commands must not silently
   alter artifact URLs, digests or versions.
+- The internal `busybox` entry is the POSIX shell Stack uses on Windows and
+  offers only Windows builds. Take its digests from frippery.org's
+  `SHA256SUM` only after `SHA256SUM.sig` verifies against the author's key.
+  frippery.org deletes builds about three years old, so move the pinned
+  release forward before its URL disappears.
 - Never publish, stage, commit or modify real service data without explicit
   authorization.

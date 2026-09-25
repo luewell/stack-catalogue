@@ -1,0 +1,43 @@
+{
+  "defaults": {
+    "type": "busybox",
+    "kind": "internal",
+    "category": "internal",
+    "every_platform": {
+      "archive": "none",
+      "paths": [
+        "busybox.exe"
+      ],
+      "strip": 0
+    },
+    "artifacts": {
+      "windows/amd64": {
+        "url": "https://frippery.org/files/busybox/busybox-w64-FRP-6075-g169694ebd.exe"
+      },
+      "windows/arm64": {
+        "url": "https://frippery.org/files/busybox/busybox-w64a-FRP-6075-g169694ebd.exe"
+      }
+    }
+  },
+  "services": [
+    {
+      "support": "current",
+      "version": "6075",
+      "description": "busybox-w32 FRP-6075-g169694ebd, the POSIX shell Stack runs catalogue scripts and site commands with on Windows",
+      "artifacts": {
+        "windows/amd64": {
+          "digest": {
+            "algorithm": "sha256",
+            "value": "07bb1e5b095b00d68a695481f9240879f33c5724b40aa2308f999d54ed78f075"
+          }
+        },
+        "windows/arm64": {
+          "digest": {
+            "algorithm": "sha256",
+            "value": "e67f873d19d58c535cc9f0c4965ffd622e19b7bab87e3da89cb2185fb54464d7"
+          }
+        }
+      }
+    }
+  ]
+}

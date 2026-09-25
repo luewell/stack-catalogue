@@ -65,6 +65,13 @@ an account per explicit database, whose connection
 `mongosh` 2.12.0 is a runtime from the mongodb-js/mongosh GitHub releases,
 pinned to the digests GitHub records.
 
+BusyBox 6075 is an internal entry for Windows only: busybox-w32 FRP-6075 from
+frippery.org as a bare `busybox.exe`, `busybox-w64` for `windows/amd64` and
+`busybox-w64a` for `windows/arm64`, pinned to the SHA-256 in the release's
+GPG-signed `SHA256SUM` (Ron Yorston's key `B43E244B92A81389CAAAA171690E10A0513DA84B`,
+published at `github.com/rmyorston.gpg`). Stack runs the catalogue's `sh`
+scripts and sites' commands with it on Windows, which has no POSIX shell.
+
 NATS 2.15.0 (the default) and 2.14.7 come from the nats-io/nats-server GitHub
 releases for macOS arm64 and Linux amd64 and arm64, pinned to the `SHA256SUMS`
 each release publishes. The entry is in the `messaging` category; its start

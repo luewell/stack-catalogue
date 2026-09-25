@@ -5,6 +5,7 @@
     "entries/databases/mongodb.json",
     "entries/databases/mongosh.json",
     "entries/databases/postgres.json",
+    "entries/internal/busybox.json",
     "entries/languages/bun.json",
     "entries/languages/go.json",
     "entries/languages/node.json",
@@ -691,6 +692,40 @@
           "PGDATABASE": "{database}"
         },
         "shareable": true
+      }
+    },
+    {
+      "type": "busybox",
+      "kind": "internal",
+      "category": "internal",
+      "support": "current",
+      "version": "6075",
+      "description": "busybox-w32 FRP-6075-g169694ebd, the POSIX shell Stack runs catalogue scripts and site commands with on Windows",
+      "artifacts": {
+        "windows/amd64": {
+          "url": "https://frippery.org/files/busybox/busybox-w64-FRP-6075-g169694ebd.exe",
+          "digest": {
+            "algorithm": "sha256",
+            "value": "07bb1e5b095b00d68a695481f9240879f33c5724b40aa2308f999d54ed78f075"
+          },
+          "archive": "none",
+          "paths": [
+            "busybox.exe"
+          ],
+          "strip": 0
+        },
+        "windows/arm64": {
+          "url": "https://frippery.org/files/busybox/busybox-w64a-FRP-6075-g169694ebd.exe",
+          "digest": {
+            "algorithm": "sha256",
+            "value": "e67f873d19d58c535cc9f0c4965ffd622e19b7bab87e3da89cb2185fb54464d7"
+          },
+          "archive": "none",
+          "paths": [
+            "busybox.exe"
+          ],
+          "strip": 0
+        }
       }
     },
     {
