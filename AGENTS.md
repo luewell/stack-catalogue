@@ -98,7 +98,10 @@ The user's global instructions apply. All project artifacts are English.
   `provision`) stay shared and run under the pinned BusyBox, so they must not
   rely on `/dev/stdin` or `umask`, which it does not emulate. A Windows
   artifact may be the x64 build under `windows/arm64` when the vendor ships no
-  ARM64 one.
+  ARM64 one. `sidecar` names where a store's gateway keeps each store's
+  metadata there, `<root>/<store>/meta/<name>`, with the files standing for
+  `published.attribute` and `ownership_attribute`: S3 runs versitygw with
+  `--sidecar`, since it refuses to start without extended attributes.
 - The internal `busybox` entry is the POSIX shell Stack uses on Windows and
   offers only Windows builds. Take its digests from frippery.org's
   `SHA256SUM` only after `SHA256SUM.sig` verifies against the author's key.

@@ -2830,6 +2830,30 @@
             "versitygw"
           ],
           "strip": 1
+        },
+        "windows/amd64": {
+          "url": "https://github.com/versity/versitygw/releases/download/v1.7.0/versitygw_v1.7.0_Windows_x86_64.zip",
+          "digest": {
+            "algorithm": "sha256",
+            "value": "9fe9408303dcd3fa07292d662271dd3c4351f803181c2d157aff4740ed1920e0"
+          },
+          "archive": "zip",
+          "paths": [
+            "versitygw.exe"
+          ],
+          "strip": 1
+        },
+        "windows/arm64": {
+          "url": "https://github.com/versity/versitygw/releases/download/v1.7.0/versitygw_v1.7.0_Windows_arm64.zip",
+          "digest": {
+            "algorithm": "sha256",
+            "value": "1c4277a25b068ddc80fc13439df03a02aaaf6c0b7fcca8391605022e2d61d829"
+          },
+          "archive": "zip",
+          "paths": [
+            "versitygw.exe"
+          ],
+          "strip": 1
         }
       },
       "runtime": {
@@ -2871,7 +2895,28 @@
           "S3_ACCESS_KEY_ID": "${AWS_ACCESS_KEY_ID}",
           "S3_SECRET_ACCESS_KEY": "${AWS_SECRET_ACCESS_KEY}"
         },
-        "shareable": true
+        "shareable": true,
+        "windows": {
+          "initialise": "mkdir -p \"$STACK_DATA_DIR/buckets\" \"$STACK_DATA_DIR/iam\" \"$STACK_DATA_DIR/meta\"",
+          "start": {
+            "arguments": [
+              "${STACK_INSTALL_DIR}/versitygw.exe",
+              "--port",
+              "127.0.0.1:${STACK_PORT}",
+              "--iam-dir",
+              "${STACK_DATA_DIR}/iam",
+              "posix",
+              "--sidecar",
+              "${STACK_DATA_DIR}/meta",
+              "${STACK_DATA_DIR}/buckets"
+            ]
+          },
+          "sidecar": {
+            "root": "meta",
+            "attribute": "policy",
+            "ownership_attribute": "acl"
+          }
+        }
       },
       "image": {
         "repository": "docker.io/versity/versitygw",
