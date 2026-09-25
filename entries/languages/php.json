@@ -19,6 +19,22 @@
       },
       "linux/arm64": {
         "url": "https://github.com/luewell/stack-binaries/releases/download/php-{version}/php-{version}-linux-arm64.tar.gz"
+      },
+      "windows/amd64": {
+        "url": "https://github.com/luewell/stack-binaries/releases/download/php-{version}-windows/php-{version}-windows-x86_64.zip",
+        "archive": "zip",
+        "paths": [
+          "bin",
+          "NOTICE-libraries.txt"
+        ]
+      },
+      "windows/arm64": {
+        "url": "https://github.com/luewell/stack-binaries/releases/download/php-{version}-windows/php-{version}-windows-x86_64.zip",
+        "archive": "zip",
+        "paths": [
+          "bin",
+          "NOTICE-libraries.txt"
+        ]
       }
     },
     "runtime": {
@@ -54,24 +70,12 @@
           }
         },
         "windows/amd64": {
-          "url": "https://github.com/luewell/stack-binaries/releases/download/php-8.5.10-windows/php-8.5.10-windows-x86_64.zip",
-          "archive": "zip",
-          "paths": [
-            "bin",
-            "NOTICE-libraries.txt"
-          ],
           "digest": {
             "algorithm": "sha256",
             "value": "e5b6751bcce76cc7917832853e1fc1cf557b66ae23c134d22971f1eccd558938"
           }
         },
         "windows/arm64": {
-          "url": "https://github.com/luewell/stack-binaries/releases/download/php-8.5.10-windows/php-8.5.10-windows-x86_64.zip",
-          "archive": "zip",
-          "paths": [
-            "bin",
-            "NOTICE-libraries.txt"
-          ],
           "digest": {
             "algorithm": "sha256",
             "value": "e5b6751bcce76cc7917832853e1fc1cf557b66ae23c134d22971f1eccd558938"
@@ -103,24 +107,12 @@
           }
         },
         "windows/amd64": {
-          "url": "https://github.com/luewell/stack-binaries/releases/download/php-8.4.25-windows/php-8.4.25-windows-x86_64.zip",
-          "archive": "zip",
-          "paths": [
-            "bin",
-            "NOTICE-libraries.txt"
-          ],
           "digest": {
             "algorithm": "sha256",
             "value": "b61f14800a7bd197e42ebb90552749c21be4402ee5f78a48446f9c2a55cecd83"
           }
         },
         "windows/arm64": {
-          "url": "https://github.com/luewell/stack-binaries/releases/download/php-8.4.25-windows/php-8.4.25-windows-x86_64.zip",
-          "archive": "zip",
-          "paths": [
-            "bin",
-            "NOTICE-libraries.txt"
-          ],
           "digest": {
             "algorithm": "sha256",
             "value": "b61f14800a7bd197e42ebb90552749c21be4402ee5f78a48446f9c2a55cecd83"
@@ -176,6 +168,18 @@
             "algorithm": "sha256",
             "value": "44131702e87fe85200a3985930bdf936c8b9adfc3bd2d48bb47d8e20ad97e920"
           }
+        },
+        "windows/amd64": {
+          "digest": {
+            "algorithm": "sha256",
+            "value": "41683c755941819287d33f0e335526b211ded8e7d88f0daadeaba5600fdb322a"
+          }
+        },
+        "windows/arm64": {
+          "digest": {
+            "algorithm": "sha256",
+            "value": "41683c755941819287d33f0e335526b211ded8e7d88f0daadeaba5600fdb322a"
+          }
         }
       }
     },
@@ -201,6 +205,18 @@
             "algorithm": "sha256",
             "value": "1b114aa752dcc6529634ecd37eaea2f645d26b1e362d0d1d6c490b3125209c4c"
           }
+        },
+        "windows/amd64": {
+          "digest": {
+            "algorithm": "sha256",
+            "value": "6acb053eac94cb923a507b034ea848323e2b5567fb775e6a9c918457db9cc19f"
+          }
+        },
+        "windows/arm64": {
+          "digest": {
+            "algorithm": "sha256",
+            "value": "6acb053eac94cb923a507b034ea848323e2b5567fb775e6a9c918457db9cc19f"
+          }
         }
       }
     },
@@ -225,6 +241,18 @@
           "digest": {
             "algorithm": "sha256",
             "value": "251c1309ad51ea9dc1592e9c7becee3f9ca68f7ad07b7db432f66bf196381fd4"
+          }
+        },
+        "windows/amd64": {
+          "digest": {
+            "algorithm": "sha256",
+            "value": "30ea7c406baa98460ea7b081536d38c19e420a3352351328ccbc8b5898fbbe34"
+          }
+        },
+        "windows/arm64": {
+          "digest": {
+            "algorithm": "sha256",
+            "value": "30ea7c406baa98460ea7b081536d38c19e420a3352351328ccbc8b5898fbbe34"
           }
         }
       }

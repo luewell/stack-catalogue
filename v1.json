@@ -2351,6 +2351,32 @@
             "bin"
           ],
           "strip": 1
+        },
+        "windows/amd64": {
+          "url": "https://github.com/luewell/stack-binaries/releases/download/php-8.3.33-windows/php-8.3.33-windows-x86_64.zip",
+          "digest": {
+            "algorithm": "sha256",
+            "value": "41683c755941819287d33f0e335526b211ded8e7d88f0daadeaba5600fdb322a"
+          },
+          "archive": "zip",
+          "paths": [
+            "bin",
+            "NOTICE-libraries.txt"
+          ],
+          "strip": 1
+        },
+        "windows/arm64": {
+          "url": "https://github.com/luewell/stack-binaries/releases/download/php-8.3.33-windows/php-8.3.33-windows-x86_64.zip",
+          "digest": {
+            "algorithm": "sha256",
+            "value": "41683c755941819287d33f0e335526b211ded8e7d88f0daadeaba5600fdb322a"
+          },
+          "archive": "zip",
+          "paths": [
+            "bin",
+            "NOTICE-libraries.txt"
+          ],
+          "strip": 1
         }
       },
       "runtime": {
@@ -2404,6 +2430,32 @@
             "bin"
           ],
           "strip": 1
+        },
+        "windows/amd64": {
+          "url": "https://github.com/luewell/stack-binaries/releases/download/php-8.2.33-windows/php-8.2.33-windows-x86_64.zip",
+          "digest": {
+            "algorithm": "sha256",
+            "value": "6acb053eac94cb923a507b034ea848323e2b5567fb775e6a9c918457db9cc19f"
+          },
+          "archive": "zip",
+          "paths": [
+            "bin",
+            "NOTICE-libraries.txt"
+          ],
+          "strip": 1
+        },
+        "windows/arm64": {
+          "url": "https://github.com/luewell/stack-binaries/releases/download/php-8.2.33-windows/php-8.2.33-windows-x86_64.zip",
+          "digest": {
+            "algorithm": "sha256",
+            "value": "6acb053eac94cb923a507b034ea848323e2b5567fb775e6a9c918457db9cc19f"
+          },
+          "archive": "zip",
+          "paths": [
+            "bin",
+            "NOTICE-libraries.txt"
+          ],
+          "strip": 1
         }
       },
       "runtime": {
@@ -2455,6 +2507,32 @@
           "archive": "tar.gz",
           "paths": [
             "bin"
+          ],
+          "strip": 1
+        },
+        "windows/amd64": {
+          "url": "https://github.com/luewell/stack-binaries/releases/download/php-8.1.34-windows/php-8.1.34-windows-x86_64.zip",
+          "digest": {
+            "algorithm": "sha256",
+            "value": "30ea7c406baa98460ea7b081536d38c19e420a3352351328ccbc8b5898fbbe34"
+          },
+          "archive": "zip",
+          "paths": [
+            "bin",
+            "NOTICE-libraries.txt"
+          ],
+          "strip": 1
+        },
+        "windows/arm64": {
+          "url": "https://github.com/luewell/stack-binaries/releases/download/php-8.1.34-windows/php-8.1.34-windows-x86_64.zip",
+          "digest": {
+            "algorithm": "sha256",
+            "value": "30ea7c406baa98460ea7b081536d38c19e420a3352351328ccbc8b5898fbbe34"
+          },
+          "archive": "zip",
+          "paths": [
+            "bin",
+            "NOTICE-libraries.txt"
           ],
           "strip": 1
         }
