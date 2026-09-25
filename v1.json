@@ -2167,6 +2167,32 @@
             "bin"
           ],
           "strip": 1
+        },
+        "windows/amd64": {
+          "url": "https://github.com/luewell/stack-binaries/releases/download/php-8.5.10-windows/php-8.5.10-windows-x86_64.zip",
+          "digest": {
+            "algorithm": "sha256",
+            "value": "e5b6751bcce76cc7917832853e1fc1cf557b66ae23c134d22971f1eccd558938"
+          },
+          "archive": "zip",
+          "paths": [
+            "bin",
+            "NOTICE-libraries.txt"
+          ],
+          "strip": 1
+        },
+        "windows/arm64": {
+          "url": "https://github.com/luewell/stack-binaries/releases/download/php-8.5.10-windows/php-8.5.10-windows-x86_64.zip",
+          "digest": {
+            "algorithm": "sha256",
+            "value": "e5b6751bcce76cc7917832853e1fc1cf557b66ae23c134d22971f1eccd558938"
+          },
+          "archive": "zip",
+          "paths": [
+            "bin",
+            "NOTICE-libraries.txt"
+          ],
+          "strip": 1
         }
       },
       "runtime": {
@@ -2218,6 +2244,32 @@
           "archive": "tar.gz",
           "paths": [
             "bin"
+          ],
+          "strip": 1
+        },
+        "windows/amd64": {
+          "url": "https://github.com/luewell/stack-binaries/releases/download/php-8.4.25-windows/php-8.4.25-windows-x86_64.zip",
+          "digest": {
+            "algorithm": "sha256",
+            "value": "b61f14800a7bd197e42ebb90552749c21be4402ee5f78a48446f9c2a55cecd83"
+          },
+          "archive": "zip",
+          "paths": [
+            "bin",
+            "NOTICE-libraries.txt"
+          ],
+          "strip": 1
+        },
+        "windows/arm64": {
+          "url": "https://github.com/luewell/stack-binaries/releases/download/php-8.4.25-windows/php-8.4.25-windows-x86_64.zip",
+          "digest": {
+            "algorithm": "sha256",
+            "value": "b61f14800a7bd197e42ebb90552749c21be4402ee5f78a48446f9c2a55cecd83"
+          },
+          "archive": "zip",
+          "paths": [
+            "bin",
+            "NOTICE-libraries.txt"
           ],
           "strip": 1
         }

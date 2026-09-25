@@ -52,6 +52,30 @@
             "algorithm": "sha256",
             "value": "1e11cfb1f4673c4a5750d045f7dfb0a4ad9eb8118c06d0c48f8677b6a4257854"
           }
+        },
+        "windows/amd64": {
+          "url": "https://github.com/luewell/stack-binaries/releases/download/php-8.5.10-windows/php-8.5.10-windows-x86_64.zip",
+          "archive": "zip",
+          "paths": [
+            "bin",
+            "NOTICE-libraries.txt"
+          ],
+          "digest": {
+            "algorithm": "sha256",
+            "value": "e5b6751bcce76cc7917832853e1fc1cf557b66ae23c134d22971f1eccd558938"
+          }
+        },
+        "windows/arm64": {
+          "url": "https://github.com/luewell/stack-binaries/releases/download/php-8.5.10-windows/php-8.5.10-windows-x86_64.zip",
+          "archive": "zip",
+          "paths": [
+            "bin",
+            "NOTICE-libraries.txt"
+          ],
+          "digest": {
+            "algorithm": "sha256",
+            "value": "e5b6751bcce76cc7917832853e1fc1cf557b66ae23c134d22971f1eccd558938"
+          }
         }
       }
     },
@@ -76,6 +100,30 @@
           "digest": {
             "algorithm": "sha256",
             "value": "9150dc1c23554956293f8311ac2d2d4b99a162f1529babc487378eafe4d314fb"
+          }
+        },
+        "windows/amd64": {
+          "url": "https://github.com/luewell/stack-binaries/releases/download/php-8.4.25-windows/php-8.4.25-windows-x86_64.zip",
+          "archive": "zip",
+          "paths": [
+            "bin",
+            "NOTICE-libraries.txt"
+          ],
+          "digest": {
+            "algorithm": "sha256",
+            "value": "b61f14800a7bd197e42ebb90552749c21be4402ee5f78a48446f9c2a55cecd83"
+          }
+        },
+        "windows/arm64": {
+          "url": "https://github.com/luewell/stack-binaries/releases/download/php-8.4.25-windows/php-8.4.25-windows-x86_64.zip",
+          "archive": "zip",
+          "paths": [
+            "bin",
+            "NOTICE-libraries.txt"
+          ],
+          "digest": {
+            "algorithm": "sha256",
+            "value": "b61f14800a7bd197e42ebb90552749c21be4402ee5f78a48446f9c2a55cecd83"
           }
         }
       },
