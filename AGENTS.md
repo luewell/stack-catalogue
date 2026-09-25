@@ -84,6 +84,16 @@ The user's global instructions apply. All project artifacts are English.
   `sha256` or `sha512` digest, and every image digest is `sha256`; `build.py`
   refuses an entry without them. Changes to runtime commands must not silently
   alter artifact URLs, digests or versions.
+- A service runs on Windows only through `runtime.windows`, which published
+  Stack releases ignore: `start` and `stop` are `{"arguments": [...]}` run
+  without a shell, each argument naming the environment only as `${NAME}`
+  (`$$` for a literal `$`), `stop` also sees `${STACK_PID}`, `restricted:
+  true` runs a server that refuses administrators under a restricted token,
+  and `initialise` replaces the shared script there. Other scripts (`ready`,
+  `provision`) stay shared and run under the pinned BusyBox, so they must not
+  rely on `/dev/stdin` or `umask`, which it does not emulate. A Windows
+  artifact may be the x64 build under `windows/arm64` when the vendor ships no
+  ARM64 one.
 - The internal `busybox` entry is the POSIX shell Stack uses on Windows and
   offers only Windows builds. Take its digests from frippery.org's
   `SHA256SUM` only after `SHA256SUM.sig` verifies against the author's key.
