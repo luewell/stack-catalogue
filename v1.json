@@ -2583,6 +2583,36 @@
             "libexec"
           ],
           "strip": 1
+        },
+        "windows/amd64": {
+          "url": "https://github.com/luewell/stack-binaries/releases/download/ruby-3.3.12-windows/ruby-3.3.12-windows-x86_64.zip",
+          "digest": {
+            "algorithm": "sha256",
+            "value": "3242a3c208e22cf0a2b2643cb2769d4ad432f505b93cf5cb5065cc4481927246"
+          },
+          "archive": "zip",
+          "paths": [
+            "bin",
+            "include",
+            "lib",
+            "LICENSE.txt"
+          ],
+          "strip": 1
+        },
+        "windows/arm64": {
+          "url": "https://github.com/luewell/stack-binaries/releases/download/ruby-3.3.12-windows/ruby-3.3.12-windows-x86_64.zip",
+          "digest": {
+            "algorithm": "sha256",
+            "value": "3242a3c208e22cf0a2b2643cb2769d4ad432f505b93cf5cb5065cc4481927246"
+          },
+          "archive": "zip",
+          "paths": [
+            "bin",
+            "include",
+            "lib",
+            "LICENSE.txt"
+          ],
+          "strip": 1
         }
       },
       "runtime": {
@@ -2653,6 +2683,36 @@
             "libexec"
           ],
           "strip": 1
+        },
+        "windows/amd64": {
+          "url": "https://github.com/luewell/stack-binaries/releases/download/ruby-3.4.10-windows/ruby-3.4.10-windows-x86_64.zip",
+          "digest": {
+            "algorithm": "sha256",
+            "value": "59ff9c4041253f019da603ff228b001eac743f0a482d7aaf29df63659160fa85"
+          },
+          "archive": "zip",
+          "paths": [
+            "bin",
+            "include",
+            "lib",
+            "LICENSE.txt"
+          ],
+          "strip": 1
+        },
+        "windows/arm64": {
+          "url": "https://github.com/luewell/stack-binaries/releases/download/ruby-3.4.10-windows/ruby-3.4.10-windows-arm64.zip",
+          "digest": {
+            "algorithm": "sha256",
+            "value": "ec47db826af6ae4761def2a8a8c88f80b677d96e50691ae602c1d69dfbcc091f"
+          },
+          "archive": "zip",
+          "paths": [
+            "bin",
+            "include",
+            "lib",
+            "LICENSE.txt"
+          ],
+          "strip": 1
         }
       },
       "runtime": {
@@ -2721,6 +2781,36 @@
             "include",
             "lib",
             "libexec"
+          ],
+          "strip": 1
+        },
+        "windows/amd64": {
+          "url": "https://github.com/luewell/stack-binaries/releases/download/ruby-4.0.6-windows/ruby-4.0.6-windows-x86_64.zip",
+          "digest": {
+            "algorithm": "sha256",
+            "value": "59539ce03d93debcc33191670ca5c09312fbfa5f197ce029a71e2097397fd02b"
+          },
+          "archive": "zip",
+          "paths": [
+            "bin",
+            "include",
+            "lib",
+            "LICENSE.txt"
+          ],
+          "strip": 1
+        },
+        "windows/arm64": {
+          "url": "https://github.com/luewell/stack-binaries/releases/download/ruby-4.0.6-windows/ruby-4.0.6-windows-arm64.zip",
+          "digest": {
+            "algorithm": "sha256",
+            "value": "28744306fd1733042e37577ac50488fa3038c812d32e31f9c293b0681b231f30"
+          },
+          "archive": "zip",
+          "paths": [
+            "bin",
+            "include",
+            "lib",
+            "LICENSE.txt"
           ],
           "strip": 1
         }
@@ -3210,6 +3300,30 @@
             "composer"
           ],
           "strip": 0
+        },
+        "windows/amd64": {
+          "url": "https://getcomposer.org/download/2.10.3/composer.phar",
+          "digest": {
+            "algorithm": "sha256",
+            "value": "7a2d379d5b8ffdaa028580ef26494c36d2feef4b178d3dd1473a4dbc5e17c8d6"
+          },
+          "archive": "none",
+          "paths": [
+            "composer"
+          ],
+          "strip": 0
+        },
+        "windows/arm64": {
+          "url": "https://getcomposer.org/download/2.10.3/composer.phar",
+          "digest": {
+            "algorithm": "sha256",
+            "value": "7a2d379d5b8ffdaa028580ef26494c36d2feef4b178d3dd1473a4dbc5e17c8d6"
+          },
+          "archive": "none",
+          "paths": [
+            "composer"
+          ],
+          "strip": 0
         }
       },
       "runtime": {
@@ -3217,7 +3331,10 @@
         "commands": [
           "composer"
         ],
-        "bin_dir": "."
+        "bin_dir": ".",
+        "windows": {
+          "run_with": "php"
+        }
       }
     },
     {
