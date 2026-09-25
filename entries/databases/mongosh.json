@@ -21,6 +21,14 @@
       "linux/arm64": {
         "url": "https://github.com/mongodb-js/mongosh/releases/download/v{version}/mongosh-{version}-linux-arm64.tgz",
         "archive": "tar.gz"
+      },
+      "windows/amd64": {
+        "url": "https://github.com/mongodb-js/mongosh/releases/download/v{version}/mongosh-{version}-win32-x64.zip",
+        "archive": "zip"
+      },
+      "windows/arm64": {
+        "url": "https://github.com/mongodb-js/mongosh/releases/download/v{version}/mongosh-{version}-win32-x64.zip",
+        "archive": "zip"
       }
     },
     "runtime": {
@@ -53,6 +61,18 @@
           "digest": {
             "algorithm": "sha256",
             "value": "99f8d38d41c510e7d4c685b71022ea1db113245968d5d933b5333fb3835e64ae"
+          }
+        },
+        "windows/amd64": {
+          "digest": {
+            "algorithm": "sha256",
+            "value": "d9dfc366a8a6b6771fcb05fe582d4b1bfe567f7a1ed7a72194dcf5b8202e9db3"
+          }
+        },
+        "windows/arm64": {
+          "digest": {
+            "algorithm": "sha256",
+            "value": "d9dfc366a8a6b6771fcb05fe582d4b1bfe567f7a1ed7a72194dcf5b8202e9db3"
           }
         }
       }

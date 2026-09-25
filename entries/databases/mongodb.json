@@ -18,6 +18,20 @@
       },
       "linux/arm64": {
         "url": "https://fastdl.mongodb.org/linux/mongodb-linux-aarch64-ubuntu2404-{version}.tgz"
+      },
+      "windows/amd64": {
+        "url": "https://fastdl.mongodb.org/windows/mongodb-windows-x86_64-{version}.zip",
+        "archive": "zip",
+        "paths": [
+          "bin/mongod.exe"
+        ]
+      },
+      "windows/arm64": {
+        "url": "https://fastdl.mongodb.org/windows/mongodb-windows-x86_64-{version}.zip",
+        "archive": "zip",
+        "paths": [
+          "bin/mongod.exe"
+        ]
       }
     },
     "runtime": {
@@ -49,7 +63,23 @@
         "MONGODB_PASSWORD"
       ],
       "provisioner": "mongodb",
-      "shareable": true
+      "shareable": true,
+      "windows": {
+        "start": {
+          "arguments": [
+            "${STACK_INSTALL_DIR}/bin/mongod.exe",
+            "--dbpath",
+            "${STACK_DATA_DIR}/db",
+            "--auth",
+            "--bind_ip",
+            "127.0.0.1",
+            "--port",
+            "${STACK_PORT}",
+            "--setParameter",
+            "enableLocalhostAuthBypass=false"
+          ]
+        }
+      }
     }
   },
   "services": [
@@ -75,6 +105,18 @@
             "algorithm": "sha256",
             "value": "8cca3993520a7f189790264ee57fb5d55a91094fb4be5f06bbbaf67c974d273f"
           }
+        },
+        "windows/amd64": {
+          "digest": {
+            "algorithm": "sha256",
+            "value": "5a0675fdec49b544cd5d374ad50a9a594cf5b3278b5ace658aa51cbb4df17177"
+          }
+        },
+        "windows/arm64": {
+          "digest": {
+            "algorithm": "sha256",
+            "value": "5a0675fdec49b544cd5d374ad50a9a594cf5b3278b5ace658aa51cbb4df17177"
+          }
         }
       }
     },
@@ -99,6 +141,18 @@
           "digest": {
             "algorithm": "sha256",
             "value": "52540bfb1de7ad415524c6a5117d434fcd84f24f23e3db56e71977e9fed28f2e"
+          }
+        },
+        "windows/amd64": {
+          "digest": {
+            "algorithm": "sha256",
+            "value": "55574b06b41848207213a5e69575dd3487abf3cf07ecfe01b3aef1bab0084241"
+          }
+        },
+        "windows/arm64": {
+          "digest": {
+            "algorithm": "sha256",
+            "value": "55574b06b41848207213a5e69575dd3487abf3cf07ecfe01b3aef1bab0084241"
           }
         }
       }

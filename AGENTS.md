@@ -66,6 +66,10 @@ The user's global instructions apply. All project artifacts are English.
   explicit-database templates live in `provisioned_database_connection`, never
   `database_connection`: Stack 2.11 and 2.12 refuse the latter outside PostgreSQL
   and stop selecting every service, while ignoring a field they do not know.
+  Windows has only MongoDB's x64 build, also listed under `windows/arm64`,
+  keeping only `bin/mongod.exe`; its Windows `start` has no socket arguments,
+  because mongod offers none there, and no `stop`, because Stack asks it to shut
+  down itself.
 - Valkey locks its `default` user with `VALKEY_ADMIN_PASSWORD` in a private
   `users.acl` and provisions one ACL account per group from `REDIS_PASSWORD`
   through `valkey-cli` stdin with `VALKEYCLI_AUTH`, never argv. Provisioning
