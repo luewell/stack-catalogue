@@ -19,6 +19,18 @@
       },
       "linux/arm64": {
         "url": "https://github.com/oven-sh/bun/releases/download/bun-v{version}/bun-linux-aarch64.zip"
+      },
+      "windows/amd64": {
+        "url": "https://github.com/oven-sh/bun/releases/download/bun-v{version}/bun-windows-x64-baseline.zip",
+        "paths": [
+          "bun.exe"
+        ]
+      },
+      "windows/arm64": {
+        "url": "https://github.com/oven-sh/bun/releases/download/bun-v{version}/bun-windows-aarch64.zip",
+        "paths": [
+          "bun.exe"
+        ]
       }
     },
     "runtime": {
@@ -51,6 +63,19 @@
           "digest": {
             "algorithm": "sha256",
             "value": "2486a9ad9937e985bea147ba0cb59b6b43882baf4bba156cabc7239d0f68ef60"
+          }
+        },
+        "windows/amd64": {
+          "digest": {
+            "algorithm": "sha256",
+            "value": "7862b06bee9f966461d6a6e7d7e728945da7f65581f13503b208069888970dc6"
+          }
+        },
+        "windows/arm64": {
+          "url": "https://github.com/oven-sh/bun/releases/download/bun-v1.1.18/bun-windows-x64-baseline.zip",
+          "digest": {
+            "algorithm": "sha256",
+            "value": "7862b06bee9f966461d6a6e7d7e728945da7f65581f13503b208069888970dc6"
           }
         }
       },
@@ -101,6 +126,18 @@
           "digest": {
             "algorithm": "sha256",
             "value": "54328bbc2d9c8e0c9f892c544d66c57a83b84139e34909e5ee81758f1ac8fda7"
+          }
+        },
+        "windows/amd64": {
+          "digest": {
+            "algorithm": "sha256",
+            "value": "78c221c2376f79731ccf4e4af0b3bb46d81fefa3296c5abee09ad8a1b21e68c6"
+          }
+        },
+        "windows/arm64": {
+          "digest": {
+            "algorithm": "sha256",
+            "value": "a7a16b876a305fd1029c66dbd27007b4f6112ae896532f675878731a21e50cfd"
           }
         }
       },

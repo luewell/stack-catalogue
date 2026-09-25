@@ -27,6 +27,14 @@
       },
       "linux/arm64": {
         "url": "https://go.dev/dl/go{version}.linux-arm64.tar.gz"
+      },
+      "windows/amd64": {
+        "url": "https://go.dev/dl/go{version}.windows-amd64.zip",
+        "archive": "zip"
+      },
+      "windows/arm64": {
+        "url": "https://go.dev/dl/go{version}.windows-arm64.zip",
+        "archive": "zip"
       }
     },
     "runtime": {
@@ -65,6 +73,18 @@
           "digest": {
             "algorithm": "sha256",
             "value": "3450b45a3f9ee8568792736a5c5e70a1f2e9b36c35a8f74958c03e51d7d92bec"
+          }
+        },
+        "windows/amd64": {
+          "digest": {
+            "algorithm": "sha256",
+            "value": "a3911b5e0e1b1053f25ed0675f4c1c6aad1e2bfcf253df2b9be4caabd2edd95d"
+          }
+        },
+        "windows/arm64": {
+          "digest": {
+            "algorithm": "sha256",
+            "value": "13b69b87bb0e83f96bc68560a8cace7f0343b1e03469f1110ea18d17e3234069"
           }
         }
       },
@@ -116,6 +136,18 @@
           "digest": {
             "algorithm": "sha256",
             "value": "211ffced9dcb9633a55eac6364816ec0ddd951389a740e88fa8b3337971bdda0"
+          }
+        },
+        "windows/amd64": {
+          "digest": {
+            "algorithm": "sha256",
+            "value": "b92c3b2adae85a11ba71fe7216daf0d84e82af4c8ab6c5625807f28622043a59"
+          }
+        },
+        "windows/arm64": {
+          "digest": {
+            "algorithm": "sha256",
+            "value": "4bc560ed3ccb64eec0be6180b8c29185c07f5215276820adb4303d7bf3365435"
           }
         }
       },

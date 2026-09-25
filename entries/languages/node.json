@@ -21,6 +21,36 @@
       },
       "linux/arm64": {
         "url": "https://nodejs.org/dist/v{version}/node-v{version}-linux-arm64.tar.gz"
+      },
+      "windows/amd64": {
+        "url": "https://nodejs.org/dist/v{version}/node-v{version}-win-x64.zip",
+        "archive": "zip",
+        "paths": [
+          "node.exe",
+          "npm",
+          "npm.cmd",
+          "npx",
+          "npx.cmd",
+          "corepack",
+          "corepack.cmd",
+          "node_modules",
+          "LICENSE"
+        ]
+      },
+      "windows/arm64": {
+        "url": "https://nodejs.org/dist/v{version}/node-v{version}-win-arm64.zip",
+        "archive": "zip",
+        "paths": [
+          "node.exe",
+          "npm",
+          "npm.cmd",
+          "npx",
+          "npx.cmd",
+          "corepack",
+          "corepack.cmd",
+          "node_modules",
+          "LICENSE"
+        ]
       }
     },
     "runtime": {
@@ -33,7 +63,10 @@
       ],
       "exposed": [
         "node"
-      ]
+      ],
+      "windows": {
+        "bin_dir": "."
+      }
     }
   },
   "services": [
@@ -58,6 +91,18 @@
           "digest": {
             "algorithm": "sha256",
             "value": "3515603e2487879a39bc75716f1a2affd027500c64ba50e845cf72cb33219013"
+          }
+        },
+        "windows/amd64": {
+          "digest": {
+            "algorithm": "sha256",
+            "value": "6cac9ffbca8f6a47091e4b5c772e0606049c3871cb67d900c0cedde630e545ba"
+          }
+        },
+        "windows/arm64": {
+          "digest": {
+            "algorithm": "sha256",
+            "value": "31c6799744de8a54601643098040c68c3697e56c94e407d61d0e5fa5f34191d7"
           }
         }
       },
@@ -116,6 +161,18 @@
             "algorithm": "sha256",
             "value": "d5f973ce975e4bd03e6c2038260f7e9201615aa8e1ee293c72f8dcc2a6d9fddb"
           }
+        },
+        "windows/amd64": {
+          "digest": {
+            "algorithm": "sha256",
+            "value": "57693d8e93d1b04e7b7de46aca53ecd63e97564e73de36a68428d7ff08d83587"
+          }
+        },
+        "windows/arm64": {
+          "digest": {
+            "algorithm": "sha256",
+            "value": "09d62005aa9dca8fcd9bdce8196f5aa783eee3818d5af74089eb7297103c02d4"
+          }
         }
       },
       "runtime": {
@@ -152,6 +209,18 @@
             "algorithm": "sha256",
             "value": "47ef73d543ecf6eb19435f6c03a0ac4809b3bf0dd6b26c7c571efc2a6572a74d"
           }
+        },
+        "windows/amd64": {
+          "digest": {
+            "algorithm": "sha256",
+            "value": "dc3700fdd57a63eedb8fd7e3c7baaa32e6a740a1b904167ff4204bc68ed8bf77"
+          }
+        },
+        "windows/arm64": {
+          "digest": {
+            "algorithm": "sha256",
+            "value": "d5c5b1d56f7f9469830eb1f57efeec0a6a9078c0a9e88cd5b4b4b48f46c22069"
+          }
         }
       },
       "lifecycle": {
@@ -181,6 +250,19 @@
             "algorithm": "sha256",
             "value": "2e3dfc51154e6fea9fc86a90c4ea8f3ecb8b60acaf7367c4b76691da192571c1"
           }
+        },
+        "windows/amd64": {
+          "digest": {
+            "algorithm": "sha256",
+            "value": "1a1e40260a6facba83636e4cd0ba01eb5bd1386896824b36645afba44857384a"
+          }
+        },
+        "windows/arm64": {
+          "url": "https://nodejs.org/dist/v18.20.8/node-v18.20.8-win-x64.zip",
+          "digest": {
+            "algorithm": "sha256",
+            "value": "1a1e40260a6facba83636e4cd0ba01eb5bd1386896824b36645afba44857384a"
+          }
         }
       },
       "lifecycle": {
@@ -209,6 +291,19 @@
           "digest": {
             "algorithm": "sha256",
             "value": "b6945fcc9ad220386bb814bfae7137189fd17297f2959a744105e1bee006035a"
+          }
+        },
+        "windows/amd64": {
+          "digest": {
+            "algorithm": "sha256",
+            "value": "f8bb35f6c08dc7bf14ac753509c06ed1a7ebf5b390cd3fbdc8f8c1aedd020ec3"
+          }
+        },
+        "windows/arm64": {
+          "url": "https://nodejs.org/dist/v16.20.2/node-v16.20.2-win-x64.zip",
+          "digest": {
+            "algorithm": "sha256",
+            "value": "f8bb35f6c08dc7bf14ac753509c06ed1a7ebf5b390cd3fbdc8f8c1aedd020ec3"
           }
         }
       },

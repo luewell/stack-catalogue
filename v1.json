@@ -1083,6 +1083,30 @@
             "bun"
           ],
           "strip": 1
+        },
+        "windows/amd64": {
+          "url": "https://github.com/oven-sh/bun/releases/download/bun-v1.1.18/bun-windows-x64-baseline.zip",
+          "digest": {
+            "algorithm": "sha256",
+            "value": "7862b06bee9f966461d6a6e7d7e728945da7f65581f13503b208069888970dc6"
+          },
+          "archive": "zip",
+          "paths": [
+            "bun.exe"
+          ],
+          "strip": 1
+        },
+        "windows/arm64": {
+          "url": "https://github.com/oven-sh/bun/releases/download/bun-v1.1.18/bun-windows-x64-baseline.zip",
+          "digest": {
+            "algorithm": "sha256",
+            "value": "7862b06bee9f966461d6a6e7d7e728945da7f65581f13503b208069888970dc6"
+          },
+          "archive": "zip",
+          "paths": [
+            "bun.exe"
+          ],
+          "strip": 1
         }
       },
       "runtime": {
@@ -1159,6 +1183,30 @@
           "archive": "zip",
           "paths": [
             "bun"
+          ],
+          "strip": 1
+        },
+        "windows/amd64": {
+          "url": "https://github.com/oven-sh/bun/releases/download/bun-v1.4.2/bun-windows-x64-baseline.zip",
+          "digest": {
+            "algorithm": "sha256",
+            "value": "78c221c2376f79731ccf4e4af0b3bb46d81fefa3296c5abee09ad8a1b21e68c6"
+          },
+          "archive": "zip",
+          "paths": [
+            "bun.exe"
+          ],
+          "strip": 1
+        },
+        "windows/arm64": {
+          "url": "https://github.com/oven-sh/bun/releases/download/bun-v1.4.2/bun-windows-aarch64.zip",
+          "digest": {
+            "algorithm": "sha256",
+            "value": "a7a16b876a305fd1029c66dbd27007b4f6112ae896532f675878731a21e50cfd"
+          },
+          "archive": "zip",
+          "paths": [
+            "bun.exe"
           ],
           "strip": 1
         }
@@ -1251,6 +1299,46 @@
             "value": "3450b45a3f9ee8568792736a5c5e70a1f2e9b36c35a8f74958c03e51d7d92bec"
           },
           "archive": "tar.gz",
+          "paths": [
+            "bin",
+            "src",
+            "pkg",
+            "lib",
+            "misc",
+            "api",
+            "go.env",
+            "VERSION",
+            "LICENSE"
+          ],
+          "strip": 1
+        },
+        "windows/amd64": {
+          "url": "https://go.dev/dl/go1.27.1.windows-amd64.zip",
+          "digest": {
+            "algorithm": "sha256",
+            "value": "a3911b5e0e1b1053f25ed0675f4c1c6aad1e2bfcf253df2b9be4caabd2edd95d"
+          },
+          "archive": "zip",
+          "paths": [
+            "bin",
+            "src",
+            "pkg",
+            "lib",
+            "misc",
+            "api",
+            "go.env",
+            "VERSION",
+            "LICENSE"
+          ],
+          "strip": 1
+        },
+        "windows/arm64": {
+          "url": "https://go.dev/dl/go1.27.1.windows-arm64.zip",
+          "digest": {
+            "algorithm": "sha256",
+            "value": "13b69b87bb0e83f96bc68560a8cace7f0343b1e03469f1110ea18d17e3234069"
+          },
+          "archive": "zip",
           "paths": [
             "bin",
             "src",
@@ -1372,6 +1460,46 @@
             "LICENSE"
           ],
           "strip": 1
+        },
+        "windows/amd64": {
+          "url": "https://go.dev/dl/go1.26.8.windows-amd64.zip",
+          "digest": {
+            "algorithm": "sha256",
+            "value": "b92c3b2adae85a11ba71fe7216daf0d84e82af4c8ab6c5625807f28622043a59"
+          },
+          "archive": "zip",
+          "paths": [
+            "bin",
+            "src",
+            "pkg",
+            "lib",
+            "misc",
+            "api",
+            "go.env",
+            "VERSION",
+            "LICENSE"
+          ],
+          "strip": 1
+        },
+        "windows/arm64": {
+          "url": "https://go.dev/dl/go1.26.8.windows-arm64.zip",
+          "digest": {
+            "algorithm": "sha256",
+            "value": "4bc560ed3ccb64eec0be6180b8c29185c07f5215276820adb4303d7bf3365435"
+          },
+          "archive": "zip",
+          "paths": [
+            "bin",
+            "src",
+            "pkg",
+            "lib",
+            "misc",
+            "api",
+            "go.env",
+            "VERSION",
+            "LICENSE"
+          ],
+          "strip": 1
         }
       },
       "runtime": {
@@ -1463,6 +1591,46 @@
             "include"
           ],
           "strip": 1
+        },
+        "windows/amd64": {
+          "url": "https://nodejs.org/dist/v24.20.0/node-v24.20.0-win-x64.zip",
+          "digest": {
+            "algorithm": "sha256",
+            "value": "6cac9ffbca8f6a47091e4b5c772e0606049c3871cb67d900c0cedde630e545ba"
+          },
+          "archive": "zip",
+          "paths": [
+            "node.exe",
+            "npm",
+            "npm.cmd",
+            "npx",
+            "npx.cmd",
+            "corepack",
+            "corepack.cmd",
+            "node_modules",
+            "LICENSE"
+          ],
+          "strip": 1
+        },
+        "windows/arm64": {
+          "url": "https://nodejs.org/dist/v24.20.0/node-v24.20.0-win-arm64.zip",
+          "digest": {
+            "algorithm": "sha256",
+            "value": "31c6799744de8a54601643098040c68c3697e56c94e407d61d0e5fa5f34191d7"
+          },
+          "archive": "zip",
+          "paths": [
+            "node.exe",
+            "npm",
+            "npm.cmd",
+            "npx",
+            "npx.cmd",
+            "corepack",
+            "corepack.cmd",
+            "node_modules",
+            "LICENSE"
+          ],
+          "strip": 1
         }
       },
       "runtime": {
@@ -1475,7 +1643,10 @@
         ],
         "exposed": [
           "node"
-        ]
+        ],
+        "windows": {
+          "bin_dir": "."
+        }
       },
       "lifecycle": {
         "lts": "2025-10-28",
@@ -1559,6 +1730,46 @@
             "include"
           ],
           "strip": 1
+        },
+        "windows/amd64": {
+          "url": "https://nodejs.org/dist/v26.8.1/node-v26.8.1-win-x64.zip",
+          "digest": {
+            "algorithm": "sha256",
+            "value": "57693d8e93d1b04e7b7de46aca53ecd63e97564e73de36a68428d7ff08d83587"
+          },
+          "archive": "zip",
+          "paths": [
+            "node.exe",
+            "npm",
+            "npm.cmd",
+            "npx",
+            "npx.cmd",
+            "corepack",
+            "corepack.cmd",
+            "node_modules",
+            "LICENSE"
+          ],
+          "strip": 1
+        },
+        "windows/arm64": {
+          "url": "https://nodejs.org/dist/v26.8.1/node-v26.8.1-win-arm64.zip",
+          "digest": {
+            "algorithm": "sha256",
+            "value": "09d62005aa9dca8fcd9bdce8196f5aa783eee3818d5af74089eb7297103c02d4"
+          },
+          "archive": "zip",
+          "paths": [
+            "node.exe",
+            "npm",
+            "npm.cmd",
+            "npx",
+            "npx.cmd",
+            "corepack",
+            "corepack.cmd",
+            "node_modules",
+            "LICENSE"
+          ],
+          "strip": 1
         }
       },
       "runtime": {
@@ -1570,7 +1781,10 @@
         ],
         "exposed": [
           "node"
-        ]
+        ],
+        "windows": {
+          "bin_dir": "."
+        }
       },
       "lifecycle": {
         "lts": "2026-10-28",
@@ -1626,6 +1840,46 @@
             "include"
           ],
           "strip": 1
+        },
+        "windows/amd64": {
+          "url": "https://nodejs.org/dist/v20.20.2/node-v20.20.2-win-x64.zip",
+          "digest": {
+            "algorithm": "sha256",
+            "value": "dc3700fdd57a63eedb8fd7e3c7baaa32e6a740a1b904167ff4204bc68ed8bf77"
+          },
+          "archive": "zip",
+          "paths": [
+            "node.exe",
+            "npm",
+            "npm.cmd",
+            "npx",
+            "npx.cmd",
+            "corepack",
+            "corepack.cmd",
+            "node_modules",
+            "LICENSE"
+          ],
+          "strip": 1
+        },
+        "windows/arm64": {
+          "url": "https://nodejs.org/dist/v20.20.2/node-v20.20.2-win-arm64.zip",
+          "digest": {
+            "algorithm": "sha256",
+            "value": "d5c5b1d56f7f9469830eb1f57efeec0a6a9078c0a9e88cd5b4b4b48f46c22069"
+          },
+          "archive": "zip",
+          "paths": [
+            "node.exe",
+            "npm",
+            "npm.cmd",
+            "npx",
+            "npx.cmd",
+            "corepack",
+            "corepack.cmd",
+            "node_modules",
+            "LICENSE"
+          ],
+          "strip": 1
         }
       },
       "runtime": {
@@ -1638,7 +1892,10 @@
         ],
         "exposed": [
           "node"
-        ]
+        ],
+        "windows": {
+          "bin_dir": "."
+        }
       },
       "lifecycle": {
         "lts": "2023-10-24",
@@ -1694,6 +1951,46 @@
             "include"
           ],
           "strip": 1
+        },
+        "windows/amd64": {
+          "url": "https://nodejs.org/dist/v18.20.8/node-v18.20.8-win-x64.zip",
+          "digest": {
+            "algorithm": "sha256",
+            "value": "1a1e40260a6facba83636e4cd0ba01eb5bd1386896824b36645afba44857384a"
+          },
+          "archive": "zip",
+          "paths": [
+            "node.exe",
+            "npm",
+            "npm.cmd",
+            "npx",
+            "npx.cmd",
+            "corepack",
+            "corepack.cmd",
+            "node_modules",
+            "LICENSE"
+          ],
+          "strip": 1
+        },
+        "windows/arm64": {
+          "url": "https://nodejs.org/dist/v18.20.8/node-v18.20.8-win-x64.zip",
+          "digest": {
+            "algorithm": "sha256",
+            "value": "1a1e40260a6facba83636e4cd0ba01eb5bd1386896824b36645afba44857384a"
+          },
+          "archive": "zip",
+          "paths": [
+            "node.exe",
+            "npm",
+            "npm.cmd",
+            "npx",
+            "npx.cmd",
+            "corepack",
+            "corepack.cmd",
+            "node_modules",
+            "LICENSE"
+          ],
+          "strip": 1
         }
       },
       "runtime": {
@@ -1706,7 +2003,10 @@
         ],
         "exposed": [
           "node"
-        ]
+        ],
+        "windows": {
+          "bin_dir": "."
+        }
       },
       "lifecycle": {
         "lts": "2022-10-25",
@@ -1762,6 +2062,46 @@
             "include"
           ],
           "strip": 1
+        },
+        "windows/amd64": {
+          "url": "https://nodejs.org/dist/v16.20.2/node-v16.20.2-win-x64.zip",
+          "digest": {
+            "algorithm": "sha256",
+            "value": "f8bb35f6c08dc7bf14ac753509c06ed1a7ebf5b390cd3fbdc8f8c1aedd020ec3"
+          },
+          "archive": "zip",
+          "paths": [
+            "node.exe",
+            "npm",
+            "npm.cmd",
+            "npx",
+            "npx.cmd",
+            "corepack",
+            "corepack.cmd",
+            "node_modules",
+            "LICENSE"
+          ],
+          "strip": 1
+        },
+        "windows/arm64": {
+          "url": "https://nodejs.org/dist/v16.20.2/node-v16.20.2-win-x64.zip",
+          "digest": {
+            "algorithm": "sha256",
+            "value": "f8bb35f6c08dc7bf14ac753509c06ed1a7ebf5b390cd3fbdc8f8c1aedd020ec3"
+          },
+          "archive": "zip",
+          "paths": [
+            "node.exe",
+            "npm",
+            "npm.cmd",
+            "npx",
+            "npx.cmd",
+            "corepack",
+            "corepack.cmd",
+            "node_modules",
+            "LICENSE"
+          ],
+          "strip": 1
         }
       },
       "runtime": {
@@ -1774,7 +2114,10 @@
         ],
         "exposed": [
           "node"
-        ]
+        ],
+        "windows": {
+          "bin_dir": "."
+        }
       },
       "lifecycle": {
         "lts": "2021-10-26",
@@ -2871,6 +3214,32 @@
             "dist"
           ],
           "strip": 0
+        },
+        "windows/amd64": {
+          "url": "https://github.com/pnpm/pnpm/releases/download/v11.25.0/pnpm-win32-x64.zip",
+          "digest": {
+            "algorithm": "sha256",
+            "value": "2d0203af85fc6fbb40f786a2671f175e9119a7c6dfcc4f30b1fa17e0f072c301"
+          },
+          "archive": "zip",
+          "paths": [
+            "pnpm.exe",
+            "dist"
+          ],
+          "strip": 0
+        },
+        "windows/arm64": {
+          "url": "https://github.com/pnpm/pnpm/releases/download/v11.25.0/pnpm-win32-arm64.zip",
+          "digest": {
+            "algorithm": "sha256",
+            "value": "07244c16ae5c6a38c4c1b24798d4d587f0f5492f603504fd608a5916890ec427"
+          },
+          "archive": "zip",
+          "paths": [
+            "pnpm.exe",
+            "dist"
+          ],
+          "strip": 0
         }
       },
       "runtime": {
@@ -2924,6 +3293,32 @@
           "archive": "tar.gz",
           "paths": [
             "pnpm",
+            "dist"
+          ],
+          "strip": 0
+        },
+        "windows/amd64": {
+          "url": "https://github.com/pnpm/pnpm/releases/download/v12.1.0/pnpm-win32-x64.zip",
+          "digest": {
+            "algorithm": "sha256",
+            "value": "69c0d1d46cdc12bbefad653e859636179927aed292f9af286460a0d38d1d99d2"
+          },
+          "archive": "zip",
+          "paths": [
+            "pnpm.exe",
+            "dist"
+          ],
+          "strip": 0
+        },
+        "windows/arm64": {
+          "url": "https://github.com/pnpm/pnpm/releases/download/v12.1.0/pnpm-win32-arm64.zip",
+          "digest": {
+            "algorithm": "sha256",
+            "value": "84769c7cbe683b9fa36d4734e0c66169478e623c014a446d71c62e8b6d6c0c11"
+          },
+          "archive": "zip",
+          "paths": [
+            "pnpm.exe",
             "dist"
           ],
           "strip": 0

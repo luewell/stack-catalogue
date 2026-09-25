@@ -20,6 +20,22 @@
       },
       "linux/arm64": {
         "url": "https://github.com/pnpm/pnpm/releases/download/v{version}/pnpm-linux-arm64.tar.gz"
+      },
+      "windows/amd64": {
+        "url": "https://github.com/pnpm/pnpm/releases/download/v{version}/pnpm-win32-x64.zip",
+        "archive": "zip",
+        "paths": [
+          "pnpm.exe",
+          "dist"
+        ]
+      },
+      "windows/arm64": {
+        "url": "https://github.com/pnpm/pnpm/releases/download/v{version}/pnpm-win32-arm64.zip",
+        "archive": "zip",
+        "paths": [
+          "pnpm.exe",
+          "dist"
+        ]
       }
     },
     "runtime": {
@@ -53,6 +69,18 @@
             "algorithm": "sha256",
             "value": "6d62b433b7a77b77e814dfaca8032bae57bb79c1a5ad50442e688c4f7fed3c8a"
           }
+        },
+        "windows/amd64": {
+          "digest": {
+            "algorithm": "sha256",
+            "value": "2d0203af85fc6fbb40f786a2671f175e9119a7c6dfcc4f30b1fa17e0f072c301"
+          }
+        },
+        "windows/arm64": {
+          "digest": {
+            "algorithm": "sha256",
+            "value": "07244c16ae5c6a38c4c1b24798d4d587f0f5492f603504fd608a5916890ec427"
+          }
         }
       }
     },
@@ -77,6 +105,18 @@
           "digest": {
             "algorithm": "sha256",
             "value": "24b202af01579ae885c8b3dc39a29c03d418a0c85eea274a969b216612abcd07"
+          }
+        },
+        "windows/amd64": {
+          "digest": {
+            "algorithm": "sha256",
+            "value": "69c0d1d46cdc12bbefad653e859636179927aed292f9af286460a0d38d1d99d2"
+          }
+        },
+        "windows/arm64": {
+          "digest": {
+            "algorithm": "sha256",
+            "value": "84769c7cbe683b9fa36d4734e0c66169478e623c014a446d71c62e8b6d6c0c11"
           }
         }
       }
