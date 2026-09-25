@@ -72,8 +72,10 @@ The user's global instructions apply. All project artifacts are English.
   interpolate only declared group secrets. S3 publishing declares both policy
   and ACL ownership attributes. Stack's `internal/service/AGENTS.md` documents
   the matching consumer contracts.
-- A runtime is verified after installation by running its pinned command with
+- A runtime is verified after installation by running its first command with
   `runtime.version_arguments`, `--version` when absent. Go declares `version`.
+  That command is the runtime's own name everywhere but Rust, whose first is
+  `cargo`; Stack releases before that ran a command named after the type.
 - `runtime.commands` is everything an entry can put in a shell and
   `runtime.exposed` is which of them every pin gets; the rest are opt-in per
   repository, so pinning Node does not hand somebody three package managers.

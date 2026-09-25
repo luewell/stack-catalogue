@@ -1,0 +1,133 @@
+{
+  "defaults": {
+    "type": "rust",
+    "kind": "runtime",
+    "category": "language",
+    "every_platform": {
+      "archive": "tar.gz",
+      "paths": [
+        "bin",
+        "lib"
+      ],
+      "strip": 2
+    },
+    "artifacts": {
+      "darwin/arm64": {
+        "url": "https://static.rust-lang.org/dist/rust-{version}-aarch64-apple-darwin.tar.gz"
+      },
+      "linux/amd64": {
+        "url": "https://static.rust-lang.org/dist/rust-{version}-x86_64-unknown-linux-gnu.tar.gz"
+      },
+      "linux/arm64": {
+        "url": "https://static.rust-lang.org/dist/rust-{version}-aarch64-unknown-linux-gnu.tar.gz"
+      },
+      "windows/amd64": {
+        "url": "https://static.rust-lang.org/dist/rust-{version}-x86_64-pc-windows-msvc.tar.gz"
+      },
+      "windows/arm64": {
+        "url": "https://static.rust-lang.org/dist/rust-{version}-aarch64-pc-windows-msvc.tar.gz"
+      }
+    },
+    "runtime": {
+      "start": "",
+      "commands": [
+        "cargo",
+        "rustc",
+        "rustdoc",
+        "rustfmt",
+        "cargo-fmt",
+        "cargo-clippy",
+        "clippy-driver",
+        "rust-analyzer",
+        "rust-gdb",
+        "rust-gdbgui",
+        "rust-lldb"
+      ],
+      "exposed": [
+        "cargo",
+        "rustc",
+        "rustdoc",
+        "rustfmt",
+        "cargo-fmt",
+        "cargo-clippy",
+        "clippy-driver"
+      ]
+    }
+  },
+  "services": [
+    {
+      "support": "current",
+      "version": "1.98.1",
+      "description": "Rust 1.98, the current stable release",
+      "artifacts": {
+        "darwin/arm64": {
+          "digest": {
+            "algorithm": "sha256",
+            "value": "cfc171d8120d401b10a1028c52646dd8e00e3e66852f949061ce087845f55afd"
+          }
+        },
+        "linux/amd64": {
+          "digest": {
+            "algorithm": "sha256",
+            "value": "24ba1338a2d35c5a3247936546429e163fa674d726102af18bdf624582c57aea"
+          }
+        },
+        "linux/arm64": {
+          "digest": {
+            "algorithm": "sha256",
+            "value": "f00ba576645cef658e1deed96fab8f707958e9d58808b16343448b5d1c4f7407"
+          }
+        },
+        "windows/amd64": {
+          "digest": {
+            "algorithm": "sha256",
+            "value": "b968b7969fa4f4e061d2246de655aa0b310c4f31faceb91f1be7baa12ab6c333"
+          }
+        },
+        "windows/arm64": {
+          "digest": {
+            "algorithm": "sha256",
+            "value": "50e069d9e6367af187e057a48743ff8386e9846e7c23cf2594a8be16df318059"
+          }
+        }
+      }
+    },
+    {
+      "support": "end of life",
+      "version": "1.97.1",
+      "description": "Rust 1.97, past end of life: Rust fixes only its newest stable release",
+      "artifacts": {
+        "darwin/arm64": {
+          "digest": {
+            "algorithm": "sha256",
+            "value": "cbd14c36f039f6f11f38148a6295d8234d18ddf20bea53031c86f119423a8b26"
+          }
+        },
+        "linux/amd64": {
+          "digest": {
+            "algorithm": "sha256",
+            "value": "b4cdbc7cc6b0ee0a2666b1872769fdb2ad8393b28b63952f6493b4b400e4832b"
+          }
+        },
+        "linux/arm64": {
+          "digest": {
+            "algorithm": "sha256",
+            "value": "2f2496c70bd336a66a4c8baf2d303ba161f3552f192444c3639ba903c7c1e2c5"
+          }
+        },
+        "windows/amd64": {
+          "digest": {
+            "algorithm": "sha256",
+            "value": "efbb66ddc8ca271424e5bf4de9b5c552c2f6cc68e36309b2c7bbe683c72d0334"
+          }
+        },
+        "windows/arm64": {
+          "digest": {
+            "algorithm": "sha256",
+            "value": "96cceaec35b69832aead092bab44d120ea88bcaf57bb3377354f1148b25c00d1"
+          }
+        }
+      }
+    }
+  ]
+}

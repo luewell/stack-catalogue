@@ -5,7 +5,10 @@ with optional immutable Docker image metadata on selected releases.
 A runtime entry separates the commands it can offer from the ones every pin gets:
 `node`, `go`, `ruby` and `python3` are exposed, and `npm`, `npx`, `corepack`,
 `gofmt`, `gem`, `bundle`, `rake`, `pip` and the rest are named by a repository
-that wants them.
+that wants them. Rust exposes what rustup's default profile installs (`cargo`,
+`rustc`, `rustdoc`, `rustfmt`, `cargo-fmt`, `cargo-clippy`, `clippy-driver`),
+since cargo finds `rustc`, `rustdoc` and its subcommands on PATH;
+`rust-analyzer` and the debugger wrappers are opt-in.
 Source entries live under `entries/`; `python3 build.py` validates identities,
 HTTPS artifact URLs and digests (lowercase `sha256` or `sha512` for artifacts,
 `sha256` for image indexes and manifests) and combines them into the committed
