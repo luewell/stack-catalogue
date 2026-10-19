@@ -51,7 +51,7 @@ The user's global instructions apply. All project artifacts are English.
   a warning; 2.10.0 and earlier refuse every service and command once their
   catalogue holds one.
 - `runtime.ports`, `runtime.hostname` and `runtime.laravel_connection` need
-  Stack 2.25.0. Earlier releases ignore them, so an entry using them must fail
+  Stack 2.25.1. Earlier releases ignore them, so an entry using them must fail
   to start there, as Mailpit's does with `${STACK_PORT_HTTP:?}` and
   `${STACK_HOSTNAMES:?}`, rather than bind a port nobody allocated; publish such
   an entry only after that release.
