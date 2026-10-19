@@ -76,6 +76,18 @@ an account per explicit database, whose connection
 `mongosh` 2.12.0 is a runtime from the mongodb-js/mongosh GitHub releases,
 pinned to the digests GitHub records.
 
+Mailpit 1.31.6 comes from the axllent/mailpit GitHub releases for all five
+platforms (native ARM64 on Windows too), pinned to the digests GitHub records,
+with the binary at the archive root. It is one instance per group and not
+shareable. SMTP listens on the main port and the web interface on the named
+`http` port (`runtime.ports`), both on 127.0.0.1; `runtime.hostname` routes
+`mail.<group>.<tld>` to the interface, and the start command passes
+`STACK_HOSTNAMES` as `--allowed-hosts`. It keeps its database in the instance
+data, accepts any SMTP credentials, skips reverse DNS and the version check, and
+has no web interface password. `connection` gives `SMTP_HOST`, `SMTP_PORT` and
+`MAIL_URL`; `laravel_connection` gives Laravel sites `MAIL_MAILER`,
+`MAIL_SCHEME`, `MAIL_HOST` and `MAIL_PORT`.
+
 BusyBox 6075 is an internal entry for Windows only: busybox-w32 FRP-6075 from
 frippery.org as a bare `busybox.exe`, `busybox-w64` for `windows/amd64` and
 `busybox-w64a` for `windows/arm64`, pinned to the SHA-256 in the release's
