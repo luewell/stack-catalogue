@@ -127,6 +127,11 @@ The user's global instructions apply. All project artifacts are English.
   `run_with` names the program that runs a runtime's commands there, for
   scripts Unix runs by their `#!` line: installing Composer writes
   `composer.cmd`, handing `composer` to `php`.
+- Ruby's macOS and Linux builds come from jdx/ruby, whose `<version>` release
+  floats to its newest rebuild. Pin the build revision release,
+  `<version>-<revision>`, whose bytes do not change, in each release's own URL,
+  and take a new revision only after `gh attestation verify --repo jdx/ruby`
+  accepts its archives.
 - The internal `busybox` entry is the POSIX shell Stack uses on Windows and
   offers only Windows builds. Take its digests from frippery.org's
   `SHA256SUM` only after `SHA256SUM.sig` verifies against the author's key,

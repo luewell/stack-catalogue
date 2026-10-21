@@ -111,6 +111,11 @@ ACL account per group from the group secret `REDIS_PASSWORD` without `@admin`
 commands, and states that account in `REDIS_URL` and in the discrete `REDIS_HOST`,
 `REDIS_PORT` and `REDIS_USERNAME` beside the exported `REDIS_PASSWORD`.
 
+Ruby 3.3.12, 3.4.10 and 4.0.6 take macOS and Linux builds from jdx/ruby's build
+revision releases `3.3.12-2`, `3.4.10-3` and `4.0.6-2`, whose SLSA provenance
+verifies against jdx/ruby's `release.yml`; Windows builds come from the
+`luewell/stack-binaries` releases `ruby-<version>-windows`.
+
 PHP 8.1.34 comes from the `luewell/stack-binaries` releases
 `php-8.1.34-1d7dec178a` and `php-8.1.34-1d7dec178a-windows`, built with php-src
 commit `1d7dec178a`, upstream's mitigation of CVE-2026-109618 and CVE-2026-109619

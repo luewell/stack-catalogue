@@ -14,15 +14,9 @@
       "strip": 1
     },
     "artifacts": {
-      "darwin/arm64": {
-        "url": "https://github.com/jdx/ruby/releases/download/{version}/ruby-{version}.macos.tar.gz"
-      },
-      "linux/amd64": {
-        "url": "https://github.com/jdx/ruby/releases/download/{version}/ruby-{version}.x86_64_linux.tar.gz"
-      },
-      "linux/arm64": {
-        "url": "https://github.com/jdx/ruby/releases/download/{version}/ruby-{version}.arm64_linux.tar.gz"
-      },
+      "darwin/arm64": {},
+      "linux/amd64": {},
+      "linux/arm64": {},
       "windows/amd64": {
         "url": "https://github.com/luewell/stack-binaries/releases/download/ruby-{version}-windows/ruby-{version}-windows-x86_64.zip",
         "archive": "zip",
@@ -67,21 +61,24 @@
       "description": "Ruby 3.3, security fixes only, and they end 31 March 2027",
       "artifacts": {
         "darwin/arm64": {
+          "url": "https://github.com/jdx/ruby/releases/download/3.3.12-2/ruby-3.3.12.macos.tar.gz",
           "digest": {
             "algorithm": "sha256",
-            "value": "63d8668a5ff595fb82ee54328ee9c6166923967fedd1dbd7f2961099fd462da2"
+            "value": "753675928abff748a2061bd5a02fd827837d259ecdc45eead4d209a4179b2162"
           }
         },
         "linux/amd64": {
+          "url": "https://github.com/jdx/ruby/releases/download/3.3.12-2/ruby-3.3.12.x86_64_linux.tar.gz",
           "digest": {
             "algorithm": "sha256",
-            "value": "9f85eb7bce31098ba8d81081e047c795ab161a785b163b30eb1ce973b0e6c186"
+            "value": "dc4eb9b3ec135c3eb7ccf049c9d61fa6599424319af90289f1e8abfc3dcc45bf"
           }
         },
         "linux/arm64": {
+          "url": "https://github.com/jdx/ruby/releases/download/3.3.12-2/ruby-3.3.12.arm64_linux.tar.gz",
           "digest": {
             "algorithm": "sha256",
-            "value": "9778fc285dca3ae4ff19213355e549c30ba7fb02635338df342969017d5ac141"
+            "value": "72a3a9e092bae580f18be2b2d8e7f7224d9818b5f3505adc1de912b242865fc1"
           }
         },
         "windows/amd64": {
@@ -105,21 +102,24 @@
       "description": "Ruby 3.4, in normal maintenance: it still takes bug fixes",
       "artifacts": {
         "darwin/arm64": {
+          "url": "https://github.com/jdx/ruby/releases/download/3.4.10-3/ruby-3.4.10.macos.tar.gz",
           "digest": {
             "algorithm": "sha256",
-            "value": "5aac8b6e16b0938a14f6d23346b5487020d1fea6b5856a33392e5eb37fa1ef62"
+            "value": "cdb8255dd970839911b7455c2d7baf4dc73bd7b993479525fbd1ecfc96e327b7"
           }
         },
         "linux/amd64": {
+          "url": "https://github.com/jdx/ruby/releases/download/3.4.10-3/ruby-3.4.10.x86_64_linux.tar.gz",
           "digest": {
             "algorithm": "sha256",
-            "value": "81ce58b056ee2765e46785b4c6befb9852d9c3e50ff9385e7eb1cf3e0314d0bd"
+            "value": "facaa94b7fe405770c6c65e8369507f1fe61265f997982b076d1dce933600919"
           }
         },
         "linux/arm64": {
+          "url": "https://github.com/jdx/ruby/releases/download/3.4.10-3/ruby-3.4.10.arm64_linux.tar.gz",
           "digest": {
             "algorithm": "sha256",
-            "value": "c0a3e9f1d7847e66b044aeeab394ba5d41f63c3da7ad99017c4b2578e31b205a"
+            "value": "c297b108020d30a4233205a3a5a5b6d2a3aaf9de50bd1df6a9441a966a2bac1e"
           }
         },
         "windows/amd64": {
@@ -142,21 +142,24 @@
       "description": "Ruby 4.0, the current release",
       "artifacts": {
         "darwin/arm64": {
+          "url": "https://github.com/jdx/ruby/releases/download/4.0.6-2/ruby-4.0.6.macos.tar.gz",
           "digest": {
             "algorithm": "sha256",
-            "value": "518c5849d7ab337790943963ded4f0b402d2d4ededea265288a5a19d4c8fee18"
+            "value": "f219dab680aae07600e76956ddf63567b360fa8f50ba026130cc275d77a55bcb"
           }
         },
         "linux/amd64": {
+          "url": "https://github.com/jdx/ruby/releases/download/4.0.6-2/ruby-4.0.6.x86_64_linux.tar.gz",
           "digest": {
             "algorithm": "sha256",
-            "value": "aefa111873bac3b15c5c416bfaaca84e793d5312d4496d651ad79c44521b200a"
+            "value": "fa0c88ecb8c4df065b132f624578af1cafba87b5aa2a79742fac10fefd49c6c1"
           }
         },
         "linux/arm64": {
+          "url": "https://github.com/jdx/ruby/releases/download/4.0.6-2/ruby-4.0.6.arm64_linux.tar.gz",
           "digest": {
             "algorithm": "sha256",
-            "value": "6144c26cd5a1ff85358beb7e68e592ada6d0319aa8093cf353465d60f10aa970"
+            "value": "9c76db3d2d24ddbbcc2b73f552a196933832200023ef16668a812175574da690"
           }
         },
         "windows/amd64": {
