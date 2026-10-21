@@ -151,6 +151,31 @@ def out_of_place(document, source):
     return problems
 
 
+def excluded(document, source):
+    """Platforms a release leaves out, written as null under its artifacts.
+
+    Only a platform the defaults offer can be left out, and one every release
+    leaves out is one the defaults should not offer.
+    """
+    offered = document.get("defaults", {}).get("artifacts", {})
+    services = document["services"]
+    problems = []
+    left_out = []
+
+    for service in services:
+        omitted = {platform for platform, artifact in (service.get("artifacts") or {}).items()
+                   if artifact is None}
+        left_out.append(omitted)
+        for platform in sorted(omitted - offered.keys()):
+            problems.append(f"{source}: {service.get('version')} leaves out {platform}, "
+                            "which its defaults do not offer")
+
+    for platform in sorted(set.intersection(*left_out) if left_out else set()):
+        problems.append(f"{source}: every version leaves out {platform}, "
+                        "which defaults should not offer")
+    return problems
+
+
 def unexposed(entry, source):
     """A runtime offering several commands has to say which a pin gets."""
     runtime = entry.get("runtime") or {}
@@ -224,7 +249,8 @@ def repeats(document, source):
     platforms = [("defaults", document.get("defaults", {}).get("artifacts", {}))]
     platforms += [(service.get("version"), service.get("artifacts", {})) for service in services]
     for where, artifacts in platforms:
-        for field in written_twice(list(artifacts.values()), ()):
+        built = [artifact for artifact in artifacts.values() if artifact is not None]
+        for field in written_twice(built, ()):
             problems.append(f"{source}: every platform of {where} repeats {field!r}, "
                             "which every_platform can say once")
     return problems
@@ -242,8 +268,10 @@ def main() -> int:
         document = json.loads(source.read_text())
         defaults = document.get("defaults", {})
 
-        problems = (problems_with(defaults, source) + repeats(document, source)
-                    + out_of_place(document, source))
+        problems = excluded(document, source)
+        if not problems:
+            problems = (problems_with(defaults, source) + repeats(document, source)
+                        + out_of_place(document, source))
         for problem in problems:
             print(problem, file=sys.stderr)
         if problems:
@@ -260,6 +288,10 @@ def main() -> int:
                 shared = expand(defaults, version)
                 platform_wide = shared.pop(EVERY_PLATFORM, {})
                 entry = merge(shared, entry, DEPTH)
+                entry["artifacts"] = {
+                    platform: artifact
+                    for platform, artifact in entry.get("artifacts", {}).items()
+                    if artifact is not None}
                 if platform_wide:
                     entry["artifacts"] = {
                         platform: merge(platform_wide, artifact, 0)

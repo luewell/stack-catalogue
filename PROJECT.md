@@ -14,7 +14,8 @@ HTTPS artifact URLs and digests (lowercase `sha256` or `sha512` for artifacts,
 `sha256` for image indexes and manifests) and combines them into the committed
 `v1.json`. A source file may share what its versions have in common through a
 `defaults` block, and what its platforms have in common through
-`defaults.every_platform`; both are expanded at build time, so
+`defaults.every_platform`; both are expanded at build time, and a release
+writing a platform as `null` under its `artifacts` leaves that platform out, so
 the served document stays a flat list of whole entries, each carrying its own
 URL and digest. Version, digest, support and lifecycle are refused there,
 because each states something about one release. The consumer validates runtime

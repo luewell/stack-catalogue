@@ -15,6 +15,10 @@ The user's global instructions apply. All project artifacts are English.
 - `defaults.every_platform` holds what each platform's build says identically,
   which is usually how the download is unpacked, leaving `artifacts` to name one
   URL per platform. A platform stating a field for itself keeps its own.
+- A release leaves out a platform its defaults offer by writing that platform
+  as `null` under its `artifacts`; the generated entry then names no artifact
+  there. `build.py` refuses `null` for a platform the defaults do not offer, and
+  for one every version leaves out, which the defaults should drop instead.
 - `defaults` may not carry `version`, `digest`, `support` or `lifecycle`, and
   `build.py` refuses a file that does. Each of those is a claim about one
   release: an inherited checksum is a version claiming another's bytes, and an
