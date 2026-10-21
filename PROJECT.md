@@ -20,7 +20,7 @@ URL and digest. Version, digest, support and lifecycle are refused there,
 because each states something about one release. The consumer validates runtime
 and artifact contracts with `stack catalog check v1.json`.
 
-Node 24.20.0 and PHP 8.4.26 carry `image` metadata for the official Bookworm
+Node 24.20.0 and PHP 8.4.27 carry `image` metadata for the official Bookworm
 and FPM images respectively. The complete Node Bookworm image includes
 `libatomic.so.1`, which the catalogue's standalone pnpm binary requires.
 The metadata names the qualified repository, upstream

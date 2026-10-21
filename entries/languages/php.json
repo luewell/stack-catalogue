@@ -48,93 +48,93 @@
   "services": [
     {
       "support": "current",
-      "version": "8.5.11",
+      "version": "8.5.12",
       "description": "PHP 8.5, in active support until the end of 2027",
       "artifacts": {
         "darwin/arm64": {
           "digest": {
             "algorithm": "sha256",
-            "value": "9dd4fe594dab57a0b1a4d66e217dc50abb9edc3456015ad731d78fd835f6ea30"
+            "value": "f7fced95389597277db4111394cf8d8819c3876cab305209dccc6d6279011d7b"
           }
         },
         "linux/amd64": {
           "digest": {
             "algorithm": "sha256",
-            "value": "371b462e4fcfb9d92e22e94a11b0e261409f69249b9d66a306f78784d022bc44"
+            "value": "8eb988cb1372ef0a778c2d6119faf87f00c9271e61f0d93702267e06571072db"
           }
         },
         "linux/arm64": {
           "digest": {
             "algorithm": "sha256",
-            "value": "bf5191aeb402d7d199a3c0bf08af891617ed8c988d85163041c931551eb7b6aa"
+            "value": "108cf1b4a2af0cc0afd619254edf964f20e050d588436cab8514fe4115ca4168"
           }
         },
         "windows/amd64": {
           "digest": {
             "algorithm": "sha256",
-            "value": "e3ca8fc46c90463aa666bda53418e30131c97ba3de63cdaf5693e165d17b74c1"
+            "value": "2fc7d9d636d6e82444b2648208975a4216b824f5dea1755dde5be14b6338582b"
           }
         },
         "windows/arm64": {
           "digest": {
             "algorithm": "sha256",
-            "value": "e3ca8fc46c90463aa666bda53418e30131c97ba3de63cdaf5693e165d17b74c1"
+            "value": "2fc7d9d636d6e82444b2648208975a4216b824f5dea1755dde5be14b6338582b"
           }
         }
       }
     },
     {
       "support": "lts",
-      "version": "8.4.26",
+      "version": "8.4.27",
       "description": "PHP 8.4, in active support",
       "artifacts": {
         "darwin/arm64": {
           "digest": {
             "algorithm": "sha256",
-            "value": "1fbb579a2c8bf7505d9f6e84fc6c19146cc1bf03f098011ffb0fd7db9a20a37a"
+            "value": "a32da1060e65e76d179a298b48d13141a8b5606e09e19a982a84aa3589aa8412"
           }
         },
         "linux/amd64": {
           "digest": {
             "algorithm": "sha256",
-            "value": "86567b58e69334ae0d3fff64f5b095bd8f29a63d63f70d84e2d53c7883386a16"
+            "value": "c38761ce4b5f205199f219ba6f6ef958bc032ad4f8c3053a582d9d88e8b191af"
           }
         },
         "linux/arm64": {
           "digest": {
             "algorithm": "sha256",
-            "value": "5c369cea2e34c1c3c69bb9d145959870e21954d90944d90a7f658404109856ef"
+            "value": "699974d41a356f062b1ad148c5a225a14142245fc7094bc0e1f635e5a19b00c3"
           }
         },
         "windows/amd64": {
           "digest": {
             "algorithm": "sha256",
-            "value": "ba4e705543e226212d2402e0e4f42fbfd6ca1075c515ffa3a48106ed308d182d"
+            "value": "1b9e387228008bac85a179bc5762d511328ce34841fb1c378fc69280eaae3268"
           }
         },
         "windows/arm64": {
           "digest": {
             "algorithm": "sha256",
-            "value": "ba4e705543e226212d2402e0e4f42fbfd6ca1075c515ffa3a48106ed308d182d"
+            "value": "1b9e387228008bac85a179bc5762d511328ce34841fb1c378fc69280eaae3268"
           }
         }
       },
       "image": {
         "repository": "docker.io/library/php",
-        "tag": "8.4.26-fpm-bookworm",
+        "tag": "8.4.27-fpm-bookworm",
         "source": "https://hub.docker.com/_/php",
         "digest": {
           "algorithm": "sha256",
-          "value": "6bfef8e416977aa41f48e3e42a40c1e08050d24e4a938c6edb421400bff24601"
+          "value": "6d2c08c2ce0548e9bc55e21aab68f5a2613e635e4225fdea84290459728995e7"
         },
         "platforms": {
           "linux/amd64": {
             "algorithm": "sha256",
-            "value": "541342ac5c92c5c163d02c212a4deb731b23e1a83e7193f0d585538eee353783"
+            "value": "e0005a213080e1c580c961e47bc6fdd9bebd3b7bb484e80479507af41547cffa"
           },
           "linux/arm64": {
             "algorithm": "sha256",
-            "value": "55884f9bdd47ef794d9143ae3fa19e28801695d467910d859d84a04936726f35"
+            "value": "b3cfadd890b5459f3df6aa2a2e1f7ba053cb28602b1ffd695f1eee28c559db2d"
           }
         },
         "commands": {
@@ -148,74 +148,74 @@
     },
     {
       "support": "current",
-      "version": "8.3.35",
+      "version": "8.3.36",
       "description": "PHP 8.3, security fixes until the end of 2027",
       "artifacts": {
         "darwin/arm64": {
           "digest": {
             "algorithm": "sha256",
-            "value": "a621262f36d3b329571c65afdf59fc8393642dabec8e70b8fdadb972801365b3"
+            "value": "ac6424efb32ff1da7c42545df3c4f66099a16aff2bcdcf11d246669f4d2aaf4e"
           }
         },
         "linux/amd64": {
           "digest": {
             "algorithm": "sha256",
-            "value": "bd89a12dd16450165606ac97fc4114189a45c9158ebb82209e7844cf7b75a551"
+            "value": "25bba781afa3c93b9e6415728bde91237eac4de3eb746bf32dcc6da57b1f300f"
           }
         },
         "linux/arm64": {
           "digest": {
             "algorithm": "sha256",
-            "value": "327bef91ad71a86801eaa0cd2445317f7729bc54f5799695290d9332d173ee23"
+            "value": "e313de6b8e23ff336dc5a091603179985918a1ec753d35cdb5defc002276328e"
           }
         },
         "windows/amd64": {
           "digest": {
             "algorithm": "sha256",
-            "value": "7cdef41df3b7e3fc28247791dec1b94a4f95cd8e00a728c758c7664c4d4527b1"
+            "value": "c0afd3a8b075316e61ca590833b3697c08aceb2c701e88d94252f7d495edfe88"
           }
         },
         "windows/arm64": {
           "digest": {
             "algorithm": "sha256",
-            "value": "7cdef41df3b7e3fc28247791dec1b94a4f95cd8e00a728c758c7664c4d4527b1"
+            "value": "c0afd3a8b075316e61ca590833b3697c08aceb2c701e88d94252f7d495edfe88"
           }
         }
       }
     },
     {
       "support": "current",
-      "version": "8.2.34",
+      "version": "8.2.35",
       "description": "PHP 8.2, security fixes only, and they end 31 December 2026",
       "artifacts": {
         "darwin/arm64": {
           "digest": {
             "algorithm": "sha256",
-            "value": "7be8afdc9569d16aa9916f2b4c559f6c2f72ea41f213d51cee80a3c5ec245b96"
+            "value": "4c498bf60fe06246ffa62175fd5583c745891360b4d987700f0a84aee2923c12"
           }
         },
         "linux/amd64": {
           "digest": {
             "algorithm": "sha256",
-            "value": "a0f70530612efead2c305e5b04aefe28b0e887e8e2d0c71304a028f4f899e1d5"
+            "value": "7b0a70fd17913edd864a532160b3902379aa25a76672db102645bd24e91a2fd8"
           }
         },
         "linux/arm64": {
           "digest": {
             "algorithm": "sha256",
-            "value": "00e8d07ad15c2f0bf1fec6e503e0b106aba50b8f84042bf3e379c380b641e86e"
+            "value": "a8813f85e1db11b8c6c1c9b593379435eefd48ee3ee739a232424e18522c6e0a"
           }
         },
         "windows/amd64": {
           "digest": {
             "algorithm": "sha256",
-            "value": "729412a56e56c5d7930a0e34aadad6140aea725b0db3905a497657db9358cdc4"
+            "value": "c4a79dedca4d2629be8ac35fb4ca4df58e2b3616b7967a13cc5a2f78125d8c34"
           }
         },
         "windows/arm64": {
           "digest": {
             "algorithm": "sha256",
-            "value": "729412a56e56c5d7930a0e34aadad6140aea725b0db3905a497657db9358cdc4"
+            "value": "c4a79dedca4d2629be8ac35fb4ca4df58e2b3616b7967a13cc5a2f78125d8c34"
           }
         }
       }
