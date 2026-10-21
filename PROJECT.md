@@ -111,6 +111,13 @@ ACL account per group from the group secret `REDIS_PASSWORD` without `@admin`
 commands, and states that account in `REDIS_URL` and in the discrete `REDIS_HOST`,
 `REDIS_PORT` and `REDIS_USERNAME` beside the exported `REDIS_PASSWORD`.
 
+PHP 8.1.34 comes from the `luewell/stack-binaries` releases
+`php-8.1.34-1d7dec178a` and `php-8.1.34-1d7dec178a-windows`, built with php-src
+commit `1d7dec178a`, upstream's mitigation of CVE-2026-109618 and CVE-2026-109619
+for the end-of-life 8.1 line, which also turns off session upload progress. The
+version stays 8.1.34, so a machine that installed the unpatched build keeps it
+until that install is removed.
+
 PostgreSQL's Linux artifacts come from the `luewell/stack-binaries` release
 `postgresql-<version>`: the theseus-rs build with a `libxml2.so.2` added to `lib/`,
 because Ubuntu 26.04 no longer ships that library. macOS stays upstream.
