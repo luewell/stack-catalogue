@@ -450,10 +450,10 @@
       "description": "PostgreSQL 18, supported until November 2030",
       "artifacts": {
         "darwin/arm64": {
-          "url": "https://github.com/theseus-rs/postgresql-binaries/releases/download/18.6.0/postgresql-18.6.0-aarch64-apple-darwin.tar.gz",
+          "url": "https://github.com/luewell/stack-binaries/releases/download/postgresql-18.6.0-pg_partman-5.5.0/postgresql-18.6.0-aarch64-apple-darwin.tar.gz",
           "digest": {
             "algorithm": "sha256",
-            "value": "a257bcdb8aa3301a13d6a5bcec48f8c9517045b7cbae71e50788b2615539e95b"
+            "value": "fa61b957914491a567be17a4992aad47b703049213dec40dbe0186f603619933"
           },
           "archive": "tar.gz",
           "paths": [
@@ -464,10 +464,10 @@
           "strip": 1
         },
         "linux/amd64": {
-          "url": "https://github.com/luewell/stack-binaries/releases/download/postgresql-18.6.0/postgresql-18.6.0-x86_64-unknown-linux-gnu.tar.gz",
+          "url": "https://github.com/luewell/stack-binaries/releases/download/postgresql-18.6.0-pg_partman-5.5.0/postgresql-18.6.0-x86_64-unknown-linux-gnu.tar.gz",
           "digest": {
             "algorithm": "sha256",
-            "value": "bd898a97614109a79ecf03d7c458203985e52a919dd3fff71f1b48b80f57d27e"
+            "value": "dbc0c0776e5a46d63c300b670b32c9326e26e8c23293aba559316dfb59c8b761"
           },
           "archive": "tar.gz",
           "paths": [
@@ -478,10 +478,10 @@
           "strip": 1
         },
         "linux/arm64": {
-          "url": "https://github.com/luewell/stack-binaries/releases/download/postgresql-18.6.0/postgresql-18.6.0-aarch64-unknown-linux-gnu.tar.gz",
+          "url": "https://github.com/luewell/stack-binaries/releases/download/postgresql-18.6.0-pg_partman-5.5.0/postgresql-18.6.0-aarch64-unknown-linux-gnu.tar.gz",
           "digest": {
             "algorithm": "sha256",
-            "value": "56dcb58a0bd6f29f868e90f2415674500969b153f59368fdf70b0e2933a24e21"
+            "value": "2d0ff328b9b6e7505a75646f34b1ce625a331e2f708582a3fd6e1c66d88b1a16"
           },
           "archive": "tar.gz",
           "paths": [
@@ -492,10 +492,10 @@
           "strip": 1
         },
         "windows/amd64": {
-          "url": "https://github.com/theseus-rs/postgresql-binaries/releases/download/18.6.0/postgresql-18.6.0-x86_64-pc-windows-msvc.tar.gz",
+          "url": "https://github.com/luewell/stack-binaries/releases/download/postgresql-18.6.0-pg_partman-5.5.0/postgresql-18.6.0-x86_64-pc-windows-msvc.tar.gz",
           "digest": {
             "algorithm": "sha256",
-            "value": "7da44c2dbcda3b49688ea08ce8cf99cfe677adf565f53a9145bf9002c74db7d5"
+            "value": "94db3dbc0ea247e7c0744e64c88b797bfcb4e6dfad247bef08d342771daab340"
           },
           "archive": "tar.gz",
           "paths": [
@@ -506,10 +506,10 @@
           "strip": 1
         },
         "windows/arm64": {
-          "url": "https://github.com/theseus-rs/postgresql-binaries/releases/download/18.6.0/postgresql-18.6.0-x86_64-pc-windows-msvc.tar.gz",
+          "url": "https://github.com/luewell/stack-binaries/releases/download/postgresql-18.6.0-pg_partman-5.5.0/postgresql-18.6.0-x86_64-pc-windows-msvc.tar.gz",
           "digest": {
             "algorithm": "sha256",
-            "value": "7da44c2dbcda3b49688ea08ce8cf99cfe677adf565f53a9145bf9002c74db7d5"
+            "value": "94db3dbc0ea247e7c0744e64c88b797bfcb4e6dfad247bef08d342771daab340"
           },
           "archive": "tar.gz",
           "paths": [
@@ -666,10 +666,10 @@
       "description": "PostgreSQL 17, supported until November 2029",
       "artifacts": {
         "darwin/arm64": {
-          "url": "https://github.com/theseus-rs/postgresql-binaries/releases/download/17.11.0/postgresql-17.11.0-aarch64-apple-darwin.tar.gz",
+          "url": "https://github.com/luewell/stack-binaries/releases/download/postgresql-17.11.0-pg_partman-5.5.0/postgresql-17.11.0-aarch64-apple-darwin.tar.gz",
           "digest": {
             "algorithm": "sha256",
-            "value": "fd4b62794b160e26973a768a1eef3248aef9d2ff23ebd6d884a4299485e28e57"
+            "value": "babb3fa86bcd3b2139d99c4803f2384d8ee8d78117c241841247e67c0881ae2a"
           },
           "archive": "tar.gz",
           "paths": [
@@ -680,10 +680,10 @@
           "strip": 1
         },
         "linux/amd64": {
-          "url": "https://github.com/luewell/stack-binaries/releases/download/postgresql-17.11.0/postgresql-17.11.0-x86_64-unknown-linux-gnu.tar.gz",
+          "url": "https://github.com/luewell/stack-binaries/releases/download/postgresql-17.11.0-pg_partman-5.5.0/postgresql-17.11.0-x86_64-unknown-linux-gnu.tar.gz",
           "digest": {
             "algorithm": "sha256",
-            "value": "b147d3e8b5545074cf582118b1a4b1e5b70a8021a7c0f06aeb27fcde8b872f19"
+            "value": "0d869e0fdf310acbaf9514fc5e5fbc14d3e1f9be76c3444e180fed7d1fa000a3"
           },
           "archive": "tar.gz",
           "paths": [
@@ -694,10 +694,10 @@
           "strip": 1
         },
         "linux/arm64": {
-          "url": "https://github.com/luewell/stack-binaries/releases/download/postgresql-17.11.0/postgresql-17.11.0-aarch64-unknown-linux-gnu.tar.gz",
+          "url": "https://github.com/luewell/stack-binaries/releases/download/postgresql-17.11.0-pg_partman-5.5.0/postgresql-17.11.0-aarch64-unknown-linux-gnu.tar.gz",
           "digest": {
             "algorithm": "sha256",
-            "value": "76697696414c0f17fb68b627ff41f3984df7fd9b1aa8153905f86a4623b263b2"
+            "value": "91ebfb8b0f1adb97bacb029248e86f29ed6fa82e5ece8db57a5fd9bfe5ae16d8"
           },
           "archive": "tar.gz",
           "paths": [
@@ -708,10 +708,10 @@
           "strip": 1
         },
         "windows/amd64": {
-          "url": "https://github.com/theseus-rs/postgresql-binaries/releases/download/17.11.0/postgresql-17.11.0-x86_64-pc-windows-msvc.tar.gz",
+          "url": "https://github.com/luewell/stack-binaries/releases/download/postgresql-17.11.0-pg_partman-5.5.0/postgresql-17.11.0-x86_64-pc-windows-msvc.tar.gz",
           "digest": {
             "algorithm": "sha256",
-            "value": "a013f0e082826f53985c7bc2a0fe1c2dcc47a9f3797023938cf1ff8c9d6d1792"
+            "value": "0b5d4549ab47f7a5f6c563e92cc3df8b10e15fc78e97ba1dd7638bcde5219fde"
           },
           "archive": "tar.gz",
           "paths": [
@@ -722,10 +722,10 @@
           "strip": 1
         },
         "windows/arm64": {
-          "url": "https://github.com/theseus-rs/postgresql-binaries/releases/download/17.11.0/postgresql-17.11.0-x86_64-pc-windows-msvc.tar.gz",
+          "url": "https://github.com/luewell/stack-binaries/releases/download/postgresql-17.11.0-pg_partman-5.5.0/postgresql-17.11.0-x86_64-pc-windows-msvc.tar.gz",
           "digest": {
             "algorithm": "sha256",
-            "value": "a013f0e082826f53985c7bc2a0fe1c2dcc47a9f3797023938cf1ff8c9d6d1792"
+            "value": "0b5d4549ab47f7a5f6c563e92cc3df8b10e15fc78e97ba1dd7638bcde5219fde"
           },
           "archive": "tar.gz",
           "paths": [
@@ -845,10 +845,10 @@
       "description": "PostgreSQL 16, supported until November 2028",
       "artifacts": {
         "darwin/arm64": {
-          "url": "https://github.com/theseus-rs/postgresql-binaries/releases/download/16.15.0/postgresql-16.15.0-aarch64-apple-darwin.tar.gz",
+          "url": "https://github.com/luewell/stack-binaries/releases/download/postgresql-16.15.0-pg_partman-5.5.0/postgresql-16.15.0-aarch64-apple-darwin.tar.gz",
           "digest": {
             "algorithm": "sha256",
-            "value": "46f6382024d9b633d1f4b4903ffef8c2404e00ae83098d628c00591048cb0512"
+            "value": "f5c343f576aa24414af8fc3d8057810afc83b06f80c5414a4520b348f6e03dd8"
           },
           "archive": "tar.gz",
           "paths": [
@@ -859,10 +859,10 @@
           "strip": 1
         },
         "linux/amd64": {
-          "url": "https://github.com/luewell/stack-binaries/releases/download/postgresql-16.15.0/postgresql-16.15.0-x86_64-unknown-linux-gnu.tar.gz",
+          "url": "https://github.com/luewell/stack-binaries/releases/download/postgresql-16.15.0-pg_partman-5.5.0/postgresql-16.15.0-x86_64-unknown-linux-gnu.tar.gz",
           "digest": {
             "algorithm": "sha256",
-            "value": "60ae21fd3aff4c327abdd154ff93508d47269ddd001a3235573b1053623608ac"
+            "value": "523005426299dff4a8be95783778228137d98aeb8ac72850261484aadc9617cf"
           },
           "archive": "tar.gz",
           "paths": [
@@ -873,10 +873,10 @@
           "strip": 1
         },
         "linux/arm64": {
-          "url": "https://github.com/luewell/stack-binaries/releases/download/postgresql-16.15.0/postgresql-16.15.0-aarch64-unknown-linux-gnu.tar.gz",
+          "url": "https://github.com/luewell/stack-binaries/releases/download/postgresql-16.15.0-pg_partman-5.5.0/postgresql-16.15.0-aarch64-unknown-linux-gnu.tar.gz",
           "digest": {
             "algorithm": "sha256",
-            "value": "f7fd2c1fc8a3455811f22ec6eaf36d9fe52332f70830ff601a736b658d8e3498"
+            "value": "dcf86ccf301316e013d2c8489374446e955f4ce691c00dc9fbede2866aacab6e"
           },
           "archive": "tar.gz",
           "paths": [
@@ -887,10 +887,10 @@
           "strip": 1
         },
         "windows/amd64": {
-          "url": "https://github.com/theseus-rs/postgresql-binaries/releases/download/16.15.0/postgresql-16.15.0-x86_64-pc-windows-msvc.tar.gz",
+          "url": "https://github.com/luewell/stack-binaries/releases/download/postgresql-16.15.0-pg_partman-5.5.0/postgresql-16.15.0-x86_64-pc-windows-msvc.tar.gz",
           "digest": {
             "algorithm": "sha256",
-            "value": "157bd7322f8c653f06b0373d1b2280e9cb238b6a6d3bd05541aeb8f33885a8ad"
+            "value": "74e626df12ae05b19802153f40406aa4140a0167dacb0d8a024057cd4061a5df"
           },
           "archive": "tar.gz",
           "paths": [
@@ -901,10 +901,10 @@
           "strip": 1
         },
         "windows/arm64": {
-          "url": "https://github.com/theseus-rs/postgresql-binaries/releases/download/16.15.0/postgresql-16.15.0-x86_64-pc-windows-msvc.tar.gz",
+          "url": "https://github.com/luewell/stack-binaries/releases/download/postgresql-16.15.0-pg_partman-5.5.0/postgresql-16.15.0-x86_64-pc-windows-msvc.tar.gz",
           "digest": {
             "algorithm": "sha256",
-            "value": "157bd7322f8c653f06b0373d1b2280e9cb238b6a6d3bd05541aeb8f33885a8ad"
+            "value": "74e626df12ae05b19802153f40406aa4140a0167dacb0d8a024057cd4061a5df"
           },
           "archive": "tar.gz",
           "paths": [

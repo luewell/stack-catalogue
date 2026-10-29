@@ -43,8 +43,8 @@ declares no image commands because the entry exposes none, and its
 `container_connection` repeats the endpoint its sites already use.
 
 PostgreSQL 16, 17 and 18 run on Windows from theseus-rs's
-`x86_64-pc-windows-msvc` archives, pinned to the SHA-256 each sidecar states
-and GitHub records, under both `windows/amd64` and `windows/arm64` (Windows on
+`x86_64-pc-windows-msvc` builds, repackaged with pg_partman like every other
+platform's, under both `windows/amd64` and `windows/arm64` (Windows on
 ARM runs them under emulation). Their `runtime.windows` initialises with a
 password file and `--locale=C`, starts `postgres.exe` restricted and stops it
 with `pg_ctl kill INT ${STACK_PID}`; readiness and provisioning are the shared
@@ -123,9 +123,13 @@ for the end-of-life 8.1 line, which also turns off session upload progress. The
 version stays 8.1.34, so a machine that installed the unpatched build keeps it
 until that install is removed.
 
-PostgreSQL's Linux artifacts come from the `luewell/stack-binaries` release
-`postgresql-<version>`: the theseus-rs build with a `libxml2.so.2` added to `lib/`,
-because Ubuntu 26.04 no longer ships that library. macOS stays upstream.
+PostgreSQL's artifacts come from the `luewell/stack-binaries` release
+`postgresql-<version>-pg_partman-5.5.0`: the theseus-rs build for each platform
+with pg_partman 5.5.0's SQL files in `share/extension`, without its background
+worker, and on Linux a `libxml2.so.2` in `lib/`, because Ubuntu 26.04 no longer
+ships that library. pg_partman needs no superuser, so a group role creates it in
+the database it owns (`CREATE SCHEMA partman; CREATE EXTENSION pg_partman SCHEMA
+partman`) and runs `partman.run_maintenance_proc()` itself.
 
 PostgreSQL entries refuse an implicit group database another role owns, and
 complete an explicit database whose creation stopped before PUBLIC's grants were
