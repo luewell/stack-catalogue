@@ -120,8 +120,9 @@ PHP 8.1.34 comes from the `luewell/stack-binaries` releases
 `php-8.1.34-1d7dec178a` and `php-8.1.34-1d7dec178a-windows`, built with php-src
 commit `1d7dec178a`, upstream's mitigation of CVE-2026-109618 and CVE-2026-109619
 for the end-of-life 8.1 line, which also turns off session upload progress. The
-version stays 8.1.34, so a machine that installed the unpatched build keeps it
-until that install is removed.
+version stays 8.1.34. Stack after 2.26.0 names an install after its artifact's
+digest, so it installs a rebuilt version beside the earlier build; 2.26.0 and
+earlier keep the build they installed until that install is removed.
 
 PostgreSQL's artifacts come from the `luewell/stack-binaries` release
 `postgresql-<version>-pg_partman-5.5.0`: the theseus-rs build for each platform
@@ -129,7 +130,9 @@ with pg_partman 5.5.0's SQL files in `share/extension`, without its background
 worker, and on Linux a `libxml2.so.2` in `lib/`, because Ubuntu 26.04 no longer
 ships that library. pg_partman needs no superuser, so a group role creates it in
 the database it owns (`CREATE SCHEMA partman; CREATE EXTENSION pg_partman SCHEMA
-partman`) and runs `partman.run_maintenance_proc()` itself.
+partman`) and runs `partman.run_maintenance_proc()` itself. A machine that
+installed one of these versions before keeps that build under Stack 2.26.0 and
+earlier, as the PHP note above explains.
 
 PostgreSQL entries refuse an implicit group database another role owns, and
 complete an explicit database whose creation stopped before PUBLIC's grants were
