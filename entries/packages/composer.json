@@ -3,6 +3,7 @@
     "type": "composer",
     "kind": "runtime",
     "category": "packages",
+    "resolver": "getcomposer.org",
     "every_platform": {
       "url": "https://getcomposer.org/download/{version}/composer.phar",
       "archive": "none",
@@ -19,7 +20,8 @@
       "bin_dir": ".",
       "windows": {
         "run_with": "php"
-      }
+      },
+      "container": {}
     }
   },
   "services": [

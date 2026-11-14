@@ -70,6 +70,11 @@
         "owner": "AWS_ACCESS_KEY_ID"
       },
       "provisioner": "versitygw",
+      "buckets": {
+        "protocol": "s3",
+        "gateway_label": "s3",
+        "laravel_variable": "AWS_BUCKET"
+      },
       "container_connection": {
         "AWS_ENDPOINT_URL": "https://s3.{group}.{tld}",
         "AWS_REGION": "us-east-1",
@@ -77,6 +82,32 @@
         "S3_ENDPOINT": "https://s3.{group}.{tld}",
         "S3_ACCESS_KEY_ID": "${AWS_ACCESS_KEY_ID}",
         "S3_SECRET_ACCESS_KEY": "${AWS_SECRET_ACCESS_KEY}"
+      },
+      "container": {
+        "environment": {
+          "ROOT_ACCESS_KEY": "${ROOT_ACCESS_KEY}",
+          "ROOT_SECRET_KEY": "${ROOT_SECRET_KEY}"
+        },
+        "data": "/data",
+        "port": 7070,
+        "command": "mkdir -p {data}/buckets {data}/iam; exec /usr/local/bin/versitygw --port :{port} --iam-dir {data}/iam posix {data}/buckets",
+        "healthcheck": {
+          "test": "ADMIN_ACCESS_KEY_ID=\"$ROOT_ACCESS_KEY\" ADMIN_SECRET_ACCESS_KEY=\"$ROOT_SECRET_KEY\" ADMIN_ENDPOINT_URL=\"http://127.0.0.1:{port}\" /usr/local/bin/versitygw admin list-buckets",
+          "interval": "2s",
+          "timeout": "5s",
+          "retries": 30
+        },
+        "init": {
+          "environment": {
+            "ADMIN_ACCESS_KEY_ID": "${ROOT_ACCESS_KEY}",
+            "ADMIN_SECRET_ACCESS_KEY": "${ROOT_SECRET_KEY}",
+            "ADMIN_ENDPOINT_URL": "http://{host}:{port}",
+            "AWS_ACCESS_KEY_ID": "${AWS_ACCESS_KEY_ID}",
+            "AWS_SECRET_ACCESS_KEY": "${AWS_SECRET_ACCESS_KEY}",
+            "STACK_BUCKETS": "{buckets}"
+          },
+          "script": "set -ef\npresent() { /usr/local/bin/versitygw admin \"$1\" | awk -v value=\"$2\" 'NR>2 && $1==value {found=1} END{exit !found}'; }\npresent list-users \"$AWS_ACCESS_KEY_ID\" ||\n  /usr/local/bin/versitygw admin create-user --access \"$AWS_ACCESS_KEY_ID\" --secret \"$AWS_SECRET_ACCESS_KEY\" --role user\nfor bucket in $STACK_BUCKETS; do\n  present list-buckets \"$bucket\" ||\n    /usr/local/bin/versitygw admin create-bucket --bucket \"$bucket\" --owner \"$AWS_ACCESS_KEY_ID\"\ndone\n"
+        }
       },
       "shareable": true,
       "windows": {

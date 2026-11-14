@@ -37,12 +37,98 @@
         ]
       }
     },
+    "documentation": "https://www.php.net/manual/en/ini.list.php",
+    "resolve": "image",
     "runtime": {
       "start": "",
       "commands": [
         "php"
       ],
-      "bin_dir": "bin"
+      "bin_dir": "bin",
+      "container": {
+        "version_output": {
+          "name": "PHP-FPM",
+          "process": "php-fpm",
+          "prefix": "PHP {release} (fpm-fcgi)"
+        },
+        "base_priority": 1,
+        "settings_directory": "/usr/local/etc/php/conf.d",
+        "server_arguments": [
+          "-F",
+          "-O"
+        ],
+        "server_port": 9000,
+        "site_check": [
+          "-r",
+          "exit(@fsockopen('127.0.0.1', {port}) ? 0 : 1);"
+        ]
+      },
+      "extend": {
+        "mechanism": "scan_dir",
+        "syntax": "ini",
+        "suffix": ".ini",
+        "directory_variable": "PHP_INI_SCAN_DIR",
+        "base": {
+          "variable": "PHPRC",
+          "file": "php.ini"
+        },
+        "reserved": [
+          {
+            "key": "openssl.cafile",
+            "reason": "points at Stack's certificate trust bundle, so PHP trusts the local sites Stack serves"
+          },
+          {
+            "key": "curl.cainfo",
+            "reason": "points at Stack's certificate trust bundle, so PHP trusts the local sites Stack serves"
+          }
+        ]
+      },
+      "trust": {
+        "bundle": "replace",
+        "settings": [
+          "openssl.cafile",
+          "curl.cainfo"
+        ]
+      },
+      "site_server": {
+        "serves": [
+          "php",
+          "laravel"
+        ],
+        "protocol": "fastcgi",
+        "name": "PHP-FPM",
+        "title": "PHP",
+        "directory": "php-fpm",
+        "config": "; #stack-generated\n[global]\ndaemonize = no\nerror_log = /dev/stderr\nlog_limit = 65536\n\n[www]\nlisten = ${STACK_LISTEN}\npm = dynamic\npm.max_children = 5\npm.start_servers = 1\npm.min_spare_servers = 1\npm.max_spare_servers = 3\ncatch_workers_output = yes\ndecorate_workers_output = no\nphp_value[log_errors] = On\nclear_env = no\n",
+        "config_name": "pool",
+        "marker": "#stack-generated",
+        "arguments": [
+          "php-fpm",
+          "-F",
+          "-y",
+          "${STACK_CONFIG}",
+          "-g",
+          "${STACK_PID_FILE}"
+        ],
+        "image_process": "php-fpm",
+        "image_arguments": [
+          "-F",
+          "-y",
+          "${STACK_CONFIG}"
+        ],
+        "split_path": ".php",
+        "index": "index.php",
+        "windows": {
+          "arguments": [
+            "php-cgi",
+            "-b",
+            "${STACK_LISTEN}"
+          ],
+          "environment": [
+            "PHP_FCGI_MAX_REQUESTS=0"
+          ]
+        }
+      }
     }
   },
   "services": [

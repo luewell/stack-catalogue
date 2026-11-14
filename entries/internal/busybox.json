@@ -3,6 +3,7 @@
     "type": "busybox",
     "kind": "internal",
     "category": "internal",
+    "provides": "posix-shell",
     "every_platform": {
       "archive": "none",
       "paths": [

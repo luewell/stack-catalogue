@@ -3,6 +3,7 @@
     "type": "bun",
     "kind": "runtime",
     "category": "language",
+    "resolver": "github.com/oven-sh/bun",
     "every_platform": {
       "archive": "zip",
       "paths": [
@@ -38,7 +39,26 @@
       "commands": [
         "bun"
       ],
-      "bin_dir": "."
+      "bin_dir": ".",
+      "trust": {
+        "bundle": "add",
+        "variable": "NODE_EXTRA_CA_CERTS"
+      },
+      "container": {
+        "environment": {
+          "BUN_INSTALL": "/home/stack/.bun",
+          "BUN_INSTALL_BIN": "/home/stack/.bun/bin",
+          "BUN_RUNTIME_TRANSPILER_CACHE_PATH": "0"
+        },
+        "path": [
+          "/home/stack/.bun/bin"
+        ],
+        "version_output": {
+          "name": "Bun",
+          "exact": "{release}"
+        },
+        "base_priority": -2
+      }
     }
   },
   "services": [

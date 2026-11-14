@@ -2,6 +2,9 @@
   "defaults": {
     "type": "valkey",
     "category": "cache",
+    "aliases": [
+      "redis"
+    ],
     "every_platform": {
       "archive": "tar.gz",
       "paths": [
@@ -29,8 +32,163 @@
       }
     },
     "runtime": {
-      "start": "umask 077\nacl=\"$STACK_DATA_DIR/users.acl\"\nif [ ! -e \"$acl\" ]; then\n  printf 'user default on >%s ~* &* +@all\\n' \"$VALKEY_ADMIN_PASSWORD\" > \"$acl\"\nfi\nexec \"$STACK_INSTALL_DIR/bin/valkey-server\" --port \"$STACK_PORT\" --bind 127.0.0.1 --dir \"$STACK_DATA_DIR\" --unixsocket \"$STACK_SOCKET_DIR/valkey.sock\" --appendonly no --aclfile \"$acl\"\n",
+      "start": "umask 077\nacl=\"$STACK_DATA_DIR/users.acl\"\nif [ ! -e \"$acl\" ]; then\n  printf 'user default on >%s ~* &* +@all\\n' \"$VALKEY_ADMIN_PASSWORD\" > \"$acl\"\nfi\nexec \"$STACK_INSTALL_DIR/bin/valkey-server\" \"$@\" --port \"$STACK_PORT\" --bind 127.0.0.1 --dir \"$STACK_DATA_DIR\" --unixsocket \"$STACK_SOCKET_DIR/valkey.sock\" --appendonly no --aclfile \"$acl\"\n",
       "initialised_marker": "users.acl",
+      "extend": {
+        "mechanism": "include",
+        "syntax": "valkey",
+        "suffix": ".conf",
+        "file": "valkey.conf",
+        "arguments": [
+          "${STACK_CONFIG_FILE}"
+        ],
+        "reserved": [
+          {
+            "key": "loadmodule",
+            "reason": "loads code into the server"
+          },
+          {
+            "key": "enable-module-command",
+            "reason": "would let clients load code into the server"
+          },
+          {
+            "key": "enable-debug-command",
+            "reason": "would let clients run debugging commands"
+          },
+          {
+            "key": "enable-protected-configs",
+            "reason": "would let clients change protected settings such as dir"
+          },
+          {
+            "key": "user",
+            "reason": "defines accounts beside Stack's ACL file, which Valkey refuses"
+          },
+          {
+            "key": "aclfile",
+            "reason": "holds the accounts Stack manages"
+          },
+          {
+            "key": "requirepass",
+            "reason": "changes the password of Stack's administrator"
+          },
+          {
+            "key": "primaryauth",
+            "reason": "signs in to another server as a replica"
+          },
+          {
+            "key": "masterauth",
+            "reason": "signs in to another server as a replica"
+          },
+          {
+            "key": "primaryuser",
+            "reason": "signs in to another server as a replica"
+          },
+          {
+            "key": "masteruser",
+            "reason": "signs in to another server as a replica"
+          },
+          {
+            "key": "replicaof",
+            "reason": "turns the server into a replica of another"
+          },
+          {
+            "key": "slaveof",
+            "reason": "turns the server into a replica of another"
+          },
+          {
+            "key": "rename-command",
+            "reason": "would hide commands Stack provisions and stops the server with"
+          },
+          {
+            "key": "sentinel",
+            "reason": "runs a different server mode"
+          },
+          {
+            "key": "dir",
+            "reason": "is the data directory Stack manages, which Stack sets on the command line"
+          },
+          {
+            "key": "port",
+            "reason": "is where Stack's clients connect, which Stack sets on the command line"
+          },
+          {
+            "key": "bind",
+            "reason": "is where Stack's clients connect, which Stack sets on the command line"
+          },
+          {
+            "key": "unixsocket",
+            "reason": "is the private socket Stack connects through, which Stack sets on the command line"
+          },
+          {
+            "key": "unixsocketperm",
+            "reason": "decides who may reach the server's private socket"
+          },
+          {
+            "key": "unixsocketgroup",
+            "reason": "decides who may reach the server's private socket"
+          },
+          {
+            "key": "protected-mode",
+            "reason": "guards the server against connections Stack did not set up"
+          },
+          {
+            "key": "tls-port",
+            "reason": "listens where Stack did not ask"
+          },
+          {
+            "key": "rdma-port",
+            "reason": "listens where Stack did not ask"
+          },
+          {
+            "key": "rdma-bind",
+            "reason": "listens where Stack did not ask"
+          },
+          {
+            "key": "cluster-enabled",
+            "reason": "opens a cluster bus port Stack did not ask for"
+          },
+          {
+            "key": "cluster-port",
+            "reason": "listens where Stack did not ask"
+          },
+          {
+            "key": "daemonize",
+            "reason": "detaches the server from the process Stack supervises"
+          },
+          {
+            "key": "appendonly",
+            "reason": "is set by Stack on the command line"
+          },
+          {
+            "key": "pidfile",
+            "reason": "writes files Stack does not manage"
+          },
+          {
+            "key": "logfile",
+            "reason": "writes files Stack does not manage"
+          },
+          {
+            "key": "syslog-enabled",
+            "reason": "writes files Stack does not manage"
+          },
+          {
+            "key": "syslog-ident",
+            "reason": "writes files Stack does not manage"
+          },
+          {
+            "key": "syslog-facility",
+            "reason": "writes files Stack does not manage"
+          },
+          {
+            "key": "cluster-config-file",
+            "reason": "writes files Stack does not manage"
+          },
+          {
+            "key": "dbfilename",
+            "reason": "names a file in the data directory, where Stack keeps its ACL file"
+          }
+        ]
+      },
       "stop_signal": "SIGTERM",
       "default_port": 6379,
       "connection": {
@@ -69,6 +227,10 @@
             "--aclfile",
             "${STACK_DATA_DIR}/users.acl"
           ]
+        },
+        "stop_request": {
+          "protocol": "resp",
+          "secret": "VALKEY_ADMIN_PASSWORD"
         }
       }
     }

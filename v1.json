@@ -1,5 +1,6 @@
 {
   "version": 1,
+  "generation": 7,
   "generated_from": [
     "entries/caches/valkey.json",
     "entries/databases/mongodb.json",
@@ -89,8 +90,163 @@
         }
       },
       "runtime": {
-        "start": "umask 077\nacl=\"$STACK_DATA_DIR/users.acl\"\nif [ ! -e \"$acl\" ]; then\n  printf 'user default on >%s ~* &* +@all\\n' \"$VALKEY_ADMIN_PASSWORD\" > \"$acl\"\nfi\nexec \"$STACK_INSTALL_DIR/bin/valkey-server\" --port \"$STACK_PORT\" --bind 127.0.0.1 --dir \"$STACK_DATA_DIR\" --unixsocket \"$STACK_SOCKET_DIR/valkey.sock\" --appendonly no --aclfile \"$acl\"\n",
+        "start": "umask 077\nacl=\"$STACK_DATA_DIR/users.acl\"\nif [ ! -e \"$acl\" ]; then\n  printf 'user default on >%s ~* &* +@all\\n' \"$VALKEY_ADMIN_PASSWORD\" > \"$acl\"\nfi\nexec \"$STACK_INSTALL_DIR/bin/valkey-server\" \"$@\" --port \"$STACK_PORT\" --bind 127.0.0.1 --dir \"$STACK_DATA_DIR\" --unixsocket \"$STACK_SOCKET_DIR/valkey.sock\" --appendonly no --aclfile \"$acl\"\n",
         "initialised_marker": "users.acl",
+        "extend": {
+          "mechanism": "include",
+          "syntax": "valkey",
+          "suffix": ".conf",
+          "file": "valkey.conf",
+          "arguments": [
+            "${STACK_CONFIG_FILE}"
+          ],
+          "reserved": [
+            {
+              "key": "loadmodule",
+              "reason": "loads code into the server"
+            },
+            {
+              "key": "enable-module-command",
+              "reason": "would let clients load code into the server"
+            },
+            {
+              "key": "enable-debug-command",
+              "reason": "would let clients run debugging commands"
+            },
+            {
+              "key": "enable-protected-configs",
+              "reason": "would let clients change protected settings such as dir"
+            },
+            {
+              "key": "user",
+              "reason": "defines accounts beside Stack's ACL file, which Valkey refuses"
+            },
+            {
+              "key": "aclfile",
+              "reason": "holds the accounts Stack manages"
+            },
+            {
+              "key": "requirepass",
+              "reason": "changes the password of Stack's administrator"
+            },
+            {
+              "key": "primaryauth",
+              "reason": "signs in to another server as a replica"
+            },
+            {
+              "key": "masterauth",
+              "reason": "signs in to another server as a replica"
+            },
+            {
+              "key": "primaryuser",
+              "reason": "signs in to another server as a replica"
+            },
+            {
+              "key": "masteruser",
+              "reason": "signs in to another server as a replica"
+            },
+            {
+              "key": "replicaof",
+              "reason": "turns the server into a replica of another"
+            },
+            {
+              "key": "slaveof",
+              "reason": "turns the server into a replica of another"
+            },
+            {
+              "key": "rename-command",
+              "reason": "would hide commands Stack provisions and stops the server with"
+            },
+            {
+              "key": "sentinel",
+              "reason": "runs a different server mode"
+            },
+            {
+              "key": "dir",
+              "reason": "is the data directory Stack manages, which Stack sets on the command line"
+            },
+            {
+              "key": "port",
+              "reason": "is where Stack's clients connect, which Stack sets on the command line"
+            },
+            {
+              "key": "bind",
+              "reason": "is where Stack's clients connect, which Stack sets on the command line"
+            },
+            {
+              "key": "unixsocket",
+              "reason": "is the private socket Stack connects through, which Stack sets on the command line"
+            },
+            {
+              "key": "unixsocketperm",
+              "reason": "decides who may reach the server's private socket"
+            },
+            {
+              "key": "unixsocketgroup",
+              "reason": "decides who may reach the server's private socket"
+            },
+            {
+              "key": "protected-mode",
+              "reason": "guards the server against connections Stack did not set up"
+            },
+            {
+              "key": "tls-port",
+              "reason": "listens where Stack did not ask"
+            },
+            {
+              "key": "rdma-port",
+              "reason": "listens where Stack did not ask"
+            },
+            {
+              "key": "rdma-bind",
+              "reason": "listens where Stack did not ask"
+            },
+            {
+              "key": "cluster-enabled",
+              "reason": "opens a cluster bus port Stack did not ask for"
+            },
+            {
+              "key": "cluster-port",
+              "reason": "listens where Stack did not ask"
+            },
+            {
+              "key": "daemonize",
+              "reason": "detaches the server from the process Stack supervises"
+            },
+            {
+              "key": "appendonly",
+              "reason": "is set by Stack on the command line"
+            },
+            {
+              "key": "pidfile",
+              "reason": "writes files Stack does not manage"
+            },
+            {
+              "key": "logfile",
+              "reason": "writes files Stack does not manage"
+            },
+            {
+              "key": "syslog-enabled",
+              "reason": "writes files Stack does not manage"
+            },
+            {
+              "key": "syslog-ident",
+              "reason": "writes files Stack does not manage"
+            },
+            {
+              "key": "syslog-facility",
+              "reason": "writes files Stack does not manage"
+            },
+            {
+              "key": "cluster-config-file",
+              "reason": "writes files Stack does not manage"
+            },
+            {
+              "key": "dbfilename",
+              "reason": "names a file in the data directory, where Stack keeps its ACL file"
+            }
+          ]
+        },
         "stop_signal": "SIGTERM",
         "default_port": 6379,
         "connection": {
@@ -129,9 +285,16 @@
               "--aclfile",
               "${STACK_DATA_DIR}/users.acl"
             ]
+          },
+          "stop_request": {
+            "protocol": "resp",
+            "secret": "VALKEY_ADMIN_PASSWORD"
           }
         }
-      }
+      },
+      "aliases": [
+        "redis"
+      ]
     },
     {
       "type": "mongodb",
@@ -245,6 +408,10 @@
               "--setParameter",
               "enableLocalhostAuthBypass=false"
             ]
+          },
+          "stop_request": {
+            "protocol": "mongodb",
+            "secret": "MONGODB_ADMIN_PASSWORD"
           }
         }
       }
@@ -361,6 +528,10 @@
               "--setParameter",
               "enableLocalhostAuthBypass=false"
             ]
+          },
+          "stop_request": {
+            "protocol": "mongodb",
+            "secret": "MONGODB_ADMIN_PASSWORD"
           }
         }
       }
@@ -523,7 +694,172 @@
       "runtime": {
         "initialise": "set -e\nif [ -e \"$STACK_DATA_DIR/PG_VERSION\" ]; then\n  printf '%s\\n' 'The existing PostgreSQL cluster uses an unsupported data layout; preserve it and choose an empty instance directory.' >&2\n  exit 1\nfi\nprintf '%s\\n' \"$POSTGRES_ADMIN_PASSWORD\" | \"$STACK_INSTALL_DIR/bin/initdb\" --pgdata=\"$STACK_DATA_DIR/pgdata\" --username=stack_admin --auth=scram-sha-256 --pwfile=/dev/stdin --encoding=UTF8 --no-sync\n",
         "initialised_marker": "pgdata/PG_VERSION",
-        "start": "\"$STACK_INSTALL_DIR/bin/postgres\" -D \"$STACK_DATA_DIR/pgdata\" -p \"$STACK_PORT\" -k \"$STACK_SOCKET_DIR\" -c listen_addresses=127.0.0.1",
+        "start": "\"$STACK_INSTALL_DIR/bin/postgres\" \"$@\" -D \"$STACK_DATA_DIR/pgdata\" -p \"$STACK_PORT\" -k \"$STACK_SOCKET_DIR\" -c listen_addresses=127.0.0.1",
+        "extend": {
+          "mechanism": "include_dir",
+          "syntax": "postgresql",
+          "suffix": ".conf",
+          "file": "postgresql.conf",
+          "engine_file": "pgdata/postgresql.conf",
+          "arguments": [
+            "-c",
+            "config_file=${STACK_CONFIG_FILE}"
+          ],
+          "reserved": [
+            {
+              "key": "shared_preload_libraries",
+              "reason": "loads libraries into the server"
+            },
+            {
+              "key": "session_preload_libraries",
+              "reason": "loads libraries into every session"
+            },
+            {
+              "key": "local_preload_libraries",
+              "reason": "loads libraries into every session"
+            },
+            {
+              "key": "dynamic_library_path",
+              "reason": "decides where the server loads libraries from"
+            },
+            {
+              "key": "extension_control_path",
+              "reason": "decides where the server finds extensions to load"
+            },
+            {
+              "key": "jit_provider",
+              "reason": "loads a library into the server"
+            },
+            {
+              "key": "oauth_validator_libraries",
+              "reason": "loads libraries into the server"
+            },
+            {
+              "key": "archive_library",
+              "reason": "loads a library into the server"
+            },
+            {
+              "key": "archive_command",
+              "reason": "runs a shell command"
+            },
+            {
+              "key": "restore_command",
+              "reason": "runs a shell command"
+            },
+            {
+              "key": "archive_cleanup_command",
+              "reason": "runs a shell command"
+            },
+            {
+              "key": "recovery_end_command",
+              "reason": "runs a shell command"
+            },
+            {
+              "key": "ssl_passphrase_command",
+              "reason": "runs a shell command"
+            },
+            {
+              "key": "listen_addresses",
+              "reason": "is where Stack's clients connect, which Stack sets on the command line"
+            },
+            {
+              "key": "port",
+              "reason": "is where Stack's clients connect, which Stack sets on the command line"
+            },
+            {
+              "key": "unix_socket_directories",
+              "reason": "is where Stack's clients connect, which Stack sets on the command line"
+            },
+            {
+              "key": "unix_socket_group",
+              "reason": "decides who may reach the server's private socket"
+            },
+            {
+              "key": "unix_socket_permissions",
+              "reason": "decides who may reach the server's private socket"
+            },
+            {
+              "key": "data_directory",
+              "reason": "is the cluster Stack manages"
+            },
+            {
+              "key": "config_file",
+              "reason": "is the main file Stack generates"
+            },
+            {
+              "key": "hba_file",
+              "reason": "decides who may sign in, which Stack keeps to its own accounts"
+            },
+            {
+              "key": "ident_file",
+              "reason": "decides who may sign in, which Stack keeps to its own accounts"
+            },
+            {
+              "key": "external_pid_file",
+              "reason": "writes a file outside the cluster Stack manages"
+            },
+            {
+              "key": "logging_collector",
+              "reason": "writes files outside the cluster Stack manages"
+            },
+            {
+              "key": "log_directory",
+              "reason": "writes files outside the cluster Stack manages"
+            },
+            {
+              "key": "log_filename",
+              "reason": "writes files outside the cluster Stack manages"
+            },
+            {
+              "key": "log_file_mode",
+              "reason": "writes files outside the cluster Stack manages"
+            },
+            {
+              "key": "log_truncate_on_rotation",
+              "reason": "writes files outside the cluster Stack manages"
+            },
+            {
+              "key": "log_rotation_age",
+              "reason": "writes files outside the cluster Stack manages"
+            },
+            {
+              "key": "log_rotation_size",
+              "reason": "writes files outside the cluster Stack manages"
+            },
+            {
+              "key": "log_destination",
+              "reason": "writes files outside the cluster Stack manages"
+            },
+            {
+              "key": "syslog_facility",
+              "reason": "writes files outside the cluster Stack manages"
+            },
+            {
+              "key": "syslog_ident",
+              "reason": "writes files outside the cluster Stack manages"
+            },
+            {
+              "key": "event_source",
+              "reason": "writes files outside the cluster Stack manages"
+            },
+            {
+              "key": "krb_server_keyfile",
+              "reason": "reads keys or certificates for sign-in or TLS, which Stack does not set up"
+            },
+            {
+              "key": "ssl",
+              "reason": "reads keys or certificates for sign-in or TLS, which Stack does not set up"
+            },
+            {
+              "key": "ssl_*",
+              "reason": "reads keys or certificates for sign-in or TLS, which Stack does not set up"
+            },
+            {
+              "key": "debug_print_*",
+              "reason": "writes the statements the server runs, passwords included, into its log"
+            }
+          ]
+        },
         "stop_signal": "SIGINT",
         "default_port": 5432,
         "connection": {
@@ -537,7 +873,7 @@
         "laravel_connection": {
           "DB_CONNECTION": "pgsql"
         },
-        "provision": "set -e\nPGPASSWORD=\"$POSTGRES_ADMIN_PASSWORD\" \"$STACK_INSTALL_DIR/bin/psql\" -h \"$STACK_SOCKET_DIR\" -p \"$STACK_PORT\" -U stack_admin -d postgres -X -w -q -v ON_ERROR_STOP=1 -v ECHO=none <<'SQL'\nSET log_statement = 'none';\nSET log_min_error_statement = 'panic';\nSET log_min_duration_statement = -1;\nSET log_min_duration_sample = -1;\nSET log_transaction_sample_rate = 0;\nSET password_encryption = 'scram-sha-256';\nREVOKE ALL ON DATABASE postgres, template0, template1 FROM PUBLIC;\n\\getenv group_password DB_PASSWORD\n\\getenv group_name STACK_GROUP\nSELECT format('CREATE ROLE %I LOGIN', :'group_name')\n  WHERE NOT EXISTS (SELECT FROM pg_roles WHERE rolname = :'group_name')\\gexec\nALTER ROLE :\"group_name\" LOGIN NOSUPERUSER NOCREATEDB NOCREATEROLE NOREPLICATION NOBYPASSRLS PASSWORD :'group_password';\nSELECT format('CREATE DATABASE %I OWNER %I ALLOW_CONNECTIONS false', :'group_name', :'group_name')\n  WHERE NOT EXISTS (SELECT FROM pg_database WHERE datname = :'group_name')\\gexec\nSELECT format('DO $refuse$ BEGIN RAISE EXCEPTION %L; END $refuse$', 'database ' || datname || ' belongs to another owner; inspect existing state')\n  FROM pg_database WHERE datname = :'group_name' AND datdba <> (SELECT oid FROM pg_roles WHERE rolname = :'group_name')\\gexec\nREVOKE CONNECT ON DATABASE :\"group_name\" FROM PUBLIC;\nALTER DATABASE :\"group_name\" ALLOW_CONNECTIONS true;\nSQL\n",
+        "provision": "set -e\nPGPASSWORD=\"$POSTGRES_ADMIN_PASSWORD\" \"$STACK_INSTALL_DIR/bin/psql\" -h \"$STACK_SOCKET_DIR\" -p \"$STACK_PORT\" -U stack_admin -d postgres -X -w -q -v ON_ERROR_STOP=1 -v ECHO=none <<'SQL'\nSET log_statement = 'none';\nSET log_min_error_statement = 'panic';\nSET log_min_duration_statement = -1;\nSET log_min_duration_sample = -1;\nSET log_transaction_sample_rate = 0;\nSET debug_print_parse = off;\nSET debug_print_rewritten = off;\nSET debug_print_plan = off;\nSET password_encryption = 'scram-sha-256';\nREVOKE ALL ON DATABASE postgres, template0, template1 FROM PUBLIC;\n\\getenv group_password DB_PASSWORD\n\\getenv group_name STACK_GROUP\nSELECT format('CREATE ROLE %I LOGIN', :'group_name')\n  WHERE NOT EXISTS (SELECT FROM pg_roles WHERE rolname = :'group_name')\\gexec\nALTER ROLE :\"group_name\" LOGIN NOSUPERUSER NOCREATEDB NOCREATEROLE NOREPLICATION NOBYPASSRLS PASSWORD :'group_password';\nSELECT format('CREATE DATABASE %I OWNER %I ALLOW_CONNECTIONS false', :'group_name', :'group_name')\n  WHERE NOT EXISTS (SELECT FROM pg_database WHERE datname = :'group_name')\\gexec\nSELECT format('DO $refuse$ BEGIN RAISE EXCEPTION %L; END $refuse$', 'database ' || datname || ' belongs to another owner; inspect existing state')\n  FROM pg_database WHERE datname = :'group_name' AND datdba <> (SELECT oid FROM pg_roles WHERE rolname = :'group_name')\\gexec\nREVOKE CONNECT ON DATABASE :\"group_name\" FROM PUBLIC;\nALTER DATABASE :\"group_name\" ALLOW_CONNECTIONS true;\nSQL\n",
         "bin_dir": "bin",
         "commands": [
           "psql",
@@ -561,7 +897,9 @@
         "group_secrets": [
           "DB_PASSWORD"
         ],
-        "database_provision": "set -e\nPGPASSWORD=\"$POSTGRES_ADMIN_PASSWORD\" \"$STACK_INSTALL_DIR/bin/psql\" -h \"$STACK_SOCKET_DIR\" -p \"$STACK_PORT\" -U stack_admin -d postgres -X -w -q -v ON_ERROR_STOP=1 -v ECHO=none <<'SQL'\nSET log_statement = 'none';\nSET log_min_error_statement = 'panic';\nSET log_min_duration_statement = -1;\nSET log_min_duration_sample = -1;\nSET log_transaction_sample_rate = 0;\nSET password_encryption = 'scram-sha-256';\n\\getenv database_password DB_PASSWORD\n\\getenv database_name STACK_DATABASE\n\\getenv database_user STACK_DATABASE_USER\nSELECT set_config('stack.database_name', :'database_name', false), set_config('stack.database_user', :'database_user', false) \\gset\nDO $provision$\nDECLARE\n  database_name text := current_setting('stack.database_name');\n  database_user text := current_setting('stack.database_user');\n  role_oid oid;\nBEGIN\n  SELECT oid INTO role_oid FROM pg_roles WHERE rolname = database_user;\n  IF role_oid IS NOT NULL AND (\n    shobj_description(role_oid, 'pg_authid') IS DISTINCT FROM 'stack:database:' || database_user\n    OR EXISTS (SELECT FROM pg_roles WHERE oid = role_oid AND\n      (rolsuper OR rolcreatedb OR rolcreaterole OR rolreplication OR rolbypassrls OR NOT rolcanlogin))\n    OR EXISTS (SELECT FROM pg_auth_members WHERE roleid = role_oid OR member = role_oid)\n  ) THEN\n    RAISE EXCEPTION 'database role ownership or privileges conflict; inspect existing state';\n  END IF;\n  IF EXISTS (SELECT FROM pg_database WHERE datname = database_name AND\n    (role_oid IS NULL OR datdba <> role_oid)) THEN\n    RAISE EXCEPTION 'database belongs to another owner; inspect existing state';\n  END IF;\n  IF EXISTS (\n    SELECT FROM pg_database AS database_entry,\n      LATERAL aclexplode(COALESCE(database_entry.datacl, acldefault('d', database_entry.datdba))) AS access_entry\n    WHERE database_entry.datname = database_name\n      AND access_entry.grantee <> role_oid\n      AND access_entry.grantee <> (SELECT oid FROM pg_roles WHERE rolname = 'stack_admin')\n      AND NOT (access_entry.grantee = 0 AND NOT database_entry.datallowconn)\n  ) THEN\n    RAISE EXCEPTION 'database access grants conflict; inspect existing state';\n  END IF;\n  IF role_oid IS NULL THEN\n    EXECUTE format('CREATE ROLE %I LOGIN NOSUPERUSER NOCREATEDB NOCREATEROLE NOREPLICATION NOBYPASSRLS', database_user);\n    EXECUTE format('COMMENT ON ROLE %I IS %L', database_user, 'stack:database:' || database_user);\n  END IF;\nEND\n$provision$;\nALTER ROLE :\"database_user\" PASSWORD :'database_password';\nREVOKE ALL ON DATABASE postgres, template0, template1 FROM PUBLIC;\nSELECT format('CREATE DATABASE %I OWNER %I ALLOW_CONNECTIONS false', :'database_name', :'database_user')\n  WHERE NOT EXISTS (SELECT FROM pg_database WHERE datname = :'database_name')\\gexec\nREVOKE ALL ON DATABASE :\"database_name\" FROM PUBLIC;\nALTER DATABASE :\"database_name\" ALLOW_CONNECTIONS true;\nSQL\n",
+        "database_provision": "set -e\nPGPASSWORD=\"$POSTGRES_ADMIN_PASSWORD\" \"$STACK_INSTALL_DIR/bin/psql\" -h \"$STACK_SOCKET_DIR\" -p \"$STACK_PORT\" -U stack_admin -d postgres -X -w -q -v ON_ERROR_STOP=1 -v ECHO=none <<'SQL'\nSET log_statement = 'none';\nSET log_min_error_statement = 'panic';\nSET log_min_duration_statement = -1;\nSET log_min_duration_sample = -1;\nSET log_transaction_sample_rate = 0;\nSET debug_print_parse = off;\nSET debug_print_rewritten = off;\nSET debug_print_plan = off;\nSET password_encryption = 'scram-sha-256';\n\\getenv database_password DB_PASSWORD\n\\getenv database_name STACK_DATABASE\n\\getenv database_user STACK_DATABASE_USER\nSELECT set_config('stack.database_name', :'database_name', false), set_config('stack.database_user', :'database_user', false) \\gset\nDO $provision$\nDECLARE\n  database_name text := current_setting('stack.database_name');\n  database_user text := current_setting('stack.database_user');\n  role_oid oid;\nBEGIN\n  SELECT oid INTO role_oid FROM pg_roles WHERE rolname = database_user;\n  IF role_oid IS NOT NULL AND (\n    shobj_description(role_oid, 'pg_authid') IS DISTINCT FROM 'stack:database:' || database_user\n    OR EXISTS (SELECT FROM pg_roles WHERE oid = role_oid AND\n      (rolsuper OR rolcreatedb OR rolcreaterole OR rolreplication OR rolbypassrls OR NOT rolcanlogin))\n    OR EXISTS (SELECT FROM pg_auth_members WHERE roleid = role_oid OR member = role_oid)\n  ) THEN\n    RAISE EXCEPTION 'database role ownership or privileges conflict; inspect existing state';\n  END IF;\n  IF EXISTS (SELECT FROM pg_database WHERE datname = database_name AND\n    (role_oid IS NULL OR datdba <> role_oid)) THEN\n    RAISE EXCEPTION 'database belongs to another owner; inspect existing state';\n  END IF;\n  IF EXISTS (\n    SELECT FROM pg_database AS database_entry,\n      LATERAL aclexplode(COALESCE(database_entry.datacl, acldefault('d', database_entry.datdba))) AS access_entry\n    WHERE database_entry.datname = database_name\n      AND access_entry.grantee <> role_oid\n      AND access_entry.grantee <> (SELECT oid FROM pg_roles WHERE rolname = 'stack_admin')\n      AND NOT (access_entry.grantee = 0 AND NOT database_entry.datallowconn)\n  ) THEN\n    RAISE EXCEPTION 'database access grants conflict; inspect existing state';\n  END IF;\n  IF role_oid IS NULL THEN\n    EXECUTE format('CREATE ROLE %I LOGIN NOSUPERUSER NOCREATEDB NOCREATEROLE NOREPLICATION NOBYPASSRLS', database_user);\n    EXECUTE format('COMMENT ON ROLE %I IS %L', database_user, 'stack:database:' || database_user);\n  END IF;\nEND\n$provision$;\nALTER ROLE :\"database_user\" PASSWORD :'database_password';\nREVOKE ALL ON DATABASE postgres, template0, template1 FROM PUBLIC;\nSELECT format('CREATE DATABASE %I OWNER %I ALLOW_CONNECTIONS false', :'database_name', :'database_user')\n  WHERE NOT EXISTS (SELECT FROM pg_database WHERE datname = :'database_name')\\gexec\nREVOKE ALL ON DATABASE :\"database_name\" FROM PUBLIC;\nALTER DATABASE :\"database_name\" ALLOW_CONNECTIONS true;\nSQL\n",
+        "group_rename": "set -e\nPGPASSWORD=\"$POSTGRES_ADMIN_PASSWORD\" \"$STACK_INSTALL_DIR/bin/psql\" -h \"$STACK_SOCKET_DIR\" -p \"$STACK_PORT\" -U stack_admin -d postgres -X -w -q -v ON_ERROR_STOP=1 -v ECHO=none <<'SQL'\nSET log_statement = 'none';\n\\getenv old_group STACK_OLD_GROUP\n\\getenv new_group STACK_GROUP\nSELECT format('ALTER DATABASE %I RENAME TO %I', :'old_group', :'new_group')\n  WHERE EXISTS (SELECT FROM pg_database WHERE datname = :'old_group')\n    AND NOT EXISTS (SELECT FROM pg_database WHERE datname = :'new_group')\\gexec\nSELECT format('ALTER ROLE %I RENAME TO %I', :'old_group', :'new_group')\n  WHERE EXISTS (SELECT FROM pg_roles WHERE rolname = :'old_group')\n    AND NOT EXISTS (SELECT FROM pg_roles WHERE rolname = :'new_group')\\gexec\nSQL\n",
+        "database_rename": "set -e\nPGPASSWORD=\"$POSTGRES_ADMIN_PASSWORD\" \"$STACK_INSTALL_DIR/bin/psql\" -h \"$STACK_SOCKET_DIR\" -p \"$STACK_PORT\" -U stack_admin -d postgres -X -w -q -v ON_ERROR_STOP=1 -v ECHO=none <<'SQL'\nSET log_statement = 'none';\n\\getenv old_user STACK_OLD_DATABASE_USER\n\\getenv new_user STACK_DATABASE_USER\nSELECT format('ALTER ROLE %I RENAME TO %I', :'old_user', :'new_user')\n  WHERE EXISTS (SELECT FROM pg_roles WHERE rolname = :'old_user')\n    AND NOT EXISTS (SELECT FROM pg_roles WHERE rolname = :'new_user')\\gexec\nSELECT format('COMMENT ON ROLE %I IS %L', :'new_user', 'stack:database:' || :'new_user')\n  WHERE EXISTS (SELECT FROM pg_roles WHERE rolname = :'new_user')\\gexec\nSQL\n",
         "database_connection": {
           "DATABASE_URL": "postgres://{database_user}:${DB_PASSWORD}@127.0.0.1:{port}/{database}?sslmode=disable",
           "DB_URL": "postgres://{database_user}:${DB_PASSWORD}@127.0.0.1:{port}/{database}?sslmode=disable",
@@ -591,6 +929,22 @@
           "PGUSER": "{database_user}",
           "PGPASSWORD": "${DB_PASSWORD}",
           "PGDATABASE": "{database}"
+        },
+        "container": {
+          "environment": {
+            "POSTGRES_USER": "{group}",
+            "POSTGRES_DB": "{group}",
+            "POSTGRES_PASSWORD": "${DB_PASSWORD}",
+            "POSTGRES_INITDB_ARGS": "--auth-host=scram-sha-256"
+          },
+          "data": "/var/lib/postgresql",
+          "port": 5432,
+          "healthcheck": {
+            "test": "pg_isready -U {group} -d {group}",
+            "interval": "2s",
+            "timeout": "3s",
+            "retries": 30
+          }
         },
         "shareable": true,
         "windows": {
@@ -739,7 +1093,172 @@
       "runtime": {
         "initialise": "set -e\nif [ -e \"$STACK_DATA_DIR/PG_VERSION\" ]; then\n  printf '%s\\n' 'The existing PostgreSQL cluster uses an unsupported data layout; preserve it and choose an empty instance directory.' >&2\n  exit 1\nfi\nprintf '%s\\n' \"$POSTGRES_ADMIN_PASSWORD\" | \"$STACK_INSTALL_DIR/bin/initdb\" --pgdata=\"$STACK_DATA_DIR/pgdata\" --username=stack_admin --auth=scram-sha-256 --pwfile=/dev/stdin --encoding=UTF8 --no-sync\n",
         "initialised_marker": "pgdata/PG_VERSION",
-        "start": "\"$STACK_INSTALL_DIR/bin/postgres\" -D \"$STACK_DATA_DIR/pgdata\" -p \"$STACK_PORT\" -k \"$STACK_SOCKET_DIR\" -c listen_addresses=127.0.0.1",
+        "start": "\"$STACK_INSTALL_DIR/bin/postgres\" \"$@\" -D \"$STACK_DATA_DIR/pgdata\" -p \"$STACK_PORT\" -k \"$STACK_SOCKET_DIR\" -c listen_addresses=127.0.0.1",
+        "extend": {
+          "mechanism": "include_dir",
+          "syntax": "postgresql",
+          "suffix": ".conf",
+          "file": "postgresql.conf",
+          "engine_file": "pgdata/postgresql.conf",
+          "arguments": [
+            "-c",
+            "config_file=${STACK_CONFIG_FILE}"
+          ],
+          "reserved": [
+            {
+              "key": "shared_preload_libraries",
+              "reason": "loads libraries into the server"
+            },
+            {
+              "key": "session_preload_libraries",
+              "reason": "loads libraries into every session"
+            },
+            {
+              "key": "local_preload_libraries",
+              "reason": "loads libraries into every session"
+            },
+            {
+              "key": "dynamic_library_path",
+              "reason": "decides where the server loads libraries from"
+            },
+            {
+              "key": "extension_control_path",
+              "reason": "decides where the server finds extensions to load"
+            },
+            {
+              "key": "jit_provider",
+              "reason": "loads a library into the server"
+            },
+            {
+              "key": "oauth_validator_libraries",
+              "reason": "loads libraries into the server"
+            },
+            {
+              "key": "archive_library",
+              "reason": "loads a library into the server"
+            },
+            {
+              "key": "archive_command",
+              "reason": "runs a shell command"
+            },
+            {
+              "key": "restore_command",
+              "reason": "runs a shell command"
+            },
+            {
+              "key": "archive_cleanup_command",
+              "reason": "runs a shell command"
+            },
+            {
+              "key": "recovery_end_command",
+              "reason": "runs a shell command"
+            },
+            {
+              "key": "ssl_passphrase_command",
+              "reason": "runs a shell command"
+            },
+            {
+              "key": "listen_addresses",
+              "reason": "is where Stack's clients connect, which Stack sets on the command line"
+            },
+            {
+              "key": "port",
+              "reason": "is where Stack's clients connect, which Stack sets on the command line"
+            },
+            {
+              "key": "unix_socket_directories",
+              "reason": "is where Stack's clients connect, which Stack sets on the command line"
+            },
+            {
+              "key": "unix_socket_group",
+              "reason": "decides who may reach the server's private socket"
+            },
+            {
+              "key": "unix_socket_permissions",
+              "reason": "decides who may reach the server's private socket"
+            },
+            {
+              "key": "data_directory",
+              "reason": "is the cluster Stack manages"
+            },
+            {
+              "key": "config_file",
+              "reason": "is the main file Stack generates"
+            },
+            {
+              "key": "hba_file",
+              "reason": "decides who may sign in, which Stack keeps to its own accounts"
+            },
+            {
+              "key": "ident_file",
+              "reason": "decides who may sign in, which Stack keeps to its own accounts"
+            },
+            {
+              "key": "external_pid_file",
+              "reason": "writes a file outside the cluster Stack manages"
+            },
+            {
+              "key": "logging_collector",
+              "reason": "writes files outside the cluster Stack manages"
+            },
+            {
+              "key": "log_directory",
+              "reason": "writes files outside the cluster Stack manages"
+            },
+            {
+              "key": "log_filename",
+              "reason": "writes files outside the cluster Stack manages"
+            },
+            {
+              "key": "log_file_mode",
+              "reason": "writes files outside the cluster Stack manages"
+            },
+            {
+              "key": "log_truncate_on_rotation",
+              "reason": "writes files outside the cluster Stack manages"
+            },
+            {
+              "key": "log_rotation_age",
+              "reason": "writes files outside the cluster Stack manages"
+            },
+            {
+              "key": "log_rotation_size",
+              "reason": "writes files outside the cluster Stack manages"
+            },
+            {
+              "key": "log_destination",
+              "reason": "writes files outside the cluster Stack manages"
+            },
+            {
+              "key": "syslog_facility",
+              "reason": "writes files outside the cluster Stack manages"
+            },
+            {
+              "key": "syslog_ident",
+              "reason": "writes files outside the cluster Stack manages"
+            },
+            {
+              "key": "event_source",
+              "reason": "writes files outside the cluster Stack manages"
+            },
+            {
+              "key": "krb_server_keyfile",
+              "reason": "reads keys or certificates for sign-in or TLS, which Stack does not set up"
+            },
+            {
+              "key": "ssl",
+              "reason": "reads keys or certificates for sign-in or TLS, which Stack does not set up"
+            },
+            {
+              "key": "ssl_*",
+              "reason": "reads keys or certificates for sign-in or TLS, which Stack does not set up"
+            },
+            {
+              "key": "debug_print_*",
+              "reason": "writes the statements the server runs, passwords included, into its log"
+            }
+          ]
+        },
         "stop_signal": "SIGINT",
         "default_port": 5432,
         "connection": {
@@ -753,7 +1272,7 @@
         "laravel_connection": {
           "DB_CONNECTION": "pgsql"
         },
-        "provision": "set -e\nPGPASSWORD=\"$POSTGRES_ADMIN_PASSWORD\" \"$STACK_INSTALL_DIR/bin/psql\" -h \"$STACK_SOCKET_DIR\" -p \"$STACK_PORT\" -U stack_admin -d postgres -X -w -q -v ON_ERROR_STOP=1 -v ECHO=none <<'SQL'\nSET log_statement = 'none';\nSET log_min_error_statement = 'panic';\nSET log_min_duration_statement = -1;\nSET log_min_duration_sample = -1;\nSET log_transaction_sample_rate = 0;\nSET password_encryption = 'scram-sha-256';\nREVOKE ALL ON DATABASE postgres, template0, template1 FROM PUBLIC;\n\\getenv group_password DB_PASSWORD\n\\getenv group_name STACK_GROUP\nSELECT format('CREATE ROLE %I LOGIN', :'group_name')\n  WHERE NOT EXISTS (SELECT FROM pg_roles WHERE rolname = :'group_name')\\gexec\nALTER ROLE :\"group_name\" LOGIN NOSUPERUSER NOCREATEDB NOCREATEROLE NOREPLICATION NOBYPASSRLS PASSWORD :'group_password';\nSELECT format('CREATE DATABASE %I OWNER %I ALLOW_CONNECTIONS false', :'group_name', :'group_name')\n  WHERE NOT EXISTS (SELECT FROM pg_database WHERE datname = :'group_name')\\gexec\nSELECT format('DO $refuse$ BEGIN RAISE EXCEPTION %L; END $refuse$', 'database ' || datname || ' belongs to another owner; inspect existing state')\n  FROM pg_database WHERE datname = :'group_name' AND datdba <> (SELECT oid FROM pg_roles WHERE rolname = :'group_name')\\gexec\nREVOKE CONNECT ON DATABASE :\"group_name\" FROM PUBLIC;\nALTER DATABASE :\"group_name\" ALLOW_CONNECTIONS true;\nSQL\n",
+        "provision": "set -e\nPGPASSWORD=\"$POSTGRES_ADMIN_PASSWORD\" \"$STACK_INSTALL_DIR/bin/psql\" -h \"$STACK_SOCKET_DIR\" -p \"$STACK_PORT\" -U stack_admin -d postgres -X -w -q -v ON_ERROR_STOP=1 -v ECHO=none <<'SQL'\nSET log_statement = 'none';\nSET log_min_error_statement = 'panic';\nSET log_min_duration_statement = -1;\nSET log_min_duration_sample = -1;\nSET log_transaction_sample_rate = 0;\nSET debug_print_parse = off;\nSET debug_print_rewritten = off;\nSET debug_print_plan = off;\nSET password_encryption = 'scram-sha-256';\nREVOKE ALL ON DATABASE postgres, template0, template1 FROM PUBLIC;\n\\getenv group_password DB_PASSWORD\n\\getenv group_name STACK_GROUP\nSELECT format('CREATE ROLE %I LOGIN', :'group_name')\n  WHERE NOT EXISTS (SELECT FROM pg_roles WHERE rolname = :'group_name')\\gexec\nALTER ROLE :\"group_name\" LOGIN NOSUPERUSER NOCREATEDB NOCREATEROLE NOREPLICATION NOBYPASSRLS PASSWORD :'group_password';\nSELECT format('CREATE DATABASE %I OWNER %I ALLOW_CONNECTIONS false', :'group_name', :'group_name')\n  WHERE NOT EXISTS (SELECT FROM pg_database WHERE datname = :'group_name')\\gexec\nSELECT format('DO $refuse$ BEGIN RAISE EXCEPTION %L; END $refuse$', 'database ' || datname || ' belongs to another owner; inspect existing state')\n  FROM pg_database WHERE datname = :'group_name' AND datdba <> (SELECT oid FROM pg_roles WHERE rolname = :'group_name')\\gexec\nREVOKE CONNECT ON DATABASE :\"group_name\" FROM PUBLIC;\nALTER DATABASE :\"group_name\" ALLOW_CONNECTIONS true;\nSQL\n",
         "bin_dir": "bin",
         "commands": [
           "psql",
@@ -777,7 +1296,9 @@
         "group_secrets": [
           "DB_PASSWORD"
         ],
-        "database_provision": "set -e\nPGPASSWORD=\"$POSTGRES_ADMIN_PASSWORD\" \"$STACK_INSTALL_DIR/bin/psql\" -h \"$STACK_SOCKET_DIR\" -p \"$STACK_PORT\" -U stack_admin -d postgres -X -w -q -v ON_ERROR_STOP=1 -v ECHO=none <<'SQL'\nSET log_statement = 'none';\nSET log_min_error_statement = 'panic';\nSET log_min_duration_statement = -1;\nSET log_min_duration_sample = -1;\nSET log_transaction_sample_rate = 0;\nSET password_encryption = 'scram-sha-256';\n\\getenv database_password DB_PASSWORD\n\\getenv database_name STACK_DATABASE\n\\getenv database_user STACK_DATABASE_USER\nSELECT set_config('stack.database_name', :'database_name', false), set_config('stack.database_user', :'database_user', false) \\gset\nDO $provision$\nDECLARE\n  database_name text := current_setting('stack.database_name');\n  database_user text := current_setting('stack.database_user');\n  role_oid oid;\nBEGIN\n  SELECT oid INTO role_oid FROM pg_roles WHERE rolname = database_user;\n  IF role_oid IS NOT NULL AND (\n    shobj_description(role_oid, 'pg_authid') IS DISTINCT FROM 'stack:database:' || database_user\n    OR EXISTS (SELECT FROM pg_roles WHERE oid = role_oid AND\n      (rolsuper OR rolcreatedb OR rolcreaterole OR rolreplication OR rolbypassrls OR NOT rolcanlogin))\n    OR EXISTS (SELECT FROM pg_auth_members WHERE roleid = role_oid OR member = role_oid)\n  ) THEN\n    RAISE EXCEPTION 'database role ownership or privileges conflict; inspect existing state';\n  END IF;\n  IF EXISTS (SELECT FROM pg_database WHERE datname = database_name AND\n    (role_oid IS NULL OR datdba <> role_oid)) THEN\n    RAISE EXCEPTION 'database belongs to another owner; inspect existing state';\n  END IF;\n  IF EXISTS (\n    SELECT FROM pg_database AS database_entry,\n      LATERAL aclexplode(COALESCE(database_entry.datacl, acldefault('d', database_entry.datdba))) AS access_entry\n    WHERE database_entry.datname = database_name\n      AND access_entry.grantee <> role_oid\n      AND access_entry.grantee <> (SELECT oid FROM pg_roles WHERE rolname = 'stack_admin')\n      AND NOT (access_entry.grantee = 0 AND NOT database_entry.datallowconn)\n  ) THEN\n    RAISE EXCEPTION 'database access grants conflict; inspect existing state';\n  END IF;\n  IF role_oid IS NULL THEN\n    EXECUTE format('CREATE ROLE %I LOGIN NOSUPERUSER NOCREATEDB NOCREATEROLE NOREPLICATION NOBYPASSRLS', database_user);\n    EXECUTE format('COMMENT ON ROLE %I IS %L', database_user, 'stack:database:' || database_user);\n  END IF;\nEND\n$provision$;\nALTER ROLE :\"database_user\" PASSWORD :'database_password';\nREVOKE ALL ON DATABASE postgres, template0, template1 FROM PUBLIC;\nSELECT format('CREATE DATABASE %I OWNER %I ALLOW_CONNECTIONS false', :'database_name', :'database_user')\n  WHERE NOT EXISTS (SELECT FROM pg_database WHERE datname = :'database_name')\\gexec\nREVOKE ALL ON DATABASE :\"database_name\" FROM PUBLIC;\nALTER DATABASE :\"database_name\" ALLOW_CONNECTIONS true;\nSQL\n",
+        "database_provision": "set -e\nPGPASSWORD=\"$POSTGRES_ADMIN_PASSWORD\" \"$STACK_INSTALL_DIR/bin/psql\" -h \"$STACK_SOCKET_DIR\" -p \"$STACK_PORT\" -U stack_admin -d postgres -X -w -q -v ON_ERROR_STOP=1 -v ECHO=none <<'SQL'\nSET log_statement = 'none';\nSET log_min_error_statement = 'panic';\nSET log_min_duration_statement = -1;\nSET log_min_duration_sample = -1;\nSET log_transaction_sample_rate = 0;\nSET debug_print_parse = off;\nSET debug_print_rewritten = off;\nSET debug_print_plan = off;\nSET password_encryption = 'scram-sha-256';\n\\getenv database_password DB_PASSWORD\n\\getenv database_name STACK_DATABASE\n\\getenv database_user STACK_DATABASE_USER\nSELECT set_config('stack.database_name', :'database_name', false), set_config('stack.database_user', :'database_user', false) \\gset\nDO $provision$\nDECLARE\n  database_name text := current_setting('stack.database_name');\n  database_user text := current_setting('stack.database_user');\n  role_oid oid;\nBEGIN\n  SELECT oid INTO role_oid FROM pg_roles WHERE rolname = database_user;\n  IF role_oid IS NOT NULL AND (\n    shobj_description(role_oid, 'pg_authid') IS DISTINCT FROM 'stack:database:' || database_user\n    OR EXISTS (SELECT FROM pg_roles WHERE oid = role_oid AND\n      (rolsuper OR rolcreatedb OR rolcreaterole OR rolreplication OR rolbypassrls OR NOT rolcanlogin))\n    OR EXISTS (SELECT FROM pg_auth_members WHERE roleid = role_oid OR member = role_oid)\n  ) THEN\n    RAISE EXCEPTION 'database role ownership or privileges conflict; inspect existing state';\n  END IF;\n  IF EXISTS (SELECT FROM pg_database WHERE datname = database_name AND\n    (role_oid IS NULL OR datdba <> role_oid)) THEN\n    RAISE EXCEPTION 'database belongs to another owner; inspect existing state';\n  END IF;\n  IF EXISTS (\n    SELECT FROM pg_database AS database_entry,\n      LATERAL aclexplode(COALESCE(database_entry.datacl, acldefault('d', database_entry.datdba))) AS access_entry\n    WHERE database_entry.datname = database_name\n      AND access_entry.grantee <> role_oid\n      AND access_entry.grantee <> (SELECT oid FROM pg_roles WHERE rolname = 'stack_admin')\n      AND NOT (access_entry.grantee = 0 AND NOT database_entry.datallowconn)\n  ) THEN\n    RAISE EXCEPTION 'database access grants conflict; inspect existing state';\n  END IF;\n  IF role_oid IS NULL THEN\n    EXECUTE format('CREATE ROLE %I LOGIN NOSUPERUSER NOCREATEDB NOCREATEROLE NOREPLICATION NOBYPASSRLS', database_user);\n    EXECUTE format('COMMENT ON ROLE %I IS %L', database_user, 'stack:database:' || database_user);\n  END IF;\nEND\n$provision$;\nALTER ROLE :\"database_user\" PASSWORD :'database_password';\nREVOKE ALL ON DATABASE postgres, template0, template1 FROM PUBLIC;\nSELECT format('CREATE DATABASE %I OWNER %I ALLOW_CONNECTIONS false', :'database_name', :'database_user')\n  WHERE NOT EXISTS (SELECT FROM pg_database WHERE datname = :'database_name')\\gexec\nREVOKE ALL ON DATABASE :\"database_name\" FROM PUBLIC;\nALTER DATABASE :\"database_name\" ALLOW_CONNECTIONS true;\nSQL\n",
+        "group_rename": "set -e\nPGPASSWORD=\"$POSTGRES_ADMIN_PASSWORD\" \"$STACK_INSTALL_DIR/bin/psql\" -h \"$STACK_SOCKET_DIR\" -p \"$STACK_PORT\" -U stack_admin -d postgres -X -w -q -v ON_ERROR_STOP=1 -v ECHO=none <<'SQL'\nSET log_statement = 'none';\n\\getenv old_group STACK_OLD_GROUP\n\\getenv new_group STACK_GROUP\nSELECT format('ALTER DATABASE %I RENAME TO %I', :'old_group', :'new_group')\n  WHERE EXISTS (SELECT FROM pg_database WHERE datname = :'old_group')\n    AND NOT EXISTS (SELECT FROM pg_database WHERE datname = :'new_group')\\gexec\nSELECT format('ALTER ROLE %I RENAME TO %I', :'old_group', :'new_group')\n  WHERE EXISTS (SELECT FROM pg_roles WHERE rolname = :'old_group')\n    AND NOT EXISTS (SELECT FROM pg_roles WHERE rolname = :'new_group')\\gexec\nSQL\n",
+        "database_rename": "set -e\nPGPASSWORD=\"$POSTGRES_ADMIN_PASSWORD\" \"$STACK_INSTALL_DIR/bin/psql\" -h \"$STACK_SOCKET_DIR\" -p \"$STACK_PORT\" -U stack_admin -d postgres -X -w -q -v ON_ERROR_STOP=1 -v ECHO=none <<'SQL'\nSET log_statement = 'none';\n\\getenv old_user STACK_OLD_DATABASE_USER\n\\getenv new_user STACK_DATABASE_USER\nSELECT format('ALTER ROLE %I RENAME TO %I', :'old_user', :'new_user')\n  WHERE EXISTS (SELECT FROM pg_roles WHERE rolname = :'old_user')\n    AND NOT EXISTS (SELECT FROM pg_roles WHERE rolname = :'new_user')\\gexec\nSELECT format('COMMENT ON ROLE %I IS %L', :'new_user', 'stack:database:' || :'new_user')\n  WHERE EXISTS (SELECT FROM pg_roles WHERE rolname = :'new_user')\\gexec\nSQL\n",
         "database_connection": {
           "DATABASE_URL": "postgres://{database_user}:${DB_PASSWORD}@127.0.0.1:{port}/{database}?sslmode=disable",
           "DB_URL": "postgres://{database_user}:${DB_PASSWORD}@127.0.0.1:{port}/{database}?sslmode=disable",
@@ -807,6 +1328,22 @@
           "PGUSER": "{database_user}",
           "PGPASSWORD": "${DB_PASSWORD}",
           "PGDATABASE": "{database}"
+        },
+        "container": {
+          "environment": {
+            "POSTGRES_USER": "{group}",
+            "POSTGRES_DB": "{group}",
+            "POSTGRES_PASSWORD": "${DB_PASSWORD}",
+            "POSTGRES_INITDB_ARGS": "--auth-host=scram-sha-256"
+          },
+          "data": "/var/lib/postgresql",
+          "port": 5432,
+          "healthcheck": {
+            "test": "pg_isready -U {group} -d {group}",
+            "interval": "2s",
+            "timeout": "3s",
+            "retries": 30
+          }
         },
         "shareable": true,
         "windows": {
@@ -918,7 +1455,172 @@
       "runtime": {
         "initialise": "set -e\nif [ -e \"$STACK_DATA_DIR/PG_VERSION\" ]; then\n  printf '%s\\n' 'The existing PostgreSQL cluster uses an unsupported data layout; preserve it and choose an empty instance directory.' >&2\n  exit 1\nfi\nprintf '%s\\n' \"$POSTGRES_ADMIN_PASSWORD\" | \"$STACK_INSTALL_DIR/bin/initdb\" --pgdata=\"$STACK_DATA_DIR/pgdata\" --username=stack_admin --auth=scram-sha-256 --pwfile=/dev/stdin --encoding=UTF8 --no-sync\n",
         "initialised_marker": "pgdata/PG_VERSION",
-        "start": "\"$STACK_INSTALL_DIR/bin/postgres\" -D \"$STACK_DATA_DIR/pgdata\" -p \"$STACK_PORT\" -k \"$STACK_SOCKET_DIR\" -c listen_addresses=127.0.0.1",
+        "start": "\"$STACK_INSTALL_DIR/bin/postgres\" \"$@\" -D \"$STACK_DATA_DIR/pgdata\" -p \"$STACK_PORT\" -k \"$STACK_SOCKET_DIR\" -c listen_addresses=127.0.0.1",
+        "extend": {
+          "mechanism": "include_dir",
+          "syntax": "postgresql",
+          "suffix": ".conf",
+          "file": "postgresql.conf",
+          "engine_file": "pgdata/postgresql.conf",
+          "arguments": [
+            "-c",
+            "config_file=${STACK_CONFIG_FILE}"
+          ],
+          "reserved": [
+            {
+              "key": "shared_preload_libraries",
+              "reason": "loads libraries into the server"
+            },
+            {
+              "key": "session_preload_libraries",
+              "reason": "loads libraries into every session"
+            },
+            {
+              "key": "local_preload_libraries",
+              "reason": "loads libraries into every session"
+            },
+            {
+              "key": "dynamic_library_path",
+              "reason": "decides where the server loads libraries from"
+            },
+            {
+              "key": "extension_control_path",
+              "reason": "decides where the server finds extensions to load"
+            },
+            {
+              "key": "jit_provider",
+              "reason": "loads a library into the server"
+            },
+            {
+              "key": "oauth_validator_libraries",
+              "reason": "loads libraries into the server"
+            },
+            {
+              "key": "archive_library",
+              "reason": "loads a library into the server"
+            },
+            {
+              "key": "archive_command",
+              "reason": "runs a shell command"
+            },
+            {
+              "key": "restore_command",
+              "reason": "runs a shell command"
+            },
+            {
+              "key": "archive_cleanup_command",
+              "reason": "runs a shell command"
+            },
+            {
+              "key": "recovery_end_command",
+              "reason": "runs a shell command"
+            },
+            {
+              "key": "ssl_passphrase_command",
+              "reason": "runs a shell command"
+            },
+            {
+              "key": "listen_addresses",
+              "reason": "is where Stack's clients connect, which Stack sets on the command line"
+            },
+            {
+              "key": "port",
+              "reason": "is where Stack's clients connect, which Stack sets on the command line"
+            },
+            {
+              "key": "unix_socket_directories",
+              "reason": "is where Stack's clients connect, which Stack sets on the command line"
+            },
+            {
+              "key": "unix_socket_group",
+              "reason": "decides who may reach the server's private socket"
+            },
+            {
+              "key": "unix_socket_permissions",
+              "reason": "decides who may reach the server's private socket"
+            },
+            {
+              "key": "data_directory",
+              "reason": "is the cluster Stack manages"
+            },
+            {
+              "key": "config_file",
+              "reason": "is the main file Stack generates"
+            },
+            {
+              "key": "hba_file",
+              "reason": "decides who may sign in, which Stack keeps to its own accounts"
+            },
+            {
+              "key": "ident_file",
+              "reason": "decides who may sign in, which Stack keeps to its own accounts"
+            },
+            {
+              "key": "external_pid_file",
+              "reason": "writes a file outside the cluster Stack manages"
+            },
+            {
+              "key": "logging_collector",
+              "reason": "writes files outside the cluster Stack manages"
+            },
+            {
+              "key": "log_directory",
+              "reason": "writes files outside the cluster Stack manages"
+            },
+            {
+              "key": "log_filename",
+              "reason": "writes files outside the cluster Stack manages"
+            },
+            {
+              "key": "log_file_mode",
+              "reason": "writes files outside the cluster Stack manages"
+            },
+            {
+              "key": "log_truncate_on_rotation",
+              "reason": "writes files outside the cluster Stack manages"
+            },
+            {
+              "key": "log_rotation_age",
+              "reason": "writes files outside the cluster Stack manages"
+            },
+            {
+              "key": "log_rotation_size",
+              "reason": "writes files outside the cluster Stack manages"
+            },
+            {
+              "key": "log_destination",
+              "reason": "writes files outside the cluster Stack manages"
+            },
+            {
+              "key": "syslog_facility",
+              "reason": "writes files outside the cluster Stack manages"
+            },
+            {
+              "key": "syslog_ident",
+              "reason": "writes files outside the cluster Stack manages"
+            },
+            {
+              "key": "event_source",
+              "reason": "writes files outside the cluster Stack manages"
+            },
+            {
+              "key": "krb_server_keyfile",
+              "reason": "reads keys or certificates for sign-in or TLS, which Stack does not set up"
+            },
+            {
+              "key": "ssl",
+              "reason": "reads keys or certificates for sign-in or TLS, which Stack does not set up"
+            },
+            {
+              "key": "ssl_*",
+              "reason": "reads keys or certificates for sign-in or TLS, which Stack does not set up"
+            },
+            {
+              "key": "debug_print_*",
+              "reason": "writes the statements the server runs, passwords included, into its log"
+            }
+          ]
+        },
         "stop_signal": "SIGINT",
         "default_port": 5432,
         "connection": {
@@ -932,7 +1634,7 @@
         "laravel_connection": {
           "DB_CONNECTION": "pgsql"
         },
-        "provision": "set -e\nPGPASSWORD=\"$POSTGRES_ADMIN_PASSWORD\" \"$STACK_INSTALL_DIR/bin/psql\" -h \"$STACK_SOCKET_DIR\" -p \"$STACK_PORT\" -U stack_admin -d postgres -X -w -q -v ON_ERROR_STOP=1 -v ECHO=none <<'SQL'\nSET log_statement = 'none';\nSET log_min_error_statement = 'panic';\nSET log_min_duration_statement = -1;\nSET log_min_duration_sample = -1;\nSET log_transaction_sample_rate = 0;\nSET password_encryption = 'scram-sha-256';\nREVOKE ALL ON DATABASE postgres, template0, template1 FROM PUBLIC;\n\\getenv group_password DB_PASSWORD\n\\getenv group_name STACK_GROUP\nSELECT format('CREATE ROLE %I LOGIN', :'group_name')\n  WHERE NOT EXISTS (SELECT FROM pg_roles WHERE rolname = :'group_name')\\gexec\nALTER ROLE :\"group_name\" LOGIN NOSUPERUSER NOCREATEDB NOCREATEROLE NOREPLICATION NOBYPASSRLS PASSWORD :'group_password';\nSELECT format('CREATE DATABASE %I OWNER %I ALLOW_CONNECTIONS false', :'group_name', :'group_name')\n  WHERE NOT EXISTS (SELECT FROM pg_database WHERE datname = :'group_name')\\gexec\nSELECT format('DO $refuse$ BEGIN RAISE EXCEPTION %L; END $refuse$', 'database ' || datname || ' belongs to another owner; inspect existing state')\n  FROM pg_database WHERE datname = :'group_name' AND datdba <> (SELECT oid FROM pg_roles WHERE rolname = :'group_name')\\gexec\nREVOKE CONNECT ON DATABASE :\"group_name\" FROM PUBLIC;\nALTER DATABASE :\"group_name\" ALLOW_CONNECTIONS true;\nSQL\n",
+        "provision": "set -e\nPGPASSWORD=\"$POSTGRES_ADMIN_PASSWORD\" \"$STACK_INSTALL_DIR/bin/psql\" -h \"$STACK_SOCKET_DIR\" -p \"$STACK_PORT\" -U stack_admin -d postgres -X -w -q -v ON_ERROR_STOP=1 -v ECHO=none <<'SQL'\nSET log_statement = 'none';\nSET log_min_error_statement = 'panic';\nSET log_min_duration_statement = -1;\nSET log_min_duration_sample = -1;\nSET log_transaction_sample_rate = 0;\nSET debug_print_parse = off;\nSET debug_print_rewritten = off;\nSET debug_print_plan = off;\nSET password_encryption = 'scram-sha-256';\nREVOKE ALL ON DATABASE postgres, template0, template1 FROM PUBLIC;\n\\getenv group_password DB_PASSWORD\n\\getenv group_name STACK_GROUP\nSELECT format('CREATE ROLE %I LOGIN', :'group_name')\n  WHERE NOT EXISTS (SELECT FROM pg_roles WHERE rolname = :'group_name')\\gexec\nALTER ROLE :\"group_name\" LOGIN NOSUPERUSER NOCREATEDB NOCREATEROLE NOREPLICATION NOBYPASSRLS PASSWORD :'group_password';\nSELECT format('CREATE DATABASE %I OWNER %I ALLOW_CONNECTIONS false', :'group_name', :'group_name')\n  WHERE NOT EXISTS (SELECT FROM pg_database WHERE datname = :'group_name')\\gexec\nSELECT format('DO $refuse$ BEGIN RAISE EXCEPTION %L; END $refuse$', 'database ' || datname || ' belongs to another owner; inspect existing state')\n  FROM pg_database WHERE datname = :'group_name' AND datdba <> (SELECT oid FROM pg_roles WHERE rolname = :'group_name')\\gexec\nREVOKE CONNECT ON DATABASE :\"group_name\" FROM PUBLIC;\nALTER DATABASE :\"group_name\" ALLOW_CONNECTIONS true;\nSQL\n",
         "bin_dir": "bin",
         "commands": [
           "psql",
@@ -956,7 +1658,9 @@
         "group_secrets": [
           "DB_PASSWORD"
         ],
-        "database_provision": "set -e\nPGPASSWORD=\"$POSTGRES_ADMIN_PASSWORD\" \"$STACK_INSTALL_DIR/bin/psql\" -h \"$STACK_SOCKET_DIR\" -p \"$STACK_PORT\" -U stack_admin -d postgres -X -w -q -v ON_ERROR_STOP=1 -v ECHO=none <<'SQL'\nSET log_statement = 'none';\nSET log_min_error_statement = 'panic';\nSET log_min_duration_statement = -1;\nSET log_min_duration_sample = -1;\nSET log_transaction_sample_rate = 0;\nSET password_encryption = 'scram-sha-256';\n\\getenv database_password DB_PASSWORD\n\\getenv database_name STACK_DATABASE\n\\getenv database_user STACK_DATABASE_USER\nSELECT set_config('stack.database_name', :'database_name', false), set_config('stack.database_user', :'database_user', false) \\gset\nDO $provision$\nDECLARE\n  database_name text := current_setting('stack.database_name');\n  database_user text := current_setting('stack.database_user');\n  role_oid oid;\nBEGIN\n  SELECT oid INTO role_oid FROM pg_roles WHERE rolname = database_user;\n  IF role_oid IS NOT NULL AND (\n    shobj_description(role_oid, 'pg_authid') IS DISTINCT FROM 'stack:database:' || database_user\n    OR EXISTS (SELECT FROM pg_roles WHERE oid = role_oid AND\n      (rolsuper OR rolcreatedb OR rolcreaterole OR rolreplication OR rolbypassrls OR NOT rolcanlogin))\n    OR EXISTS (SELECT FROM pg_auth_members WHERE roleid = role_oid OR member = role_oid)\n  ) THEN\n    RAISE EXCEPTION 'database role ownership or privileges conflict; inspect existing state';\n  END IF;\n  IF EXISTS (SELECT FROM pg_database WHERE datname = database_name AND\n    (role_oid IS NULL OR datdba <> role_oid)) THEN\n    RAISE EXCEPTION 'database belongs to another owner; inspect existing state';\n  END IF;\n  IF EXISTS (\n    SELECT FROM pg_database AS database_entry,\n      LATERAL aclexplode(COALESCE(database_entry.datacl, acldefault('d', database_entry.datdba))) AS access_entry\n    WHERE database_entry.datname = database_name\n      AND access_entry.grantee <> role_oid\n      AND access_entry.grantee <> (SELECT oid FROM pg_roles WHERE rolname = 'stack_admin')\n      AND NOT (access_entry.grantee = 0 AND NOT database_entry.datallowconn)\n  ) THEN\n    RAISE EXCEPTION 'database access grants conflict; inspect existing state';\n  END IF;\n  IF role_oid IS NULL THEN\n    EXECUTE format('CREATE ROLE %I LOGIN NOSUPERUSER NOCREATEDB NOCREATEROLE NOREPLICATION NOBYPASSRLS', database_user);\n    EXECUTE format('COMMENT ON ROLE %I IS %L', database_user, 'stack:database:' || database_user);\n  END IF;\nEND\n$provision$;\nALTER ROLE :\"database_user\" PASSWORD :'database_password';\nREVOKE ALL ON DATABASE postgres, template0, template1 FROM PUBLIC;\nSELECT format('CREATE DATABASE %I OWNER %I ALLOW_CONNECTIONS false', :'database_name', :'database_user')\n  WHERE NOT EXISTS (SELECT FROM pg_database WHERE datname = :'database_name')\\gexec\nREVOKE ALL ON DATABASE :\"database_name\" FROM PUBLIC;\nALTER DATABASE :\"database_name\" ALLOW_CONNECTIONS true;\nSQL\n",
+        "database_provision": "set -e\nPGPASSWORD=\"$POSTGRES_ADMIN_PASSWORD\" \"$STACK_INSTALL_DIR/bin/psql\" -h \"$STACK_SOCKET_DIR\" -p \"$STACK_PORT\" -U stack_admin -d postgres -X -w -q -v ON_ERROR_STOP=1 -v ECHO=none <<'SQL'\nSET log_statement = 'none';\nSET log_min_error_statement = 'panic';\nSET log_min_duration_statement = -1;\nSET log_min_duration_sample = -1;\nSET log_transaction_sample_rate = 0;\nSET debug_print_parse = off;\nSET debug_print_rewritten = off;\nSET debug_print_plan = off;\nSET password_encryption = 'scram-sha-256';\n\\getenv database_password DB_PASSWORD\n\\getenv database_name STACK_DATABASE\n\\getenv database_user STACK_DATABASE_USER\nSELECT set_config('stack.database_name', :'database_name', false), set_config('stack.database_user', :'database_user', false) \\gset\nDO $provision$\nDECLARE\n  database_name text := current_setting('stack.database_name');\n  database_user text := current_setting('stack.database_user');\n  role_oid oid;\nBEGIN\n  SELECT oid INTO role_oid FROM pg_roles WHERE rolname = database_user;\n  IF role_oid IS NOT NULL AND (\n    shobj_description(role_oid, 'pg_authid') IS DISTINCT FROM 'stack:database:' || database_user\n    OR EXISTS (SELECT FROM pg_roles WHERE oid = role_oid AND\n      (rolsuper OR rolcreatedb OR rolcreaterole OR rolreplication OR rolbypassrls OR NOT rolcanlogin))\n    OR EXISTS (SELECT FROM pg_auth_members WHERE roleid = role_oid OR member = role_oid)\n  ) THEN\n    RAISE EXCEPTION 'database role ownership or privileges conflict; inspect existing state';\n  END IF;\n  IF EXISTS (SELECT FROM pg_database WHERE datname = database_name AND\n    (role_oid IS NULL OR datdba <> role_oid)) THEN\n    RAISE EXCEPTION 'database belongs to another owner; inspect existing state';\n  END IF;\n  IF EXISTS (\n    SELECT FROM pg_database AS database_entry,\n      LATERAL aclexplode(COALESCE(database_entry.datacl, acldefault('d', database_entry.datdba))) AS access_entry\n    WHERE database_entry.datname = database_name\n      AND access_entry.grantee <> role_oid\n      AND access_entry.grantee <> (SELECT oid FROM pg_roles WHERE rolname = 'stack_admin')\n      AND NOT (access_entry.grantee = 0 AND NOT database_entry.datallowconn)\n  ) THEN\n    RAISE EXCEPTION 'database access grants conflict; inspect existing state';\n  END IF;\n  IF role_oid IS NULL THEN\n    EXECUTE format('CREATE ROLE %I LOGIN NOSUPERUSER NOCREATEDB NOCREATEROLE NOREPLICATION NOBYPASSRLS', database_user);\n    EXECUTE format('COMMENT ON ROLE %I IS %L', database_user, 'stack:database:' || database_user);\n  END IF;\nEND\n$provision$;\nALTER ROLE :\"database_user\" PASSWORD :'database_password';\nREVOKE ALL ON DATABASE postgres, template0, template1 FROM PUBLIC;\nSELECT format('CREATE DATABASE %I OWNER %I ALLOW_CONNECTIONS false', :'database_name', :'database_user')\n  WHERE NOT EXISTS (SELECT FROM pg_database WHERE datname = :'database_name')\\gexec\nREVOKE ALL ON DATABASE :\"database_name\" FROM PUBLIC;\nALTER DATABASE :\"database_name\" ALLOW_CONNECTIONS true;\nSQL\n",
+        "group_rename": "set -e\nPGPASSWORD=\"$POSTGRES_ADMIN_PASSWORD\" \"$STACK_INSTALL_DIR/bin/psql\" -h \"$STACK_SOCKET_DIR\" -p \"$STACK_PORT\" -U stack_admin -d postgres -X -w -q -v ON_ERROR_STOP=1 -v ECHO=none <<'SQL'\nSET log_statement = 'none';\n\\getenv old_group STACK_OLD_GROUP\n\\getenv new_group STACK_GROUP\nSELECT format('ALTER DATABASE %I RENAME TO %I', :'old_group', :'new_group')\n  WHERE EXISTS (SELECT FROM pg_database WHERE datname = :'old_group')\n    AND NOT EXISTS (SELECT FROM pg_database WHERE datname = :'new_group')\\gexec\nSELECT format('ALTER ROLE %I RENAME TO %I', :'old_group', :'new_group')\n  WHERE EXISTS (SELECT FROM pg_roles WHERE rolname = :'old_group')\n    AND NOT EXISTS (SELECT FROM pg_roles WHERE rolname = :'new_group')\\gexec\nSQL\n",
+        "database_rename": "set -e\nPGPASSWORD=\"$POSTGRES_ADMIN_PASSWORD\" \"$STACK_INSTALL_DIR/bin/psql\" -h \"$STACK_SOCKET_DIR\" -p \"$STACK_PORT\" -U stack_admin -d postgres -X -w -q -v ON_ERROR_STOP=1 -v ECHO=none <<'SQL'\nSET log_statement = 'none';\n\\getenv old_user STACK_OLD_DATABASE_USER\n\\getenv new_user STACK_DATABASE_USER\nSELECT format('ALTER ROLE %I RENAME TO %I', :'old_user', :'new_user')\n  WHERE EXISTS (SELECT FROM pg_roles WHERE rolname = :'old_user')\n    AND NOT EXISTS (SELECT FROM pg_roles WHERE rolname = :'new_user')\\gexec\nSELECT format('COMMENT ON ROLE %I IS %L', :'new_user', 'stack:database:' || :'new_user')\n  WHERE EXISTS (SELECT FROM pg_roles WHERE rolname = :'new_user')\\gexec\nSQL\n",
         "database_connection": {
           "DATABASE_URL": "postgres://{database_user}:${DB_PASSWORD}@127.0.0.1:{port}/{database}?sslmode=disable",
           "DB_URL": "postgres://{database_user}:${DB_PASSWORD}@127.0.0.1:{port}/{database}?sslmode=disable",
@@ -986,6 +1690,22 @@
           "PGUSER": "{database_user}",
           "PGPASSWORD": "${DB_PASSWORD}",
           "PGDATABASE": "{database}"
+        },
+        "container": {
+          "environment": {
+            "POSTGRES_USER": "{group}",
+            "POSTGRES_DB": "{group}",
+            "POSTGRES_PASSWORD": "${DB_PASSWORD}",
+            "POSTGRES_INITDB_ARGS": "--auth-host=scram-sha-256"
+          },
+          "data": "/var/lib/postgresql",
+          "port": 5432,
+          "healthcheck": {
+            "test": "pg_isready -U {group} -d {group}",
+            "interval": "2s",
+            "timeout": "3s",
+            "retries": 30
+          }
         },
         "shareable": true,
         "windows": {
@@ -1048,7 +1768,8 @@
           ],
           "strip": 0
         }
-      }
+      },
+      "provides": "posix-shell"
     },
     {
       "type": "bun",
@@ -1124,8 +1845,28 @@
         "commands": [
           "bun"
         ],
-        "bin_dir": "."
+        "bin_dir": ".",
+        "trust": {
+          "bundle": "add",
+          "variable": "NODE_EXTRA_CA_CERTS"
+        },
+        "container": {
+          "environment": {
+            "BUN_INSTALL": "/home/stack/.bun",
+            "BUN_INSTALL_BIN": "/home/stack/.bun/bin",
+            "BUN_RUNTIME_TRANSPILER_CACHE_PATH": "0"
+          },
+          "path": [
+            "/home/stack/.bun/bin"
+          ],
+          "version_output": {
+            "name": "Bun",
+            "exact": "{release}"
+          },
+          "base_priority": -2
+        }
       },
+      "resolver": "github.com/oven-sh/bun",
       "image": {
         "repository": "docker.io/oven/bun",
         "tag": "1.1.18-debian",
@@ -1226,8 +1967,28 @@
         "commands": [
           "bun"
         ],
-        "bin_dir": "."
+        "bin_dir": ".",
+        "trust": {
+          "bundle": "add",
+          "variable": "NODE_EXTRA_CA_CERTS"
+        },
+        "container": {
+          "environment": {
+            "BUN_INSTALL": "/home/stack/.bun",
+            "BUN_INSTALL_BIN": "/home/stack/.bun/bin",
+            "BUN_RUNTIME_TRANSPILER_CACHE_PATH": "0"
+          },
+          "path": [
+            "/home/stack/.bun/bin"
+          ],
+          "version_output": {
+            "name": "Bun",
+            "exact": "{release}"
+          },
+          "base_priority": -2
+        }
       },
+      "resolver": "github.com/oven-sh/bun",
       "image": {
         "repository": "docker.io/oven/bun",
         "tag": "1.4.2-debian",
@@ -1374,8 +2135,23 @@
         ],
         "version_arguments": [
           "version"
-        ]
+        ],
+        "container": {
+          "environment": {
+            "GOPATH": "/home/stack/go",
+            "GOTOOLCHAIN": "local"
+          },
+          "path": [
+            "/home/stack/go/bin"
+          ],
+          "version_output": {
+            "name": "Go",
+            "prefix": "go version go{release} "
+          },
+          "base_priority": -1
+        }
       },
+      "resolver": "go.dev",
       "image": {
         "repository": "docker.io/library/golang",
         "tag": "1.27.1-bookworm",
@@ -1523,8 +2299,23 @@
         ],
         "version_arguments": [
           "version"
-        ]
+        ],
+        "container": {
+          "environment": {
+            "GOPATH": "/home/stack/go",
+            "GOTOOLCHAIN": "local"
+          },
+          "path": [
+            "/home/stack/go/bin"
+          ],
+          "version_output": {
+            "name": "Go",
+            "prefix": "go version go{release} "
+          },
+          "base_priority": -1
+        }
       },
+      "resolver": "go.dev",
       "image": {
         "repository": "docker.io/library/golang",
         "tag": "1.26.8-bookworm",
@@ -1654,6 +2445,21 @@
         "exposed": [
           "node"
         ],
+        "trust": {
+          "bundle": "add",
+          "variable": "NODE_EXTRA_CA_CERTS",
+          "serves": [
+            "vite",
+            "nuxt",
+            "next"
+          ]
+        },
+        "container": {
+          "site_check": [
+            "-e",
+            "require('http').get('http://127.0.0.1:{port}',()=>process.exit(0)).on('error',()=>process.exit(1))"
+          ]
+        },
         "windows": {
           "bin_dir": "."
         }
@@ -1662,6 +2468,7 @@
         "lts": "2025-10-28",
         "end": "2028-04-30"
       },
+      "resolver": "nodejs.org",
       "image": {
         "repository": "docker.io/library/node",
         "tag": "24.20.0-bookworm",
@@ -1792,6 +2599,21 @@
         "exposed": [
           "node"
         ],
+        "trust": {
+          "bundle": "add",
+          "variable": "NODE_EXTRA_CA_CERTS",
+          "serves": [
+            "vite",
+            "nuxt",
+            "next"
+          ]
+        },
+        "container": {
+          "site_check": [
+            "-e",
+            "require('http').get('http://127.0.0.1:{port}',()=>process.exit(0)).on('error',()=>process.exit(1))"
+          ]
+        },
         "windows": {
           "bin_dir": "."
         }
@@ -1799,7 +2621,8 @@
       "lifecycle": {
         "lts": "2026-10-28",
         "end": "2029-04-30"
-      }
+      },
+      "resolver": "nodejs.org"
     },
     {
       "type": "node",
@@ -1903,6 +2726,21 @@
         "exposed": [
           "node"
         ],
+        "trust": {
+          "bundle": "add",
+          "variable": "NODE_EXTRA_CA_CERTS",
+          "serves": [
+            "vite",
+            "nuxt",
+            "next"
+          ]
+        },
+        "container": {
+          "site_check": [
+            "-e",
+            "require('http').get('http://127.0.0.1:{port}',()=>process.exit(0)).on('error',()=>process.exit(1))"
+          ]
+        },
         "windows": {
           "bin_dir": "."
         }
@@ -1910,7 +2748,8 @@
       "lifecycle": {
         "lts": "2023-10-24",
         "end": "2026-04-30"
-      }
+      },
+      "resolver": "nodejs.org"
     },
     {
       "type": "node",
@@ -2014,6 +2853,21 @@
         "exposed": [
           "node"
         ],
+        "trust": {
+          "bundle": "add",
+          "variable": "NODE_EXTRA_CA_CERTS",
+          "serves": [
+            "vite",
+            "nuxt",
+            "next"
+          ]
+        },
+        "container": {
+          "site_check": [
+            "-e",
+            "require('http').get('http://127.0.0.1:{port}',()=>process.exit(0)).on('error',()=>process.exit(1))"
+          ]
+        },
         "windows": {
           "bin_dir": "."
         }
@@ -2021,7 +2875,8 @@
       "lifecycle": {
         "lts": "2022-10-25",
         "end": "2025-04-30"
-      }
+      },
+      "resolver": "nodejs.org"
     },
     {
       "type": "node",
@@ -2125,6 +2980,21 @@
         "exposed": [
           "node"
         ],
+        "trust": {
+          "bundle": "add",
+          "variable": "NODE_EXTRA_CA_CERTS",
+          "serves": [
+            "vite",
+            "nuxt",
+            "next"
+          ]
+        },
+        "container": {
+          "site_check": [
+            "-e",
+            "require('http').get('http://127.0.0.1:{port}',()=>process.exit(0)).on('error',()=>process.exit(1))"
+          ]
+        },
         "windows": {
           "bin_dir": "."
         }
@@ -2132,7 +3002,8 @@
       "lifecycle": {
         "lts": "2021-10-26",
         "end": "2023-09-11"
-      }
+      },
+      "resolver": "nodejs.org"
     },
     {
       "type": "php",
@@ -2210,8 +3081,94 @@
         "commands": [
           "php"
         ],
-        "bin_dir": "bin"
-      }
+        "bin_dir": "bin",
+        "container": {
+          "version_output": {
+            "name": "PHP-FPM",
+            "process": "php-fpm",
+            "prefix": "PHP {release} (fpm-fcgi)"
+          },
+          "base_priority": 1,
+          "settings_directory": "/usr/local/etc/php/conf.d",
+          "server_arguments": [
+            "-F",
+            "-O"
+          ],
+          "server_port": 9000,
+          "site_check": [
+            "-r",
+            "exit(@fsockopen('127.0.0.1', {port}) ? 0 : 1);"
+          ]
+        },
+        "extend": {
+          "mechanism": "scan_dir",
+          "syntax": "ini",
+          "suffix": ".ini",
+          "directory_variable": "PHP_INI_SCAN_DIR",
+          "base": {
+            "variable": "PHPRC",
+            "file": "php.ini"
+          },
+          "reserved": [
+            {
+              "key": "openssl.cafile",
+              "reason": "points at Stack's certificate trust bundle, so PHP trusts the local sites Stack serves"
+            },
+            {
+              "key": "curl.cainfo",
+              "reason": "points at Stack's certificate trust bundle, so PHP trusts the local sites Stack serves"
+            }
+          ]
+        },
+        "trust": {
+          "bundle": "replace",
+          "settings": [
+            "openssl.cafile",
+            "curl.cainfo"
+          ]
+        },
+        "site_server": {
+          "serves": [
+            "php",
+            "laravel"
+          ],
+          "protocol": "fastcgi",
+          "name": "PHP-FPM",
+          "title": "PHP",
+          "directory": "php-fpm",
+          "config": "; #stack-generated\n[global]\ndaemonize = no\nerror_log = /dev/stderr\nlog_limit = 65536\n\n[www]\nlisten = ${STACK_LISTEN}\npm = dynamic\npm.max_children = 5\npm.start_servers = 1\npm.min_spare_servers = 1\npm.max_spare_servers = 3\ncatch_workers_output = yes\ndecorate_workers_output = no\nphp_value[log_errors] = On\nclear_env = no\n",
+          "config_name": "pool",
+          "marker": "#stack-generated",
+          "arguments": [
+            "php-fpm",
+            "-F",
+            "-y",
+            "${STACK_CONFIG}",
+            "-g",
+            "${STACK_PID_FILE}"
+          ],
+          "image_process": "php-fpm",
+          "image_arguments": [
+            "-F",
+            "-y",
+            "${STACK_CONFIG}"
+          ],
+          "split_path": ".php",
+          "index": "index.php",
+          "windows": {
+            "arguments": [
+              "php-cgi",
+              "-b",
+              "${STACK_LISTEN}"
+            ],
+            "environment": [
+              "PHP_FCGI_MAX_REQUESTS=0"
+            ]
+          }
+        }
+      },
+      "documentation": "https://www.php.net/manual/en/ini.list.php",
+      "resolve": "image"
     },
     {
       "type": "php",
@@ -2289,8 +3246,94 @@
         "commands": [
           "php"
         ],
-        "bin_dir": "bin"
+        "bin_dir": "bin",
+        "container": {
+          "version_output": {
+            "name": "PHP-FPM",
+            "process": "php-fpm",
+            "prefix": "PHP {release} (fpm-fcgi)"
+          },
+          "base_priority": 1,
+          "settings_directory": "/usr/local/etc/php/conf.d",
+          "server_arguments": [
+            "-F",
+            "-O"
+          ],
+          "server_port": 9000,
+          "site_check": [
+            "-r",
+            "exit(@fsockopen('127.0.0.1', {port}) ? 0 : 1);"
+          ]
+        },
+        "extend": {
+          "mechanism": "scan_dir",
+          "syntax": "ini",
+          "suffix": ".ini",
+          "directory_variable": "PHP_INI_SCAN_DIR",
+          "base": {
+            "variable": "PHPRC",
+            "file": "php.ini"
+          },
+          "reserved": [
+            {
+              "key": "openssl.cafile",
+              "reason": "points at Stack's certificate trust bundle, so PHP trusts the local sites Stack serves"
+            },
+            {
+              "key": "curl.cainfo",
+              "reason": "points at Stack's certificate trust bundle, so PHP trusts the local sites Stack serves"
+            }
+          ]
+        },
+        "trust": {
+          "bundle": "replace",
+          "settings": [
+            "openssl.cafile",
+            "curl.cainfo"
+          ]
+        },
+        "site_server": {
+          "serves": [
+            "php",
+            "laravel"
+          ],
+          "protocol": "fastcgi",
+          "name": "PHP-FPM",
+          "title": "PHP",
+          "directory": "php-fpm",
+          "config": "; #stack-generated\n[global]\ndaemonize = no\nerror_log = /dev/stderr\nlog_limit = 65536\n\n[www]\nlisten = ${STACK_LISTEN}\npm = dynamic\npm.max_children = 5\npm.start_servers = 1\npm.min_spare_servers = 1\npm.max_spare_servers = 3\ncatch_workers_output = yes\ndecorate_workers_output = no\nphp_value[log_errors] = On\nclear_env = no\n",
+          "config_name": "pool",
+          "marker": "#stack-generated",
+          "arguments": [
+            "php-fpm",
+            "-F",
+            "-y",
+            "${STACK_CONFIG}",
+            "-g",
+            "${STACK_PID_FILE}"
+          ],
+          "image_process": "php-fpm",
+          "image_arguments": [
+            "-F",
+            "-y",
+            "${STACK_CONFIG}"
+          ],
+          "split_path": ".php",
+          "index": "index.php",
+          "windows": {
+            "arguments": [
+              "php-cgi",
+              "-b",
+              "${STACK_LISTEN}"
+            ],
+            "environment": [
+              "PHP_FCGI_MAX_REQUESTS=0"
+            ]
+          }
+        }
       },
+      "documentation": "https://www.php.net/manual/en/ini.list.php",
+      "resolve": "image",
       "image": {
         "repository": "docker.io/library/php",
         "tag": "8.4.27-fpm-bookworm",
@@ -2394,8 +3437,94 @@
         "commands": [
           "php"
         ],
-        "bin_dir": "bin"
-      }
+        "bin_dir": "bin",
+        "container": {
+          "version_output": {
+            "name": "PHP-FPM",
+            "process": "php-fpm",
+            "prefix": "PHP {release} (fpm-fcgi)"
+          },
+          "base_priority": 1,
+          "settings_directory": "/usr/local/etc/php/conf.d",
+          "server_arguments": [
+            "-F",
+            "-O"
+          ],
+          "server_port": 9000,
+          "site_check": [
+            "-r",
+            "exit(@fsockopen('127.0.0.1', {port}) ? 0 : 1);"
+          ]
+        },
+        "extend": {
+          "mechanism": "scan_dir",
+          "syntax": "ini",
+          "suffix": ".ini",
+          "directory_variable": "PHP_INI_SCAN_DIR",
+          "base": {
+            "variable": "PHPRC",
+            "file": "php.ini"
+          },
+          "reserved": [
+            {
+              "key": "openssl.cafile",
+              "reason": "points at Stack's certificate trust bundle, so PHP trusts the local sites Stack serves"
+            },
+            {
+              "key": "curl.cainfo",
+              "reason": "points at Stack's certificate trust bundle, so PHP trusts the local sites Stack serves"
+            }
+          ]
+        },
+        "trust": {
+          "bundle": "replace",
+          "settings": [
+            "openssl.cafile",
+            "curl.cainfo"
+          ]
+        },
+        "site_server": {
+          "serves": [
+            "php",
+            "laravel"
+          ],
+          "protocol": "fastcgi",
+          "name": "PHP-FPM",
+          "title": "PHP",
+          "directory": "php-fpm",
+          "config": "; #stack-generated\n[global]\ndaemonize = no\nerror_log = /dev/stderr\nlog_limit = 65536\n\n[www]\nlisten = ${STACK_LISTEN}\npm = dynamic\npm.max_children = 5\npm.start_servers = 1\npm.min_spare_servers = 1\npm.max_spare_servers = 3\ncatch_workers_output = yes\ndecorate_workers_output = no\nphp_value[log_errors] = On\nclear_env = no\n",
+          "config_name": "pool",
+          "marker": "#stack-generated",
+          "arguments": [
+            "php-fpm",
+            "-F",
+            "-y",
+            "${STACK_CONFIG}",
+            "-g",
+            "${STACK_PID_FILE}"
+          ],
+          "image_process": "php-fpm",
+          "image_arguments": [
+            "-F",
+            "-y",
+            "${STACK_CONFIG}"
+          ],
+          "split_path": ".php",
+          "index": "index.php",
+          "windows": {
+            "arguments": [
+              "php-cgi",
+              "-b",
+              "${STACK_LISTEN}"
+            ],
+            "environment": [
+              "PHP_FCGI_MAX_REQUESTS=0"
+            ]
+          }
+        }
+      },
+      "documentation": "https://www.php.net/manual/en/ini.list.php",
+      "resolve": "image"
     },
     {
       "type": "php",
@@ -2473,8 +3602,94 @@
         "commands": [
           "php"
         ],
-        "bin_dir": "bin"
-      }
+        "bin_dir": "bin",
+        "container": {
+          "version_output": {
+            "name": "PHP-FPM",
+            "process": "php-fpm",
+            "prefix": "PHP {release} (fpm-fcgi)"
+          },
+          "base_priority": 1,
+          "settings_directory": "/usr/local/etc/php/conf.d",
+          "server_arguments": [
+            "-F",
+            "-O"
+          ],
+          "server_port": 9000,
+          "site_check": [
+            "-r",
+            "exit(@fsockopen('127.0.0.1', {port}) ? 0 : 1);"
+          ]
+        },
+        "extend": {
+          "mechanism": "scan_dir",
+          "syntax": "ini",
+          "suffix": ".ini",
+          "directory_variable": "PHP_INI_SCAN_DIR",
+          "base": {
+            "variable": "PHPRC",
+            "file": "php.ini"
+          },
+          "reserved": [
+            {
+              "key": "openssl.cafile",
+              "reason": "points at Stack's certificate trust bundle, so PHP trusts the local sites Stack serves"
+            },
+            {
+              "key": "curl.cainfo",
+              "reason": "points at Stack's certificate trust bundle, so PHP trusts the local sites Stack serves"
+            }
+          ]
+        },
+        "trust": {
+          "bundle": "replace",
+          "settings": [
+            "openssl.cafile",
+            "curl.cainfo"
+          ]
+        },
+        "site_server": {
+          "serves": [
+            "php",
+            "laravel"
+          ],
+          "protocol": "fastcgi",
+          "name": "PHP-FPM",
+          "title": "PHP",
+          "directory": "php-fpm",
+          "config": "; #stack-generated\n[global]\ndaemonize = no\nerror_log = /dev/stderr\nlog_limit = 65536\n\n[www]\nlisten = ${STACK_LISTEN}\npm = dynamic\npm.max_children = 5\npm.start_servers = 1\npm.min_spare_servers = 1\npm.max_spare_servers = 3\ncatch_workers_output = yes\ndecorate_workers_output = no\nphp_value[log_errors] = On\nclear_env = no\n",
+          "config_name": "pool",
+          "marker": "#stack-generated",
+          "arguments": [
+            "php-fpm",
+            "-F",
+            "-y",
+            "${STACK_CONFIG}",
+            "-g",
+            "${STACK_PID_FILE}"
+          ],
+          "image_process": "php-fpm",
+          "image_arguments": [
+            "-F",
+            "-y",
+            "${STACK_CONFIG}"
+          ],
+          "split_path": ".php",
+          "index": "index.php",
+          "windows": {
+            "arguments": [
+              "php-cgi",
+              "-b",
+              "${STACK_LISTEN}"
+            ],
+            "environment": [
+              "PHP_FCGI_MAX_REQUESTS=0"
+            ]
+          }
+        }
+      },
+      "documentation": "https://www.php.net/manual/en/ini.list.php",
+      "resolve": "image"
     },
     {
       "type": "php",
@@ -2552,8 +3767,94 @@
         "commands": [
           "php"
         ],
-        "bin_dir": "bin"
-      }
+        "bin_dir": "bin",
+        "container": {
+          "version_output": {
+            "name": "PHP-FPM",
+            "process": "php-fpm",
+            "prefix": "PHP {release} (fpm-fcgi)"
+          },
+          "base_priority": 1,
+          "settings_directory": "/usr/local/etc/php/conf.d",
+          "server_arguments": [
+            "-F",
+            "-O"
+          ],
+          "server_port": 9000,
+          "site_check": [
+            "-r",
+            "exit(@fsockopen('127.0.0.1', {port}) ? 0 : 1);"
+          ]
+        },
+        "extend": {
+          "mechanism": "scan_dir",
+          "syntax": "ini",
+          "suffix": ".ini",
+          "directory_variable": "PHP_INI_SCAN_DIR",
+          "base": {
+            "variable": "PHPRC",
+            "file": "php.ini"
+          },
+          "reserved": [
+            {
+              "key": "openssl.cafile",
+              "reason": "points at Stack's certificate trust bundle, so PHP trusts the local sites Stack serves"
+            },
+            {
+              "key": "curl.cainfo",
+              "reason": "points at Stack's certificate trust bundle, so PHP trusts the local sites Stack serves"
+            }
+          ]
+        },
+        "trust": {
+          "bundle": "replace",
+          "settings": [
+            "openssl.cafile",
+            "curl.cainfo"
+          ]
+        },
+        "site_server": {
+          "serves": [
+            "php",
+            "laravel"
+          ],
+          "protocol": "fastcgi",
+          "name": "PHP-FPM",
+          "title": "PHP",
+          "directory": "php-fpm",
+          "config": "; #stack-generated\n[global]\ndaemonize = no\nerror_log = /dev/stderr\nlog_limit = 65536\n\n[www]\nlisten = ${STACK_LISTEN}\npm = dynamic\npm.max_children = 5\npm.start_servers = 1\npm.min_spare_servers = 1\npm.max_spare_servers = 3\ncatch_workers_output = yes\ndecorate_workers_output = no\nphp_value[log_errors] = On\nclear_env = no\n",
+          "config_name": "pool",
+          "marker": "#stack-generated",
+          "arguments": [
+            "php-fpm",
+            "-F",
+            "-y",
+            "${STACK_CONFIG}",
+            "-g",
+            "${STACK_PID_FILE}"
+          ],
+          "image_process": "php-fpm",
+          "image_arguments": [
+            "-F",
+            "-y",
+            "${STACK_CONFIG}"
+          ],
+          "split_path": ".php",
+          "index": "index.php",
+          "windows": {
+            "arguments": [
+              "php-cgi",
+              "-b",
+              "${STACK_LISTEN}"
+            ],
+            "environment": [
+              "PHP_FCGI_MAX_REQUESTS=0"
+            ]
+          }
+        }
+      },
+      "documentation": "https://www.php.net/manual/en/ini.list.php",
+      "resolve": "image"
     },
     {
       "type": "python",
@@ -3363,7 +4664,293 @@
       },
       "runtime": {
         "initialised_marker": "stack-accounts",
-        "start": "umask 077\nprintf 'max_payload: 64MB\\ninclude ./accounts.conf\\n' > \"$STACK_DATA_DIR/nats.conf\"\nexec \"$STACK_INSTALL_DIR/nats-server\" -c \"$STACK_DATA_DIR/nats.conf\" -a 127.0.0.1 -p \"$STACK_PORT\" -js -sd \"$STACK_DATA_DIR/jetstream\"\n",
+        "start": "umask 077\nprintf 'max_payload: 64MB\\ninclude ./accounts.conf\\n' > \"$STACK_DATA_DIR/nats.conf\"\nexec \"$STACK_INSTALL_DIR/nats-server\" -c \"$STACK_DATA_DIR/nats.conf\" \"$@\" -a 127.0.0.1 -p \"$STACK_PORT\" -js -sd \"$STACK_DATA_DIR/jetstream\"\n",
+        "extend": {
+          "mechanism": "include",
+          "syntax": "nats",
+          "suffix": ".conf",
+          "file": "nats.conf",
+          "settings_file": "nats.conf",
+          "arguments": [
+            "-c",
+            "${STACK_CONFIG_FILE}"
+          ],
+          "windows_append": true,
+          "reserved": [
+            {
+              "key": "accounts",
+              "reason": "holds the accounts Stack provisions"
+            },
+            {
+              "key": "authorization",
+              "reason": "decides who may sign in, which Stack's accounts decide"
+            },
+            {
+              "key": "system_account",
+              "reason": "names the account Stack administers the server through"
+            },
+            {
+              "key": "system",
+              "reason": "names the account Stack administers the server through"
+            },
+            {
+              "key": "no_system_account",
+              "reason": "removes the account Stack administers the server through"
+            },
+            {
+              "key": "no_system",
+              "reason": "removes the account Stack administers the server through"
+            },
+            {
+              "key": "no_sys_acc",
+              "reason": "removes the account Stack administers the server through"
+            },
+            {
+              "key": "operator",
+              "reason": "replaces Stack's accounts with operator-signed ones"
+            },
+            {
+              "key": "operators",
+              "reason": "replaces Stack's accounts with operator-signed ones"
+            },
+            {
+              "key": "root",
+              "reason": "replaces Stack's accounts with operator-signed ones"
+            },
+            {
+              "key": "roots",
+              "reason": "replaces Stack's accounts with operator-signed ones"
+            },
+            {
+              "key": "root_operator",
+              "reason": "replaces Stack's accounts with operator-signed ones"
+            },
+            {
+              "key": "root_operators",
+              "reason": "replaces Stack's accounts with operator-signed ones"
+            },
+            {
+              "key": "trusted",
+              "reason": "trusts operator keys beside Stack's accounts"
+            },
+            {
+              "key": "trusted_keys",
+              "reason": "trusts operator keys beside Stack's accounts"
+            },
+            {
+              "key": "resolver",
+              "reason": "loads accounts Stack did not provision"
+            },
+            {
+              "key": "account_resolver",
+              "reason": "loads accounts Stack did not provision"
+            },
+            {
+              "key": "accounts_resolver",
+              "reason": "loads accounts Stack did not provision"
+            },
+            {
+              "key": "resolver_preload",
+              "reason": "loads accounts Stack did not provision"
+            },
+            {
+              "key": "resolver_pinned_accounts",
+              "reason": "configures account resolution, which Stack does not use"
+            },
+            {
+              "key": "resolver_tls",
+              "reason": "configures account resolution, which Stack does not use"
+            },
+            {
+              "key": "no_auth_user",
+              "reason": "lets a client sign in without a password"
+            },
+            {
+              "key": "default_sentinel",
+              "reason": "signs in clients that present no credentials"
+            },
+            {
+              "key": "proxies",
+              "reason": "trusts proxies to sign clients in"
+            },
+            {
+              "key": "proxy_protocol",
+              "reason": "changes how the client port reads connections"
+            },
+            {
+              "key": "listen",
+              "reason": "is where Stack's clients connect, which Stack sets on the command line"
+            },
+            {
+              "key": "port",
+              "reason": "is where Stack's clients connect, which Stack sets on the command line"
+            },
+            {
+              "key": "host",
+              "reason": "is where Stack's clients connect, which Stack sets on the command line"
+            },
+            {
+              "key": "net",
+              "reason": "is where Stack's clients connect, which Stack sets on the command line"
+            },
+            {
+              "key": "client_advertise",
+              "reason": "advertises an address other than Stack's to clients"
+            },
+            {
+              "key": "http",
+              "reason": "opens a monitoring port Stack did not ask for"
+            },
+            {
+              "key": "https",
+              "reason": "opens a monitoring port Stack did not ask for"
+            },
+            {
+              "key": "http_port",
+              "reason": "opens a monitoring port Stack did not ask for"
+            },
+            {
+              "key": "https_port",
+              "reason": "opens a monitoring port Stack did not ask for"
+            },
+            {
+              "key": "monitor_port",
+              "reason": "opens a monitoring port Stack did not ask for"
+            },
+            {
+              "key": "prof_port",
+              "reason": "opens a profiling port Stack did not ask for"
+            },
+            {
+              "key": "websocket",
+              "reason": "listens where Stack did not ask"
+            },
+            {
+              "key": "websocket.*",
+              "reason": "listens where Stack did not ask"
+            },
+            {
+              "key": "ws",
+              "reason": "listens where Stack did not ask"
+            },
+            {
+              "key": "ws.*",
+              "reason": "listens where Stack did not ask"
+            },
+            {
+              "key": "mqtt",
+              "reason": "listens where Stack did not ask"
+            },
+            {
+              "key": "mqtt.*",
+              "reason": "listens where Stack did not ask"
+            },
+            {
+              "key": "cluster",
+              "reason": "connects the server to others and listens where Stack did not ask"
+            },
+            {
+              "key": "cluster.*",
+              "reason": "connects the server to others and listens where Stack did not ask"
+            },
+            {
+              "key": "gateway",
+              "reason": "connects the server to others and listens where Stack did not ask"
+            },
+            {
+              "key": "gateway.*",
+              "reason": "connects the server to others and listens where Stack did not ask"
+            },
+            {
+              "key": "leafnodes",
+              "reason": "connects the server to others and listens where Stack did not ask"
+            },
+            {
+              "key": "leafnodes.*",
+              "reason": "connects the server to others and listens where Stack did not ask"
+            },
+            {
+              "key": "leaf",
+              "reason": "connects the server to others and listens where Stack did not ask"
+            },
+            {
+              "key": "leaf.*",
+              "reason": "connects the server to others and listens where Stack did not ask"
+            },
+            {
+              "key": "tls",
+              "reason": "changes how clients connect, which Stack does not set up"
+            },
+            {
+              "key": "ocsp",
+              "reason": "concerns TLS, which Stack does not set up"
+            },
+            {
+              "key": "ocsp_cache",
+              "reason": "concerns TLS, which Stack does not set up"
+            },
+            {
+              "key": "ocsp_cache.*",
+              "reason": "concerns TLS, which Stack does not set up"
+            },
+            {
+              "key": "store_dir",
+              "reason": "is the data directory Stack manages, which Stack sets on the command line"
+            },
+            {
+              "key": "storedir",
+              "reason": "is the data directory Stack manages, which Stack sets on the command line"
+            },
+            {
+              "key": "jetstream.store_dir",
+              "reason": "is the data directory Stack manages, which Stack sets on the command line"
+            },
+            {
+              "key": "jetstream.store",
+              "reason": "is the data directory Stack manages, which Stack sets on the command line"
+            },
+            {
+              "key": "jetstream.storedir",
+              "reason": "is the data directory Stack manages, which Stack sets on the command line"
+            },
+            {
+              "key": "jetstream.tpm",
+              "reason": "keeps a key file outside the data directory Stack manages"
+            },
+            {
+              "key": "logfile",
+              "reason": "writes the server's log somewhere other than the file Stack supervises"
+            },
+            {
+              "key": "log_file",
+              "reason": "writes the server's log somewhere other than the file Stack supervises"
+            },
+            {
+              "key": "syslog",
+              "reason": "sends the server's log away from the file Stack supervises"
+            },
+            {
+              "key": "remote_syslog",
+              "reason": "sends the server's log away from the file Stack supervises"
+            },
+            {
+              "key": "pidfile",
+              "reason": "writes a file outside the data directory Stack manages"
+            },
+            {
+              "key": "pid_file",
+              "reason": "writes a file outside the data directory Stack manages"
+            },
+            {
+              "key": "ports_file_dir",
+              "reason": "writes a file outside the data directory Stack manages"
+            },
+            {
+              "key": "max_payload",
+              "reason": "is set by Stack, whose settings are read last"
+            }
+          ]
+        },
         "stop_signal": "SIGTERM",
         "default_port": 4222,
         "connection": {
@@ -3476,7 +5063,293 @@
       },
       "runtime": {
         "initialised_marker": "stack-accounts",
-        "start": "umask 077\nprintf 'max_payload: 64MB\\ninclude ./accounts.conf\\n' > \"$STACK_DATA_DIR/nats.conf\"\nexec \"$STACK_INSTALL_DIR/nats-server\" -c \"$STACK_DATA_DIR/nats.conf\" -a 127.0.0.1 -p \"$STACK_PORT\" -js -sd \"$STACK_DATA_DIR/jetstream\"\n",
+        "start": "umask 077\nprintf 'max_payload: 64MB\\ninclude ./accounts.conf\\n' > \"$STACK_DATA_DIR/nats.conf\"\nexec \"$STACK_INSTALL_DIR/nats-server\" -c \"$STACK_DATA_DIR/nats.conf\" \"$@\" -a 127.0.0.1 -p \"$STACK_PORT\" -js -sd \"$STACK_DATA_DIR/jetstream\"\n",
+        "extend": {
+          "mechanism": "include",
+          "syntax": "nats",
+          "suffix": ".conf",
+          "file": "nats.conf",
+          "settings_file": "nats.conf",
+          "arguments": [
+            "-c",
+            "${STACK_CONFIG_FILE}"
+          ],
+          "windows_append": true,
+          "reserved": [
+            {
+              "key": "accounts",
+              "reason": "holds the accounts Stack provisions"
+            },
+            {
+              "key": "authorization",
+              "reason": "decides who may sign in, which Stack's accounts decide"
+            },
+            {
+              "key": "system_account",
+              "reason": "names the account Stack administers the server through"
+            },
+            {
+              "key": "system",
+              "reason": "names the account Stack administers the server through"
+            },
+            {
+              "key": "no_system_account",
+              "reason": "removes the account Stack administers the server through"
+            },
+            {
+              "key": "no_system",
+              "reason": "removes the account Stack administers the server through"
+            },
+            {
+              "key": "no_sys_acc",
+              "reason": "removes the account Stack administers the server through"
+            },
+            {
+              "key": "operator",
+              "reason": "replaces Stack's accounts with operator-signed ones"
+            },
+            {
+              "key": "operators",
+              "reason": "replaces Stack's accounts with operator-signed ones"
+            },
+            {
+              "key": "root",
+              "reason": "replaces Stack's accounts with operator-signed ones"
+            },
+            {
+              "key": "roots",
+              "reason": "replaces Stack's accounts with operator-signed ones"
+            },
+            {
+              "key": "root_operator",
+              "reason": "replaces Stack's accounts with operator-signed ones"
+            },
+            {
+              "key": "root_operators",
+              "reason": "replaces Stack's accounts with operator-signed ones"
+            },
+            {
+              "key": "trusted",
+              "reason": "trusts operator keys beside Stack's accounts"
+            },
+            {
+              "key": "trusted_keys",
+              "reason": "trusts operator keys beside Stack's accounts"
+            },
+            {
+              "key": "resolver",
+              "reason": "loads accounts Stack did not provision"
+            },
+            {
+              "key": "account_resolver",
+              "reason": "loads accounts Stack did not provision"
+            },
+            {
+              "key": "accounts_resolver",
+              "reason": "loads accounts Stack did not provision"
+            },
+            {
+              "key": "resolver_preload",
+              "reason": "loads accounts Stack did not provision"
+            },
+            {
+              "key": "resolver_pinned_accounts",
+              "reason": "configures account resolution, which Stack does not use"
+            },
+            {
+              "key": "resolver_tls",
+              "reason": "configures account resolution, which Stack does not use"
+            },
+            {
+              "key": "no_auth_user",
+              "reason": "lets a client sign in without a password"
+            },
+            {
+              "key": "default_sentinel",
+              "reason": "signs in clients that present no credentials"
+            },
+            {
+              "key": "proxies",
+              "reason": "trusts proxies to sign clients in"
+            },
+            {
+              "key": "proxy_protocol",
+              "reason": "changes how the client port reads connections"
+            },
+            {
+              "key": "listen",
+              "reason": "is where Stack's clients connect, which Stack sets on the command line"
+            },
+            {
+              "key": "port",
+              "reason": "is where Stack's clients connect, which Stack sets on the command line"
+            },
+            {
+              "key": "host",
+              "reason": "is where Stack's clients connect, which Stack sets on the command line"
+            },
+            {
+              "key": "net",
+              "reason": "is where Stack's clients connect, which Stack sets on the command line"
+            },
+            {
+              "key": "client_advertise",
+              "reason": "advertises an address other than Stack's to clients"
+            },
+            {
+              "key": "http",
+              "reason": "opens a monitoring port Stack did not ask for"
+            },
+            {
+              "key": "https",
+              "reason": "opens a monitoring port Stack did not ask for"
+            },
+            {
+              "key": "http_port",
+              "reason": "opens a monitoring port Stack did not ask for"
+            },
+            {
+              "key": "https_port",
+              "reason": "opens a monitoring port Stack did not ask for"
+            },
+            {
+              "key": "monitor_port",
+              "reason": "opens a monitoring port Stack did not ask for"
+            },
+            {
+              "key": "prof_port",
+              "reason": "opens a profiling port Stack did not ask for"
+            },
+            {
+              "key": "websocket",
+              "reason": "listens where Stack did not ask"
+            },
+            {
+              "key": "websocket.*",
+              "reason": "listens where Stack did not ask"
+            },
+            {
+              "key": "ws",
+              "reason": "listens where Stack did not ask"
+            },
+            {
+              "key": "ws.*",
+              "reason": "listens where Stack did not ask"
+            },
+            {
+              "key": "mqtt",
+              "reason": "listens where Stack did not ask"
+            },
+            {
+              "key": "mqtt.*",
+              "reason": "listens where Stack did not ask"
+            },
+            {
+              "key": "cluster",
+              "reason": "connects the server to others and listens where Stack did not ask"
+            },
+            {
+              "key": "cluster.*",
+              "reason": "connects the server to others and listens where Stack did not ask"
+            },
+            {
+              "key": "gateway",
+              "reason": "connects the server to others and listens where Stack did not ask"
+            },
+            {
+              "key": "gateway.*",
+              "reason": "connects the server to others and listens where Stack did not ask"
+            },
+            {
+              "key": "leafnodes",
+              "reason": "connects the server to others and listens where Stack did not ask"
+            },
+            {
+              "key": "leafnodes.*",
+              "reason": "connects the server to others and listens where Stack did not ask"
+            },
+            {
+              "key": "leaf",
+              "reason": "connects the server to others and listens where Stack did not ask"
+            },
+            {
+              "key": "leaf.*",
+              "reason": "connects the server to others and listens where Stack did not ask"
+            },
+            {
+              "key": "tls",
+              "reason": "changes how clients connect, which Stack does not set up"
+            },
+            {
+              "key": "ocsp",
+              "reason": "concerns TLS, which Stack does not set up"
+            },
+            {
+              "key": "ocsp_cache",
+              "reason": "concerns TLS, which Stack does not set up"
+            },
+            {
+              "key": "ocsp_cache.*",
+              "reason": "concerns TLS, which Stack does not set up"
+            },
+            {
+              "key": "store_dir",
+              "reason": "is the data directory Stack manages, which Stack sets on the command line"
+            },
+            {
+              "key": "storedir",
+              "reason": "is the data directory Stack manages, which Stack sets on the command line"
+            },
+            {
+              "key": "jetstream.store_dir",
+              "reason": "is the data directory Stack manages, which Stack sets on the command line"
+            },
+            {
+              "key": "jetstream.store",
+              "reason": "is the data directory Stack manages, which Stack sets on the command line"
+            },
+            {
+              "key": "jetstream.storedir",
+              "reason": "is the data directory Stack manages, which Stack sets on the command line"
+            },
+            {
+              "key": "jetstream.tpm",
+              "reason": "keeps a key file outside the data directory Stack manages"
+            },
+            {
+              "key": "logfile",
+              "reason": "writes the server's log somewhere other than the file Stack supervises"
+            },
+            {
+              "key": "log_file",
+              "reason": "writes the server's log somewhere other than the file Stack supervises"
+            },
+            {
+              "key": "syslog",
+              "reason": "sends the server's log away from the file Stack supervises"
+            },
+            {
+              "key": "remote_syslog",
+              "reason": "sends the server's log away from the file Stack supervises"
+            },
+            {
+              "key": "pidfile",
+              "reason": "writes a file outside the data directory Stack manages"
+            },
+            {
+              "key": "pid_file",
+              "reason": "writes a file outside the data directory Stack manages"
+            },
+            {
+              "key": "ports_file_dir",
+              "reason": "writes a file outside the data directory Stack manages"
+            },
+            {
+              "key": "max_payload",
+              "reason": "is set by Stack, whose settings are read last"
+            }
+          ]
+        },
         "stop_signal": "SIGTERM",
         "default_port": 4222,
         "connection": {
@@ -3591,8 +5464,10 @@
         "bin_dir": ".",
         "windows": {
           "run_with": "php"
-        }
-      }
+        },
+        "container": {}
+      },
+      "resolver": "getcomposer.org"
     },
     {
       "type": "pnpm",
@@ -3673,8 +5548,10 @@
         "commands": [
           "pnpm"
         ],
-        "bin_dir": "."
-      }
+        "bin_dir": ".",
+        "container": {}
+      },
+      "resolver": "github.com/pnpm/pnpm"
     },
     {
       "type": "pnpm",
@@ -3755,8 +5632,10 @@
         "commands": [
           "pnpm"
         ],
-        "bin_dir": "."
-      }
+        "bin_dir": ".",
+        "container": {}
+      },
+      "resolver": "github.com/pnpm/pnpm"
     },
     {
       "type": "s3",
@@ -3862,6 +5741,11 @@
           "owner": "AWS_ACCESS_KEY_ID"
         },
         "provisioner": "versitygw",
+        "buckets": {
+          "protocol": "s3",
+          "gateway_label": "s3",
+          "laravel_variable": "AWS_BUCKET"
+        },
         "container_connection": {
           "AWS_ENDPOINT_URL": "https://s3.{group}.{tld}",
           "AWS_REGION": "us-east-1",
@@ -3869,6 +5753,32 @@
           "S3_ENDPOINT": "https://s3.{group}.{tld}",
           "S3_ACCESS_KEY_ID": "${AWS_ACCESS_KEY_ID}",
           "S3_SECRET_ACCESS_KEY": "${AWS_SECRET_ACCESS_KEY}"
+        },
+        "container": {
+          "environment": {
+            "ROOT_ACCESS_KEY": "${ROOT_ACCESS_KEY}",
+            "ROOT_SECRET_KEY": "${ROOT_SECRET_KEY}"
+          },
+          "data": "/data",
+          "port": 7070,
+          "command": "mkdir -p {data}/buckets {data}/iam; exec /usr/local/bin/versitygw --port :{port} --iam-dir {data}/iam posix {data}/buckets",
+          "healthcheck": {
+            "test": "ADMIN_ACCESS_KEY_ID=\"$ROOT_ACCESS_KEY\" ADMIN_SECRET_ACCESS_KEY=\"$ROOT_SECRET_KEY\" ADMIN_ENDPOINT_URL=\"http://127.0.0.1:{port}\" /usr/local/bin/versitygw admin list-buckets",
+            "interval": "2s",
+            "timeout": "5s",
+            "retries": 30
+          },
+          "init": {
+            "environment": {
+              "ADMIN_ACCESS_KEY_ID": "${ROOT_ACCESS_KEY}",
+              "ADMIN_SECRET_ACCESS_KEY": "${ROOT_SECRET_KEY}",
+              "ADMIN_ENDPOINT_URL": "http://{host}:{port}",
+              "AWS_ACCESS_KEY_ID": "${AWS_ACCESS_KEY_ID}",
+              "AWS_SECRET_ACCESS_KEY": "${AWS_SECRET_ACCESS_KEY}",
+              "STACK_BUCKETS": "{buckets}"
+            },
+            "script": "set -ef\npresent() { /usr/local/bin/versitygw admin \"$1\" | awk -v value=\"$2\" 'NR>2 && $1==value {found=1} END{exit !found}'; }\npresent list-users \"$AWS_ACCESS_KEY_ID\" ||\n  /usr/local/bin/versitygw admin create-user --access \"$AWS_ACCESS_KEY_ID\" --secret \"$AWS_SECRET_ACCESS_KEY\" --role user\nfor bucket in $STACK_BUCKETS; do\n  present list-buckets \"$bucket\" ||\n    /usr/local/bin/versitygw admin create-bucket --bucket \"$bucket\" --owner \"$AWS_ACCESS_KEY_ID\"\ndone\n"
+          }
         },
         "shareable": true,
         "windows": {

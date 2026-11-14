@@ -39,7 +39,293 @@
     },
     "runtime": {
       "initialised_marker": "stack-accounts",
-      "start": "umask 077\nprintf 'max_payload: 64MB\\ninclude ./accounts.conf\\n' > \"$STACK_DATA_DIR/nats.conf\"\nexec \"$STACK_INSTALL_DIR/nats-server\" -c \"$STACK_DATA_DIR/nats.conf\" -a 127.0.0.1 -p \"$STACK_PORT\" -js -sd \"$STACK_DATA_DIR/jetstream\"\n",
+      "start": "umask 077\nprintf 'max_payload: 64MB\\ninclude ./accounts.conf\\n' > \"$STACK_DATA_DIR/nats.conf\"\nexec \"$STACK_INSTALL_DIR/nats-server\" -c \"$STACK_DATA_DIR/nats.conf\" \"$@\" -a 127.0.0.1 -p \"$STACK_PORT\" -js -sd \"$STACK_DATA_DIR/jetstream\"\n",
+      "extend": {
+        "mechanism": "include",
+        "syntax": "nats",
+        "suffix": ".conf",
+        "file": "nats.conf",
+        "settings_file": "nats.conf",
+        "arguments": [
+          "-c",
+          "${STACK_CONFIG_FILE}"
+        ],
+        "windows_append": true,
+        "reserved": [
+          {
+            "key": "accounts",
+            "reason": "holds the accounts Stack provisions"
+          },
+          {
+            "key": "authorization",
+            "reason": "decides who may sign in, which Stack's accounts decide"
+          },
+          {
+            "key": "system_account",
+            "reason": "names the account Stack administers the server through"
+          },
+          {
+            "key": "system",
+            "reason": "names the account Stack administers the server through"
+          },
+          {
+            "key": "no_system_account",
+            "reason": "removes the account Stack administers the server through"
+          },
+          {
+            "key": "no_system",
+            "reason": "removes the account Stack administers the server through"
+          },
+          {
+            "key": "no_sys_acc",
+            "reason": "removes the account Stack administers the server through"
+          },
+          {
+            "key": "operator",
+            "reason": "replaces Stack's accounts with operator-signed ones"
+          },
+          {
+            "key": "operators",
+            "reason": "replaces Stack's accounts with operator-signed ones"
+          },
+          {
+            "key": "root",
+            "reason": "replaces Stack's accounts with operator-signed ones"
+          },
+          {
+            "key": "roots",
+            "reason": "replaces Stack's accounts with operator-signed ones"
+          },
+          {
+            "key": "root_operator",
+            "reason": "replaces Stack's accounts with operator-signed ones"
+          },
+          {
+            "key": "root_operators",
+            "reason": "replaces Stack's accounts with operator-signed ones"
+          },
+          {
+            "key": "trusted",
+            "reason": "trusts operator keys beside Stack's accounts"
+          },
+          {
+            "key": "trusted_keys",
+            "reason": "trusts operator keys beside Stack's accounts"
+          },
+          {
+            "key": "resolver",
+            "reason": "loads accounts Stack did not provision"
+          },
+          {
+            "key": "account_resolver",
+            "reason": "loads accounts Stack did not provision"
+          },
+          {
+            "key": "accounts_resolver",
+            "reason": "loads accounts Stack did not provision"
+          },
+          {
+            "key": "resolver_preload",
+            "reason": "loads accounts Stack did not provision"
+          },
+          {
+            "key": "resolver_pinned_accounts",
+            "reason": "configures account resolution, which Stack does not use"
+          },
+          {
+            "key": "resolver_tls",
+            "reason": "configures account resolution, which Stack does not use"
+          },
+          {
+            "key": "no_auth_user",
+            "reason": "lets a client sign in without a password"
+          },
+          {
+            "key": "default_sentinel",
+            "reason": "signs in clients that present no credentials"
+          },
+          {
+            "key": "proxies",
+            "reason": "trusts proxies to sign clients in"
+          },
+          {
+            "key": "proxy_protocol",
+            "reason": "changes how the client port reads connections"
+          },
+          {
+            "key": "listen",
+            "reason": "is where Stack's clients connect, which Stack sets on the command line"
+          },
+          {
+            "key": "port",
+            "reason": "is where Stack's clients connect, which Stack sets on the command line"
+          },
+          {
+            "key": "host",
+            "reason": "is where Stack's clients connect, which Stack sets on the command line"
+          },
+          {
+            "key": "net",
+            "reason": "is where Stack's clients connect, which Stack sets on the command line"
+          },
+          {
+            "key": "client_advertise",
+            "reason": "advertises an address other than Stack's to clients"
+          },
+          {
+            "key": "http",
+            "reason": "opens a monitoring port Stack did not ask for"
+          },
+          {
+            "key": "https",
+            "reason": "opens a monitoring port Stack did not ask for"
+          },
+          {
+            "key": "http_port",
+            "reason": "opens a monitoring port Stack did not ask for"
+          },
+          {
+            "key": "https_port",
+            "reason": "opens a monitoring port Stack did not ask for"
+          },
+          {
+            "key": "monitor_port",
+            "reason": "opens a monitoring port Stack did not ask for"
+          },
+          {
+            "key": "prof_port",
+            "reason": "opens a profiling port Stack did not ask for"
+          },
+          {
+            "key": "websocket",
+            "reason": "listens where Stack did not ask"
+          },
+          {
+            "key": "websocket.*",
+            "reason": "listens where Stack did not ask"
+          },
+          {
+            "key": "ws",
+            "reason": "listens where Stack did not ask"
+          },
+          {
+            "key": "ws.*",
+            "reason": "listens where Stack did not ask"
+          },
+          {
+            "key": "mqtt",
+            "reason": "listens where Stack did not ask"
+          },
+          {
+            "key": "mqtt.*",
+            "reason": "listens where Stack did not ask"
+          },
+          {
+            "key": "cluster",
+            "reason": "connects the server to others and listens where Stack did not ask"
+          },
+          {
+            "key": "cluster.*",
+            "reason": "connects the server to others and listens where Stack did not ask"
+          },
+          {
+            "key": "gateway",
+            "reason": "connects the server to others and listens where Stack did not ask"
+          },
+          {
+            "key": "gateway.*",
+            "reason": "connects the server to others and listens where Stack did not ask"
+          },
+          {
+            "key": "leafnodes",
+            "reason": "connects the server to others and listens where Stack did not ask"
+          },
+          {
+            "key": "leafnodes.*",
+            "reason": "connects the server to others and listens where Stack did not ask"
+          },
+          {
+            "key": "leaf",
+            "reason": "connects the server to others and listens where Stack did not ask"
+          },
+          {
+            "key": "leaf.*",
+            "reason": "connects the server to others and listens where Stack did not ask"
+          },
+          {
+            "key": "tls",
+            "reason": "changes how clients connect, which Stack does not set up"
+          },
+          {
+            "key": "ocsp",
+            "reason": "concerns TLS, which Stack does not set up"
+          },
+          {
+            "key": "ocsp_cache",
+            "reason": "concerns TLS, which Stack does not set up"
+          },
+          {
+            "key": "ocsp_cache.*",
+            "reason": "concerns TLS, which Stack does not set up"
+          },
+          {
+            "key": "store_dir",
+            "reason": "is the data directory Stack manages, which Stack sets on the command line"
+          },
+          {
+            "key": "storedir",
+            "reason": "is the data directory Stack manages, which Stack sets on the command line"
+          },
+          {
+            "key": "jetstream.store_dir",
+            "reason": "is the data directory Stack manages, which Stack sets on the command line"
+          },
+          {
+            "key": "jetstream.store",
+            "reason": "is the data directory Stack manages, which Stack sets on the command line"
+          },
+          {
+            "key": "jetstream.storedir",
+            "reason": "is the data directory Stack manages, which Stack sets on the command line"
+          },
+          {
+            "key": "jetstream.tpm",
+            "reason": "keeps a key file outside the data directory Stack manages"
+          },
+          {
+            "key": "logfile",
+            "reason": "writes the server's log somewhere other than the file Stack supervises"
+          },
+          {
+            "key": "log_file",
+            "reason": "writes the server's log somewhere other than the file Stack supervises"
+          },
+          {
+            "key": "syslog",
+            "reason": "sends the server's log away from the file Stack supervises"
+          },
+          {
+            "key": "remote_syslog",
+            "reason": "sends the server's log away from the file Stack supervises"
+          },
+          {
+            "key": "pidfile",
+            "reason": "writes a file outside the data directory Stack manages"
+          },
+          {
+            "key": "pid_file",
+            "reason": "writes a file outside the data directory Stack manages"
+          },
+          {
+            "key": "ports_file_dir",
+            "reason": "writes a file outside the data directory Stack manages"
+          },
+          {
+            "key": "max_payload",
+            "reason": "is set by Stack, whose settings are read last"
+          }
+        ]
+      },
       "stop_signal": "SIGTERM",
       "default_port": 4222,
       "connection": {

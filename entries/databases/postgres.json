@@ -31,7 +31,172 @@
     "runtime": {
       "initialise": "set -e\nif [ -e \"$STACK_DATA_DIR/PG_VERSION\" ]; then\n  printf '%s\\n' 'The existing PostgreSQL cluster uses an unsupported data layout; preserve it and choose an empty instance directory.' >&2\n  exit 1\nfi\nprintf '%s\\n' \"$POSTGRES_ADMIN_PASSWORD\" | \"$STACK_INSTALL_DIR/bin/initdb\" --pgdata=\"$STACK_DATA_DIR/pgdata\" --username=stack_admin --auth=scram-sha-256 --pwfile=/dev/stdin --encoding=UTF8 --no-sync\n",
       "initialised_marker": "pgdata/PG_VERSION",
-      "start": "\"$STACK_INSTALL_DIR/bin/postgres\" -D \"$STACK_DATA_DIR/pgdata\" -p \"$STACK_PORT\" -k \"$STACK_SOCKET_DIR\" -c listen_addresses=127.0.0.1",
+      "start": "\"$STACK_INSTALL_DIR/bin/postgres\" \"$@\" -D \"$STACK_DATA_DIR/pgdata\" -p \"$STACK_PORT\" -k \"$STACK_SOCKET_DIR\" -c listen_addresses=127.0.0.1",
+      "extend": {
+        "mechanism": "include_dir",
+        "syntax": "postgresql",
+        "suffix": ".conf",
+        "file": "postgresql.conf",
+        "engine_file": "pgdata/postgresql.conf",
+        "arguments": [
+          "-c",
+          "config_file=${STACK_CONFIG_FILE}"
+        ],
+        "reserved": [
+          {
+            "key": "shared_preload_libraries",
+            "reason": "loads libraries into the server"
+          },
+          {
+            "key": "session_preload_libraries",
+            "reason": "loads libraries into every session"
+          },
+          {
+            "key": "local_preload_libraries",
+            "reason": "loads libraries into every session"
+          },
+          {
+            "key": "dynamic_library_path",
+            "reason": "decides where the server loads libraries from"
+          },
+          {
+            "key": "extension_control_path",
+            "reason": "decides where the server finds extensions to load"
+          },
+          {
+            "key": "jit_provider",
+            "reason": "loads a library into the server"
+          },
+          {
+            "key": "oauth_validator_libraries",
+            "reason": "loads libraries into the server"
+          },
+          {
+            "key": "archive_library",
+            "reason": "loads a library into the server"
+          },
+          {
+            "key": "archive_command",
+            "reason": "runs a shell command"
+          },
+          {
+            "key": "restore_command",
+            "reason": "runs a shell command"
+          },
+          {
+            "key": "archive_cleanup_command",
+            "reason": "runs a shell command"
+          },
+          {
+            "key": "recovery_end_command",
+            "reason": "runs a shell command"
+          },
+          {
+            "key": "ssl_passphrase_command",
+            "reason": "runs a shell command"
+          },
+          {
+            "key": "listen_addresses",
+            "reason": "is where Stack's clients connect, which Stack sets on the command line"
+          },
+          {
+            "key": "port",
+            "reason": "is where Stack's clients connect, which Stack sets on the command line"
+          },
+          {
+            "key": "unix_socket_directories",
+            "reason": "is where Stack's clients connect, which Stack sets on the command line"
+          },
+          {
+            "key": "unix_socket_group",
+            "reason": "decides who may reach the server's private socket"
+          },
+          {
+            "key": "unix_socket_permissions",
+            "reason": "decides who may reach the server's private socket"
+          },
+          {
+            "key": "data_directory",
+            "reason": "is the cluster Stack manages"
+          },
+          {
+            "key": "config_file",
+            "reason": "is the main file Stack generates"
+          },
+          {
+            "key": "hba_file",
+            "reason": "decides who may sign in, which Stack keeps to its own accounts"
+          },
+          {
+            "key": "ident_file",
+            "reason": "decides who may sign in, which Stack keeps to its own accounts"
+          },
+          {
+            "key": "external_pid_file",
+            "reason": "writes a file outside the cluster Stack manages"
+          },
+          {
+            "key": "logging_collector",
+            "reason": "writes files outside the cluster Stack manages"
+          },
+          {
+            "key": "log_directory",
+            "reason": "writes files outside the cluster Stack manages"
+          },
+          {
+            "key": "log_filename",
+            "reason": "writes files outside the cluster Stack manages"
+          },
+          {
+            "key": "log_file_mode",
+            "reason": "writes files outside the cluster Stack manages"
+          },
+          {
+            "key": "log_truncate_on_rotation",
+            "reason": "writes files outside the cluster Stack manages"
+          },
+          {
+            "key": "log_rotation_age",
+            "reason": "writes files outside the cluster Stack manages"
+          },
+          {
+            "key": "log_rotation_size",
+            "reason": "writes files outside the cluster Stack manages"
+          },
+          {
+            "key": "log_destination",
+            "reason": "writes files outside the cluster Stack manages"
+          },
+          {
+            "key": "syslog_facility",
+            "reason": "writes files outside the cluster Stack manages"
+          },
+          {
+            "key": "syslog_ident",
+            "reason": "writes files outside the cluster Stack manages"
+          },
+          {
+            "key": "event_source",
+            "reason": "writes files outside the cluster Stack manages"
+          },
+          {
+            "key": "krb_server_keyfile",
+            "reason": "reads keys or certificates for sign-in or TLS, which Stack does not set up"
+          },
+          {
+            "key": "ssl",
+            "reason": "reads keys or certificates for sign-in or TLS, which Stack does not set up"
+          },
+          {
+            "key": "ssl_*",
+            "reason": "reads keys or certificates for sign-in or TLS, which Stack does not set up"
+          },
+          {
+            "key": "debug_print_*",
+            "reason": "writes the statements the server runs, passwords included, into its log"
+          }
+        ]
+      },
       "stop_signal": "SIGINT",
       "default_port": 5432,
       "connection": {
@@ -45,7 +210,7 @@
       "laravel_connection": {
         "DB_CONNECTION": "pgsql"
       },
-      "provision": "set -e\nPGPASSWORD=\"$POSTGRES_ADMIN_PASSWORD\" \"$STACK_INSTALL_DIR/bin/psql\" -h \"$STACK_SOCKET_DIR\" -p \"$STACK_PORT\" -U stack_admin -d postgres -X -w -q -v ON_ERROR_STOP=1 -v ECHO=none <<'SQL'\nSET log_statement = 'none';\nSET log_min_error_statement = 'panic';\nSET log_min_duration_statement = -1;\nSET log_min_duration_sample = -1;\nSET log_transaction_sample_rate = 0;\nSET password_encryption = 'scram-sha-256';\nREVOKE ALL ON DATABASE postgres, template0, template1 FROM PUBLIC;\n\\getenv group_password DB_PASSWORD\n\\getenv group_name STACK_GROUP\nSELECT format('CREATE ROLE %I LOGIN', :'group_name')\n  WHERE NOT EXISTS (SELECT FROM pg_roles WHERE rolname = :'group_name')\\gexec\nALTER ROLE :\"group_name\" LOGIN NOSUPERUSER NOCREATEDB NOCREATEROLE NOREPLICATION NOBYPASSRLS PASSWORD :'group_password';\nSELECT format('CREATE DATABASE %I OWNER %I ALLOW_CONNECTIONS false', :'group_name', :'group_name')\n  WHERE NOT EXISTS (SELECT FROM pg_database WHERE datname = :'group_name')\\gexec\nSELECT format('DO $refuse$ BEGIN RAISE EXCEPTION %L; END $refuse$', 'database ' || datname || ' belongs to another owner; inspect existing state')\n  FROM pg_database WHERE datname = :'group_name' AND datdba <> (SELECT oid FROM pg_roles WHERE rolname = :'group_name')\\gexec\nREVOKE CONNECT ON DATABASE :\"group_name\" FROM PUBLIC;\nALTER DATABASE :\"group_name\" ALLOW_CONNECTIONS true;\nSQL\n",
+      "provision": "set -e\nPGPASSWORD=\"$POSTGRES_ADMIN_PASSWORD\" \"$STACK_INSTALL_DIR/bin/psql\" -h \"$STACK_SOCKET_DIR\" -p \"$STACK_PORT\" -U stack_admin -d postgres -X -w -q -v ON_ERROR_STOP=1 -v ECHO=none <<'SQL'\nSET log_statement = 'none';\nSET log_min_error_statement = 'panic';\nSET log_min_duration_statement = -1;\nSET log_min_duration_sample = -1;\nSET log_transaction_sample_rate = 0;\nSET debug_print_parse = off;\nSET debug_print_rewritten = off;\nSET debug_print_plan = off;\nSET password_encryption = 'scram-sha-256';\nREVOKE ALL ON DATABASE postgres, template0, template1 FROM PUBLIC;\n\\getenv group_password DB_PASSWORD\n\\getenv group_name STACK_GROUP\nSELECT format('CREATE ROLE %I LOGIN', :'group_name')\n  WHERE NOT EXISTS (SELECT FROM pg_roles WHERE rolname = :'group_name')\\gexec\nALTER ROLE :\"group_name\" LOGIN NOSUPERUSER NOCREATEDB NOCREATEROLE NOREPLICATION NOBYPASSRLS PASSWORD :'group_password';\nSELECT format('CREATE DATABASE %I OWNER %I ALLOW_CONNECTIONS false', :'group_name', :'group_name')\n  WHERE NOT EXISTS (SELECT FROM pg_database WHERE datname = :'group_name')\\gexec\nSELECT format('DO $refuse$ BEGIN RAISE EXCEPTION %L; END $refuse$', 'database ' || datname || ' belongs to another owner; inspect existing state')\n  FROM pg_database WHERE datname = :'group_name' AND datdba <> (SELECT oid FROM pg_roles WHERE rolname = :'group_name')\\gexec\nREVOKE CONNECT ON DATABASE :\"group_name\" FROM PUBLIC;\nALTER DATABASE :\"group_name\" ALLOW_CONNECTIONS true;\nSQL\n",
       "bin_dir": "bin",
       "commands": [
         "psql",
@@ -69,7 +234,9 @@
       "group_secrets": [
         "DB_PASSWORD"
       ],
-      "database_provision": "set -e\nPGPASSWORD=\"$POSTGRES_ADMIN_PASSWORD\" \"$STACK_INSTALL_DIR/bin/psql\" -h \"$STACK_SOCKET_DIR\" -p \"$STACK_PORT\" -U stack_admin -d postgres -X -w -q -v ON_ERROR_STOP=1 -v ECHO=none <<'SQL'\nSET log_statement = 'none';\nSET log_min_error_statement = 'panic';\nSET log_min_duration_statement = -1;\nSET log_min_duration_sample = -1;\nSET log_transaction_sample_rate = 0;\nSET password_encryption = 'scram-sha-256';\n\\getenv database_password DB_PASSWORD\n\\getenv database_name STACK_DATABASE\n\\getenv database_user STACK_DATABASE_USER\nSELECT set_config('stack.database_name', :'database_name', false), set_config('stack.database_user', :'database_user', false) \\gset\nDO $provision$\nDECLARE\n  database_name text := current_setting('stack.database_name');\n  database_user text := current_setting('stack.database_user');\n  role_oid oid;\nBEGIN\n  SELECT oid INTO role_oid FROM pg_roles WHERE rolname = database_user;\n  IF role_oid IS NOT NULL AND (\n    shobj_description(role_oid, 'pg_authid') IS DISTINCT FROM 'stack:database:' || database_user\n    OR EXISTS (SELECT FROM pg_roles WHERE oid = role_oid AND\n      (rolsuper OR rolcreatedb OR rolcreaterole OR rolreplication OR rolbypassrls OR NOT rolcanlogin))\n    OR EXISTS (SELECT FROM pg_auth_members WHERE roleid = role_oid OR member = role_oid)\n  ) THEN\n    RAISE EXCEPTION 'database role ownership or privileges conflict; inspect existing state';\n  END IF;\n  IF EXISTS (SELECT FROM pg_database WHERE datname = database_name AND\n    (role_oid IS NULL OR datdba <> role_oid)) THEN\n    RAISE EXCEPTION 'database belongs to another owner; inspect existing state';\n  END IF;\n  IF EXISTS (\n    SELECT FROM pg_database AS database_entry,\n      LATERAL aclexplode(COALESCE(database_entry.datacl, acldefault('d', database_entry.datdba))) AS access_entry\n    WHERE database_entry.datname = database_name\n      AND access_entry.grantee <> role_oid\n      AND access_entry.grantee <> (SELECT oid FROM pg_roles WHERE rolname = 'stack_admin')\n      AND NOT (access_entry.grantee = 0 AND NOT database_entry.datallowconn)\n  ) THEN\n    RAISE EXCEPTION 'database access grants conflict; inspect existing state';\n  END IF;\n  IF role_oid IS NULL THEN\n    EXECUTE format('CREATE ROLE %I LOGIN NOSUPERUSER NOCREATEDB NOCREATEROLE NOREPLICATION NOBYPASSRLS', database_user);\n    EXECUTE format('COMMENT ON ROLE %I IS %L', database_user, 'stack:database:' || database_user);\n  END IF;\nEND\n$provision$;\nALTER ROLE :\"database_user\" PASSWORD :'database_password';\nREVOKE ALL ON DATABASE postgres, template0, template1 FROM PUBLIC;\nSELECT format('CREATE DATABASE %I OWNER %I ALLOW_CONNECTIONS false', :'database_name', :'database_user')\n  WHERE NOT EXISTS (SELECT FROM pg_database WHERE datname = :'database_name')\\gexec\nREVOKE ALL ON DATABASE :\"database_name\" FROM PUBLIC;\nALTER DATABASE :\"database_name\" ALLOW_CONNECTIONS true;\nSQL\n",
+      "database_provision": "set -e\nPGPASSWORD=\"$POSTGRES_ADMIN_PASSWORD\" \"$STACK_INSTALL_DIR/bin/psql\" -h \"$STACK_SOCKET_DIR\" -p \"$STACK_PORT\" -U stack_admin -d postgres -X -w -q -v ON_ERROR_STOP=1 -v ECHO=none <<'SQL'\nSET log_statement = 'none';\nSET log_min_error_statement = 'panic';\nSET log_min_duration_statement = -1;\nSET log_min_duration_sample = -1;\nSET log_transaction_sample_rate = 0;\nSET debug_print_parse = off;\nSET debug_print_rewritten = off;\nSET debug_print_plan = off;\nSET password_encryption = 'scram-sha-256';\n\\getenv database_password DB_PASSWORD\n\\getenv database_name STACK_DATABASE\n\\getenv database_user STACK_DATABASE_USER\nSELECT set_config('stack.database_name', :'database_name', false), set_config('stack.database_user', :'database_user', false) \\gset\nDO $provision$\nDECLARE\n  database_name text := current_setting('stack.database_name');\n  database_user text := current_setting('stack.database_user');\n  role_oid oid;\nBEGIN\n  SELECT oid INTO role_oid FROM pg_roles WHERE rolname = database_user;\n  IF role_oid IS NOT NULL AND (\n    shobj_description(role_oid, 'pg_authid') IS DISTINCT FROM 'stack:database:' || database_user\n    OR EXISTS (SELECT FROM pg_roles WHERE oid = role_oid AND\n      (rolsuper OR rolcreatedb OR rolcreaterole OR rolreplication OR rolbypassrls OR NOT rolcanlogin))\n    OR EXISTS (SELECT FROM pg_auth_members WHERE roleid = role_oid OR member = role_oid)\n  ) THEN\n    RAISE EXCEPTION 'database role ownership or privileges conflict; inspect existing state';\n  END IF;\n  IF EXISTS (SELECT FROM pg_database WHERE datname = database_name AND\n    (role_oid IS NULL OR datdba <> role_oid)) THEN\n    RAISE EXCEPTION 'database belongs to another owner; inspect existing state';\n  END IF;\n  IF EXISTS (\n    SELECT FROM pg_database AS database_entry,\n      LATERAL aclexplode(COALESCE(database_entry.datacl, acldefault('d', database_entry.datdba))) AS access_entry\n    WHERE database_entry.datname = database_name\n      AND access_entry.grantee <> role_oid\n      AND access_entry.grantee <> (SELECT oid FROM pg_roles WHERE rolname = 'stack_admin')\n      AND NOT (access_entry.grantee = 0 AND NOT database_entry.datallowconn)\n  ) THEN\n    RAISE EXCEPTION 'database access grants conflict; inspect existing state';\n  END IF;\n  IF role_oid IS NULL THEN\n    EXECUTE format('CREATE ROLE %I LOGIN NOSUPERUSER NOCREATEDB NOCREATEROLE NOREPLICATION NOBYPASSRLS', database_user);\n    EXECUTE format('COMMENT ON ROLE %I IS %L', database_user, 'stack:database:' || database_user);\n  END IF;\nEND\n$provision$;\nALTER ROLE :\"database_user\" PASSWORD :'database_password';\nREVOKE ALL ON DATABASE postgres, template0, template1 FROM PUBLIC;\nSELECT format('CREATE DATABASE %I OWNER %I ALLOW_CONNECTIONS false', :'database_name', :'database_user')\n  WHERE NOT EXISTS (SELECT FROM pg_database WHERE datname = :'database_name')\\gexec\nREVOKE ALL ON DATABASE :\"database_name\" FROM PUBLIC;\nALTER DATABASE :\"database_name\" ALLOW_CONNECTIONS true;\nSQL\n",
+      "group_rename": "set -e\nPGPASSWORD=\"$POSTGRES_ADMIN_PASSWORD\" \"$STACK_INSTALL_DIR/bin/psql\" -h \"$STACK_SOCKET_DIR\" -p \"$STACK_PORT\" -U stack_admin -d postgres -X -w -q -v ON_ERROR_STOP=1 -v ECHO=none <<'SQL'\nSET log_statement = 'none';\n\\getenv old_group STACK_OLD_GROUP\n\\getenv new_group STACK_GROUP\nSELECT format('ALTER DATABASE %I RENAME TO %I', :'old_group', :'new_group')\n  WHERE EXISTS (SELECT FROM pg_database WHERE datname = :'old_group')\n    AND NOT EXISTS (SELECT FROM pg_database WHERE datname = :'new_group')\\gexec\nSELECT format('ALTER ROLE %I RENAME TO %I', :'old_group', :'new_group')\n  WHERE EXISTS (SELECT FROM pg_roles WHERE rolname = :'old_group')\n    AND NOT EXISTS (SELECT FROM pg_roles WHERE rolname = :'new_group')\\gexec\nSQL\n",
+      "database_rename": "set -e\nPGPASSWORD=\"$POSTGRES_ADMIN_PASSWORD\" \"$STACK_INSTALL_DIR/bin/psql\" -h \"$STACK_SOCKET_DIR\" -p \"$STACK_PORT\" -U stack_admin -d postgres -X -w -q -v ON_ERROR_STOP=1 -v ECHO=none <<'SQL'\nSET log_statement = 'none';\n\\getenv old_user STACK_OLD_DATABASE_USER\n\\getenv new_user STACK_DATABASE_USER\nSELECT format('ALTER ROLE %I RENAME TO %I', :'old_user', :'new_user')\n  WHERE EXISTS (SELECT FROM pg_roles WHERE rolname = :'old_user')\n    AND NOT EXISTS (SELECT FROM pg_roles WHERE rolname = :'new_user')\\gexec\nSELECT format('COMMENT ON ROLE %I IS %L', :'new_user', 'stack:database:' || :'new_user')\n  WHERE EXISTS (SELECT FROM pg_roles WHERE rolname = :'new_user')\\gexec\nSQL\n",
       "database_connection": {
         "DATABASE_URL": "postgres://{database_user}:${DB_PASSWORD}@127.0.0.1:{port}/{database}?sslmode=disable",
         "DB_URL": "postgres://{database_user}:${DB_PASSWORD}@127.0.0.1:{port}/{database}?sslmode=disable",
@@ -99,6 +266,22 @@
         "PGUSER": "{database_user}",
         "PGPASSWORD": "${DB_PASSWORD}",
         "PGDATABASE": "{database}"
+      },
+      "container": {
+        "environment": {
+          "POSTGRES_USER": "{group}",
+          "POSTGRES_DB": "{group}",
+          "POSTGRES_PASSWORD": "${DB_PASSWORD}",
+          "POSTGRES_INITDB_ARGS": "--auth-host=scram-sha-256"
+        },
+        "data": "/var/lib/postgresql",
+        "port": 5432,
+        "healthcheck": {
+          "test": "pg_isready -U {group} -d {group}",
+          "interval": "2s",
+          "timeout": "3s",
+          "retries": 30
+        }
       },
       "shareable": true,
       "windows": {

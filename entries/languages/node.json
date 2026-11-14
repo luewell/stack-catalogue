@@ -3,6 +3,7 @@
     "type": "node",
     "kind": "runtime",
     "category": "language",
+    "resolver": "nodejs.org",
     "every_platform": {
       "archive": "tar.gz",
       "paths": [
@@ -64,6 +65,21 @@
       "exposed": [
         "node"
       ],
+      "trust": {
+        "bundle": "add",
+        "variable": "NODE_EXTRA_CA_CERTS",
+        "serves": [
+          "vite",
+          "nuxt",
+          "next"
+        ]
+      },
+      "container": {
+        "site_check": [
+          "-e",
+          "require('http').get('http://127.0.0.1:{port}',()=>process.exit(0)).on('error',()=>process.exit(1))"
+        ]
+      },
       "windows": {
         "bin_dir": "."
       }

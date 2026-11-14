@@ -23,6 +23,8 @@ ENTRIES = Path("entries")
 # built with, so the day the format changes incompatibly the old ones have to
 # keep finding a file they understand.
 OUTPUT = Path("v1.json")
+# Raised when Stack drops code that a declaration replaced.
+GENERATION = 7
 # What a shared URL says instead of the version it is missing. Expanded only in
 # values coming from "defaults": a version that writes its own URL writes it
 # whole, and what is served is always the literal URL its digest was taken from.
@@ -313,6 +315,7 @@ def main() -> int:
 
     combined = {
         "version": 1,
+        "generation": GENERATION,
         # Named so whoever opens this knows not to edit it here. There are no
         # comments in JSON, and a generated file that does not say so gets
         # edited by somebody eventually.

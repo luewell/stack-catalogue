@@ -46,6 +46,9 @@ jobs:
           problems = []
           if document.get("version") != 1:
               problems.append(f"version is {document.get('version')!r}, and this tool writes 1")
+          generation = document.get("generation")
+          if type(generation) is not int or generation < 1:
+              problems.append(f"generation is {generation!r}, and this tool writes a positive integer")
 
           seen = set()
           for entry in document.get("services", []):

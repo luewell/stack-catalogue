@@ -3,6 +3,7 @@
     "type": "pnpm",
     "kind": "runtime",
     "category": "packages",
+    "resolver": "github.com/pnpm/pnpm",
     "every_platform": {
       "archive": "tar.gz",
       "paths": [
@@ -43,7 +44,8 @@
       "commands": [
         "pnpm"
       ],
-      "bin_dir": "."
+      "bin_dir": ".",
+      "container": {}
     }
   },
   "services": [

@@ -78,6 +78,10 @@
             "--setParameter",
             "enableLocalhostAuthBypass=false"
           ]
+        },
+        "stop_request": {
+          "protocol": "mongodb",
+          "secret": "MONGODB_ADMIN_PASSWORD"
         }
       }
     }

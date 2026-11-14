@@ -101,7 +101,11 @@ releases for macOS arm64 and Linux amd64 and arm64, pinned to the `SHA256SUMS`
 each release publishes. The entry is in the `messaging` category; its start
 command writes `nats.conf` with `max_payload: 64MB` and runs `nats-server` on the
 loopback address with JetStream in the instance's data, and the `nats`
-provisioner in Stack writes the accounts that file includes.
+provisioner in Stack writes the accounts that file includes. Its `extend`
+layers a repository's `config:` files beneath that `nats.conf` and the
+command-line flags, refusing the keys that touch accounts, listeners, TLS,
+clustering or files outside the data directory. MongoDB, Mailpit and S3
+declare no `extend`, so they accept no `config:` files.
 
 PostgreSQL, S3, MongoDB and NATS set `runtime.shareable`: one instance keeps each
 group's data apart behind its own credentials, so Stack lets several groups
@@ -142,7 +146,11 @@ PostgreSQL entries provision an implicit database per group or explicit named
 databases through `runtime.database_provision`. Explicit databases have distinct
 stable credentials and generated roles. The provisioner verifies existing role
 markers, privileges, membership, database ownership and access grants before
-making changes.
+making changes. A renamed group's database and role take the new name through
+`runtime.group_rename`, and each explicit database's role through
+`runtime.database_rename`, renaming only what exists under the old name.
+The bootstrap databases and roles a group cannot take are Stack's `stack.yaml`
+grammar, not entry data.
 Connection templates expose URLs and discrete host, port, username and database
 fields; explicit database templates use `{database}` and `{database_user}`.
 
@@ -153,5 +161,9 @@ and consumer tests alone do not establish live authentication behavior.
 S3 connections retain AWS SDK variables and expose equivalent `S3_ENDPOINT`,
 `S3_ACCESS_KEY_ID` and `S3_SECRET_ACCESS_KEY` aliases through catalogue templates.
 Bucket convenience names are composed by Stack from the declared bucket policy.
+`runtime.buckets` (`protocol: s3`, `gateway_label: s3`) says the entry holds the
+buckets a group declares, behind its gateway at `s3.<group>.<tld>`, and its
+`laravel_variable` gives Laravel sites `AWS_BUCKET`, the storage name of the
+group's first bucket.
 A service-level `env_prefix` changes the S3 alias prefix while AWS SDK variables
 retain their original names.
