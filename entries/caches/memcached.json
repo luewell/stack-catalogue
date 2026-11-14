@@ -1,0 +1,93 @@
+{
+  "defaults": {
+    "type": "memcached",
+    "category": "cache",
+    "summary": "memcached, an in-memory key-value cache without sign-in.",
+    "every_platform": {
+      "archive": "tar.gz",
+      "paths": [
+        "bin",
+        "share"
+      ],
+      "strip": 1
+    },
+    "artifacts": {
+      "darwin/arm64": {
+        "url": "https://github.com/luewell/stack-binaries/releases/download/memcached-{version}/memcached-{version}-aarch64-apple-darwin.tar.gz"
+      },
+      "linux/amd64": {
+        "url": "https://github.com/luewell/stack-binaries/releases/download/memcached-{version}/memcached-{version}-x86_64-unknown-linux-gnu.tar.gz"
+      },
+      "linux/arm64": {
+        "url": "https://github.com/luewell/stack-binaries/releases/download/memcached-{version}/memcached-{version}-aarch64-unknown-linux-gnu.tar.gz"
+      }
+    },
+    "runtime": {
+      "start": "exec \"$STACK_INSTALL_DIR/bin/memcached\" -l 127.0.0.1 -p \"$STACK_PORT\" -U 0 -m 64\n",
+      "stop_signal": "SIGTERM",
+      "default_port": 11211,
+      "connection": {
+        "MEMCACHED_HOST": "127.0.0.1",
+        "MEMCACHED_PORT": "{port}"
+      },
+      "bin_dir": "bin"
+    },
+    "notes": [
+      {
+        "name": "access",
+        "text": "memcached asks for no credentials: any account on this machine can reach its port and read or change every key, so keep secrets out of it."
+      },
+      {
+        "name": "clients",
+        "text": "Stack's PHP has no memcached extension, so PHP code and Laravel's memcached cache store cannot use this service; give a Laravel site a valkey service (type: redis) for its cache instead. Clients of other languages, such as Node, Python or Go, connect to MEMCACHED_HOST and MEMCACHED_PORT."
+      },
+      {
+        "name": "memory",
+        "text": "It listens on TCP only, holds at most 64 MiB, evicting the least recently used keys beyond that, and loses every key when it stops."
+      },
+      {
+        "name": "group_rename",
+        "text": "A group rename does not carry its keys: the cache starts empty under the new name, so the application fills it again, and the old data directory stays until stack prune --data removes it."
+      }
+    ],
+    "recipes": [
+      {
+        "title": "A cache for the group",
+        "yaml": "group: shop\nservices:\n  - {name: cache, type: memcached}\n",
+        "gives": "Gives MEMCACHED_HOST and MEMCACHED_PORT, and the same two prefixed CACHE_, for clients such as Node, Python or Go; Stack's PHP cannot use it."
+      },
+      {
+        "title": "Two caches, one holding the bare names",
+        "yaml": "group: shop\nservices:\n  - {name: cache, type: memcached, default: true}\n  - {name: sessions, type: memcached}\n",
+        "gives": "Gives MEMCACHED_HOST and MEMCACHED_PORT to cache, the default, and both again prefixed CACHE_ or SESSIONS_ for each, such as SESSIONS_MEMCACHED_PORT."
+      }
+    ]
+  },
+  "services": [
+    {
+      "support": "current",
+      "version": "1.6.45",
+      "description": "memcached 1.6, the maintained series",
+      "artifacts": {
+        "darwin/arm64": {
+          "digest": {
+            "algorithm": "sha256",
+            "value": "11b1317a36e9e03059df4ec8c26081bd274c0c27afe3aafb9265e2154c626f36"
+          }
+        },
+        "linux/amd64": {
+          "digest": {
+            "algorithm": "sha256",
+            "value": "1bc9bfe447751735d26326948154cf2e4629dab42b9e875c66d2d964b77d2c34"
+          }
+        },
+        "linux/arm64": {
+          "digest": {
+            "algorithm": "sha256",
+            "value": "97919a4b3df049005f26bc219dba28906f33e32ce7c63f92e702c6058f0e9188"
+          }
+        }
+      }
+    }
+  ]
+}

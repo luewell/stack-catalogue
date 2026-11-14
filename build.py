@@ -11,6 +11,10 @@ what they share in "defaults" and leave each version saying only what is its
 own, and a type's platforms repeat how the download is unpacked, which goes in
 "defaults.every_platform". Both are expanded here and neither leaves: the served
 file stays the flat list of whole entries every binary already understands.
+
+Several scripts of one type share the same shell functions and checks, so a
+file may name each once under "snippets" and have a script take it in with a
+line holding only {snippet:<name>}. Those are inserted here too.
 """
 
 import json
@@ -29,6 +33,10 @@ GENERATION = 7
 # values coming from "defaults": a version that writes its own URL writes it
 # whole, and what is served is always the literal URL its digest was taken from.
 PLACEHOLDER = "{version}"
+# A script line that is only this takes in the snippet it names. A whole line,
+# so a snippet keeps its own indentation and never lands inside a statement.
+SNIPPET_LINE = re.compile(r"\{snippet:([a-z0-9-]+)\}")
+SNIPPET_MARK = "{snippet:"
 # artifacts and runtime are one level under an entry, and their platforms and
 # fields one more. Deeper than that lies a digest, and a checksum inherited
 # field by field is how a version quietly ends up claiming another's bytes.
@@ -75,6 +83,52 @@ def expand(value, version):
     if isinstance(value, dict):
         return {key: expand(item, version) for key, item in value.items()}
     return value
+
+
+def with_snippets(value, snippets, used, problems, source):
+    """value with every snippet line replaced by the snippet it names."""
+    if isinstance(value, list):
+        return [with_snippets(item, snippets, used, problems, source) for item in value]
+    if isinstance(value, dict):
+        return {key: with_snippets(item, snippets, used, problems, source)
+                for key, item in value.items()}
+    if not isinstance(value, str) or SNIPPET_MARK not in value:
+        return value
+
+    lines = []
+    for line in value.split("\n"):
+        reference = SNIPPET_LINE.fullmatch(line)
+        if reference is None:
+            if SNIPPET_MARK in line:
+                problems.append(f"{source}: {line.strip()!r} is not a snippet line of its own")
+            lines.append(line)
+        elif reference.group(1) not in snippets:
+            problems.append(f"{source}: no snippet is named {reference.group(1)!r}")
+        else:
+            used.add(reference.group(1))
+            lines.append(snippets[reference.group(1)].removesuffix("\n"))
+    return "\n".join(lines)
+
+
+def insert_snippets(document, source):
+    """The document without its snippets, each inserted where a script names it."""
+    snippets = document.get("snippets", {})
+    problems = []
+    if not isinstance(snippets, dict) or not all(
+            isinstance(text, str) and text.strip() for text in snippets.values()):
+        return document, [f"{source}: snippets has to map each name to the text it stands for"]
+    for name, text in sorted(snippets.items()):
+        if not re.fullmatch("[a-z0-9-]+", name):
+            problems.append(f"{source}: snippet {name!r} is not named in lowercase kebab-case")
+        if SNIPPET_MARK in text:
+            problems.append(f"{source}: snippet {name!r} names another snippet")
+
+    used = set()
+    body = {key: value for key, value in document.items() if key != "snippets"}
+    body = with_snippets(body, snippets, used, problems, source)
+    for name in sorted(snippets.keys() - used):
+        problems.append(f"{source}: no script takes in snippet {name!r}")
+    return body, problems
 
 
 def merge(defaults, entry, depth):
@@ -302,7 +356,11 @@ def main() -> int:
     services = []
     seen = {}
     for source in sources:
-        document = json.loads(source.read_text())
+        document, problems = insert_snippets(json.loads(source.read_text()), source)
+        for problem in problems:
+            print(problem, file=sys.stderr)
+        if problems:
+            return 1
         defaults = document.get("defaults", {})
 
         problems = excluded(document, source)

@@ -1,0 +1,106 @@
+{
+  "defaults": {
+    "type": "typesense",
+    "category": "search",
+    "summary": "Typesense full-text search, one instance and key per group.",
+    "requires": [
+      "group_secrets_at_start"
+    ],
+    "every_platform": {
+      "archive": "tar.gz",
+      "paths": [
+        "typesense-server"
+      ],
+      "strip": 0
+    },
+    "artifacts": {
+      "darwin/arm64": {
+        "url": "https://dl.typesense.org/releases/{version}/typesense-server-{version}-darwin-arm64.tar.gz"
+      },
+      "linux/amd64": {
+        "url": "https://dl.typesense.org/releases/{version}/typesense-server-{version}-linux-amd64.tar.gz"
+      },
+      "linux/arm64": {
+        "url": "https://dl.typesense.org/releases/{version}/typesense-server-{version}-linux-arm64.tar.gz"
+      }
+    },
+    "runtime": {
+      "start": ": \"${TYPESENSE_API_KEY:?this instance started without the key of its group}\"\nmkdir -p \"$STACK_DATA_DIR/data\"\nexec \"$STACK_INSTALL_DIR/typesense-server\" --data-dir \"$STACK_DATA_DIR/data\" --api-address 127.0.0.1 --api-port \"$STACK_PORT\" --peering-address 127.0.0.1 --peering-port \"${STACK_PORT_PEERING:?this Typesense entry needs a newer Stack}\"\n",
+      "stop_signal": "SIGTERM",
+      "default_port": 8108,
+      "ports": [
+        "peering"
+      ],
+      "connection": {
+        "TYPESENSE_HOST": "127.0.0.1",
+        "TYPESENSE_PORT": "{port}",
+        "TYPESENSE_PROTOCOL": "http"
+      },
+      "laravel_connection": {
+        "SCOUT_DRIVER": "typesense"
+      },
+      "bin_dir": ".",
+      "ready": "url=\"http://127.0.0.1:$STACK_PORT/health\"\nif command -v curl >/dev/null 2>&1; then\n  curl -fsS -o /dev/null \"$url\"\nelse\n  wget -q -O /dev/null \"$url\"\nfi\n",
+      "group_secrets": [
+        "TYPESENSE_API_KEY"
+      ]
+    },
+    "notes": [
+      {
+        "name": "key",
+        "text": "The server starts with the group's key as its admin API key, read from its environment, and answers every route but /health only to a request carrying it as X-TYPESENSE-API-KEY; sites get it as TYPESENSE_API_KEY."
+      },
+      {
+        "name": "listener",
+        "text": "It listens on 127.0.0.1 over HTTP only, on its port and on a second, peering port Stack allocates for its cluster protocol, and keeps its whole index in memory, writing it to the instance's data directory."
+      },
+      {
+        "name": "peering",
+        "text": "Its peering port, for the cluster protocol, asks for no key: any account on this machine can reach it on 127.0.0.1 and use the built-in pages it serves, such as /flags, /status, /vars, /connections and /raft_stat, to read and change the server's runtime settings, as Typesense 30.2 does. The API key does not protect it, so keep this instance off machines other people sign in to."
+      },
+      {
+        "name": "group_rename",
+        "text": "A group rename does not carry its data: the index starts empty under the new name, so index the records again, as php artisan scout:import does for Laravel, and the old data directory stays until stack prune --data removes it."
+      }
+    ],
+    "recipes": [
+      {
+        "title": "Laravel Scout with Typesense",
+        "yaml": "group: shop\nruntimes:\n  php: \"8.4\"\nservices:\n  - {name: search, type: typesense}\nsites:\n  - {name: app, type: laravel}\n",
+        "gives": "Gives the site SCOUT_DRIVER=typesense, TYPESENSE_HOST, TYPESENSE_PORT, TYPESENSE_PROTOCOL and TYPESENSE_API_KEY, the same prefixed SEARCH_, and APP_URL."
+      },
+      {
+        "title": "A search server for any client",
+        "yaml": "group: shop\nservices:\n  - {name: search, type: typesense}\n",
+        "gives": "Gives TYPESENSE_HOST, TYPESENSE_PORT, TYPESENSE_PROTOCOL=http and TYPESENSE_API_KEY, the key every request needs, and the same prefixed SEARCH_."
+      }
+    ]
+  },
+  "services": [
+    {
+      "support": "current",
+      "version": "30.2",
+      "description": "Typesense 30, the newest release",
+      "artifacts": {
+        "darwin/arm64": {
+          "digest": {
+            "algorithm": "sha256",
+            "value": "7d8d6d0c33930ad20ea23dd184250547b16615944be891b2078e8a075152fa7e"
+          }
+        },
+        "linux/amd64": {
+          "digest": {
+            "algorithm": "sha256",
+            "value": "cd791605e7c6cc7be457794f534cd4b9f9d361781adb10e40020efc22840ebc3"
+          }
+        },
+        "linux/arm64": {
+          "digest": {
+            "algorithm": "sha256",
+            "value": "a9b9d6e2927c863900306290e8532c17f66bdff34ef2ad043b24ed4ccec8a6bc"
+          }
+        }
+      }
+    }
+  ]
+}

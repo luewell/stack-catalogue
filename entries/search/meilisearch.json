@@ -1,0 +1,144 @@
+{
+  "defaults": {
+    "type": "meilisearch",
+    "category": "search",
+    "summary": "Meilisearch full-text search, one instance and key per group.",
+    "requires": [
+      "group_secrets_at_start"
+    ],
+    "every_platform": {
+      "archive": "none",
+      "paths": [
+        "meilisearch"
+      ],
+      "strip": 0
+    },
+    "artifacts": {
+      "darwin/arm64": {
+        "url": "https://github.com/meilisearch/meilisearch/releases/download/v{version}/meilisearch-macos-apple-silicon"
+      },
+      "linux/amd64": {
+        "url": "https://github.com/meilisearch/meilisearch/releases/download/v{version}/meilisearch-linux-amd64"
+      },
+      "linux/arm64": {
+        "url": "https://github.com/meilisearch/meilisearch/releases/download/v{version}/meilisearch-linux-aarch64"
+      },
+      "windows/amd64": {
+        "url": "https://github.com/meilisearch/meilisearch/releases/download/v{version}/meilisearch-windows-amd64.exe",
+        "paths": [
+          "meilisearch.exe"
+        ]
+      },
+      "windows/arm64": {
+        "url": "https://github.com/meilisearch/meilisearch/releases/download/v{version}/meilisearch-windows-amd64.exe",
+        "paths": [
+          "meilisearch.exe"
+        ]
+      }
+    },
+    "runtime": {
+      "start": ": \"${MEILI_MASTER_KEY:?this instance started without the key of its group}\"\nexec \"$STACK_INSTALL_DIR/meilisearch\" --db-path \"$STACK_DATA_DIR/data.ms\" --dump-dir \"$STACK_DATA_DIR/dumps\" --snapshot-dir \"$STACK_DATA_DIR/snapshots\" --http-addr \"127.0.0.1:$STACK_PORT\" --env development --no-analytics\n",
+      "stop_signal": "SIGTERM",
+      "default_port": 7700,
+      "connection": {
+        "MEILISEARCH_HOST": "http://127.0.0.1:{port}",
+        "MEILISEARCH_KEY": "${MEILI_MASTER_KEY}"
+      },
+      "laravel_connection": {
+        "SCOUT_DRIVER": "meilisearch"
+      },
+      "bin_dir": ".",
+      "ready": "url=\"http://127.0.0.1:$STACK_PORT/health\"\nif command -v curl >/dev/null 2>&1; then\n  curl -fsS -o /dev/null \"$url\"\nelse\n  wget -q -O /dev/null \"$url\"\nfi\n",
+      "group_secrets": [
+        "MEILI_MASTER_KEY"
+      ],
+      "windows": {
+        "start": {
+          "arguments": [
+            "${STACK_INSTALL_DIR}/meilisearch.exe",
+            "--db-path",
+            "${STACK_DATA_DIR}/data.ms",
+            "--dump-dir",
+            "${STACK_DATA_DIR}/dumps",
+            "--snapshot-dir",
+            "${STACK_DATA_DIR}/snapshots",
+            "--http-addr",
+            "127.0.0.1:${STACK_PORT}",
+            "--env",
+            "development",
+            "--no-analytics"
+          ]
+        }
+      }
+    },
+    "notes": [
+      {
+        "name": "key",
+        "text": "The server starts with the group's key as its master key, read from its environment, and answers every route but /health only to a request carrying it as Authorization: Bearer; sites get it as MEILISEARCH_KEY and MEILI_MASTER_KEY."
+      },
+      {
+        "name": "data_version",
+        "text": "Meilisearch opens only data its own release wrote and refuses to start on another's, so pin a version, and after changing it remove the instance's data directory and index the records again, as php artisan scout:import does for Laravel."
+      },
+      {
+        "name": "listener",
+        "text": "It listens on 127.0.0.1 over HTTP only, with no Unix socket, and keeps its database, dumps and snapshots in the instance's data directory."
+      },
+      {
+        "name": "group_rename",
+        "text": "A group rename does not carry its data: the index starts empty under the new name, so index the records again, as php artisan scout:import does for Laravel, and the old data directory stays until stack prune --data removes it."
+      }
+    ],
+    "recipes": [
+      {
+        "title": "Laravel Scout with Meilisearch",
+        "yaml": "group: shop\nruntimes:\n  php: \"8.4\"\nservices:\n  - {name: search, type: meilisearch}\nsites:\n  - {name: app, type: laravel}\n",
+        "gives": "Gives the site SCOUT_DRIVER=meilisearch, MEILISEARCH_HOST and MEILISEARCH_KEY, the same prefixed SEARCH_, such as SEARCH_MEILISEARCH_HOST, and APP_URL."
+      },
+      {
+        "title": "A search server for any client",
+        "yaml": "group: shop\nservices:\n  - {name: search, type: meilisearch, version: \"1.56\"}\n",
+        "gives": "Gives MEILISEARCH_HOST, an http://127.0.0.1 URL, and MEILISEARCH_KEY, the key every request needs, pinned to 1.56 so the data stays readable."
+      }
+    ]
+  },
+  "services": [
+    {
+      "support": "current",
+      "version": "1.56.1",
+      "description": "Meilisearch 1.56, the newest release built for every platform",
+      "artifacts": {
+        "darwin/arm64": {
+          "digest": {
+            "algorithm": "sha256",
+            "value": "293b48304c8452cf67c5ab3f5882e542bfe63d52f357bb155f576412cb6f739d"
+          }
+        },
+        "linux/amd64": {
+          "digest": {
+            "algorithm": "sha256",
+            "value": "b2c7a647d4cdfdd7a901466bfd6797077b849e90f5eb2c0f5b1d05869592e27e"
+          }
+        },
+        "linux/arm64": {
+          "digest": {
+            "algorithm": "sha256",
+            "value": "f73987f92b094fd15b79956f9bfc9e8fc7294ad6ad610ebf8a4403c170890726"
+          }
+        },
+        "windows/amd64": {
+          "digest": {
+            "algorithm": "sha256",
+            "value": "ac6d2506cafe862c93a6add533e125a19852339ec21303413120bde84aad3a48"
+          }
+        },
+        "windows/arm64": {
+          "digest": {
+            "algorithm": "sha256",
+            "value": "ac6d2506cafe862c93a6add533e125a19852339ec21303413120bde84aad3a48"
+          }
+        }
+      }
+    }
+  ]
+}

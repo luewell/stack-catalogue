@@ -2,9 +2,11 @@
   "version": 1,
   "generation": 7,
   "generated_from": [
+    "entries/caches/memcached.json",
     "entries/caches/valkey.json",
     "entries/databases/mongodb.json",
     "entries/databases/mongosh.json",
+    "entries/databases/mysql.json",
     "entries/databases/postgres.json",
     "entries/internal/busybox.json",
     "entries/languages/bun.json",
@@ -18,9 +20,100 @@
     "entries/messaging/nats.json",
     "entries/packages/composer.json",
     "entries/packages/pnpm.json",
+    "entries/search/meilisearch.json",
+    "entries/search/typesense.json",
     "entries/storage/s3.json"
   ],
   "services": [
+    {
+      "type": "memcached",
+      "category": "cache",
+      "summary": "memcached, an in-memory key-value cache without sign-in.",
+      "support": "current",
+      "version": "1.6.45",
+      "description": "memcached 1.6, the maintained series",
+      "artifacts": {
+        "darwin/arm64": {
+          "url": "https://github.com/luewell/stack-binaries/releases/download/memcached-1.6.45/memcached-1.6.45-aarch64-apple-darwin.tar.gz",
+          "digest": {
+            "algorithm": "sha256",
+            "value": "11b1317a36e9e03059df4ec8c26081bd274c0c27afe3aafb9265e2154c626f36"
+          },
+          "archive": "tar.gz",
+          "paths": [
+            "bin",
+            "share"
+          ],
+          "strip": 1
+        },
+        "linux/amd64": {
+          "url": "https://github.com/luewell/stack-binaries/releases/download/memcached-1.6.45/memcached-1.6.45-x86_64-unknown-linux-gnu.tar.gz",
+          "digest": {
+            "algorithm": "sha256",
+            "value": "1bc9bfe447751735d26326948154cf2e4629dab42b9e875c66d2d964b77d2c34"
+          },
+          "archive": "tar.gz",
+          "paths": [
+            "bin",
+            "share"
+          ],
+          "strip": 1
+        },
+        "linux/arm64": {
+          "url": "https://github.com/luewell/stack-binaries/releases/download/memcached-1.6.45/memcached-1.6.45-aarch64-unknown-linux-gnu.tar.gz",
+          "digest": {
+            "algorithm": "sha256",
+            "value": "97919a4b3df049005f26bc219dba28906f33e32ce7c63f92e702c6058f0e9188"
+          },
+          "archive": "tar.gz",
+          "paths": [
+            "bin",
+            "share"
+          ],
+          "strip": 1
+        }
+      },
+      "runtime": {
+        "start": "exec \"$STACK_INSTALL_DIR/bin/memcached\" -l 127.0.0.1 -p \"$STACK_PORT\" -U 0 -m 64\n",
+        "stop_signal": "SIGTERM",
+        "default_port": 11211,
+        "connection": {
+          "MEMCACHED_HOST": "127.0.0.1",
+          "MEMCACHED_PORT": "{port}"
+        },
+        "bin_dir": "bin"
+      },
+      "notes": [
+        {
+          "name": "access",
+          "text": "memcached asks for no credentials: any account on this machine can reach its port and read or change every key, so keep secrets out of it."
+        },
+        {
+          "name": "clients",
+          "text": "Stack's PHP has no memcached extension, so PHP code and Laravel's memcached cache store cannot use this service; give a Laravel site a valkey service (type: redis) for its cache instead. Clients of other languages, such as Node, Python or Go, connect to MEMCACHED_HOST and MEMCACHED_PORT."
+        },
+        {
+          "name": "memory",
+          "text": "It listens on TCP only, holds at most 64 MiB, evicting the least recently used keys beyond that, and loses every key when it stops."
+        },
+        {
+          "name": "group_rename",
+          "text": "A group rename does not carry its keys: the cache starts empty under the new name, so the application fills it again, and the old data directory stays until stack prune --data removes it."
+        }
+      ],
+      "recipes": [
+        {
+          "title": "A cache for the group",
+          "yaml": "group: shop\nservices:\n  - {name: cache, type: memcached}\n",
+          "gives": "Gives MEMCACHED_HOST and MEMCACHED_PORT, and the same two prefixed CACHE_, for clients such as Node, Python or Go; Stack's PHP cannot use it."
+        },
+        {
+          "title": "Two caches, one holding the bare names",
+          "yaml": "group: shop\nservices:\n  - {name: cache, type: memcached, default: true}\n  - {name: sessions, type: memcached}\n",
+          "gives": "Gives MEMCACHED_HOST and MEMCACHED_PORT to cache, the default, and both again prefixed CACHE_ or SESSIONS_ for each, such as SESSIONS_MEMCACHED_PORT."
+        }
+      ]
+    },
     {
       "type": "valkey",
       "category": "cache",
@@ -666,6 +759,410 @@
       ]
     },
     {
+      "type": "mysql",
+      "category": "database",
+      "summary": "MySQL, one database and account per group.",
+      "support": "lts",
+      "version": "9.7.4",
+      "description": "MySQL 9.7 LTS, supported until April 2034",
+      "artifacts": {
+        "darwin/arm64": {
+          "url": "https://github.com/luewell/stack-binaries/releases/download/mysql-9.7.4/mysql-9.7.4-aarch64-apple-darwin.tar.gz",
+          "digest": {
+            "algorithm": "sha256",
+            "value": "c0048e51869f84a68f1312ed82472cf1e972b4c8eea61ea6af203ebdd03b2dd9"
+          },
+          "archive": "tar.gz",
+          "paths": [
+            "bin",
+            "lib",
+            "share"
+          ],
+          "strip": 1
+        },
+        "linux/amd64": {
+          "url": "https://github.com/luewell/stack-binaries/releases/download/mysql-9.7.4/mysql-9.7.4-x86_64-unknown-linux-gnu.tar.gz",
+          "digest": {
+            "algorithm": "sha256",
+            "value": "9cad2a79e97195e9915c86dbd4604442359bd6ccdf0980debeae821c1a0a35eb"
+          },
+          "archive": "tar.gz",
+          "paths": [
+            "bin",
+            "lib",
+            "share"
+          ],
+          "strip": 1
+        },
+        "linux/arm64": {
+          "url": "https://github.com/luewell/stack-binaries/releases/download/mysql-9.7.4/mysql-9.7.4-aarch64-unknown-linux-gnu.tar.gz",
+          "digest": {
+            "algorithm": "sha256",
+            "value": "eca93cfb89b000d45a6f56c98fc91a5b75365cda3fdac1bd3a19be8272b4445d"
+          },
+          "archive": "tar.gz",
+          "paths": [
+            "bin",
+            "lib",
+            "share"
+          ],
+          "strip": 1
+        }
+      },
+      "runtime": {
+        "initialise": "set -eu\numask 077\ncase \"${MYSQL_ADMIN_PASSWORD:-}\" in\n  '' | *[!0-9a-f]*) printf '%s\\n' 'the administrator password is not hexadecimal' >&2; exit 1 ;;\nesac\nif [ -e \"$STACK_DATA_DIR/mysql-data\" ]; then\n  printf '%s\\n' 'mysql-data exists without its system tablespace; preserve it and choose an empty instance directory.' >&2\n  exit 1\nfi\nbuilding=\"$STACK_DATA_DIR/mysql-data.initialising\"\ninit_file=\"$STACK_DATA_DIR/initialise.sql\"\ntrap 'rm -f \"$init_file\"' EXIT\nrm -rf \"$building\"\nprintf \"CREATE USER 'stack_admin'@'localhost' IDENTIFIED BY '%s';\\nGRANT ALL ON *.* TO 'stack_admin'@'localhost' WITH GRANT OPTION;\\nDROP USER 'root'@'localhost';\\n\" \"$MYSQL_ADMIN_PASSWORD\" > \"$init_file\"\n\"$STACK_INSTALL_DIR/bin/mysqld\" --no-defaults --initialize-insecure --basedir=\"$STACK_INSTALL_DIR\" --datadir=\"$building\" --init-file=\"$init_file\" --skip-log-bin --mysqlx=OFF\nmv \"$building\" \"$STACK_DATA_DIR/mysql-data\"\n",
+        "initialised_marker": "mysql-data/mysql.ibd",
+        "start": "umask 077\ncase \"${1:-}\" in\n  --defaults-file=*) ;;\n  *) set -- --no-defaults ;;\nesac\nmkdir -p \"$STACK_DATA_DIR/files\"\nexec \"$STACK_INSTALL_DIR/bin/mysqld\" \"$@\" --basedir=\"$STACK_INSTALL_DIR\" --datadir=\"$STACK_DATA_DIR/mysql-data\" --bind-address=127.0.0.1 --port=\"$STACK_PORT\" --socket=\"$STACK_SOCKET_DIR/mysqld.sock\" --mysqlx=OFF --skip-log-bin --skip-name-resolve --local-infile=OFF --secure-file-priv=\"$STACK_DATA_DIR/files\" --pid-file=\"$STACK_DATA_DIR/mysqld.pid\"\n",
+        "extend": {
+          "mechanism": "include",
+          "syntax": "mycnf",
+          "suffix": ".cnf",
+          "file": "my.cnf",
+          "arguments": [
+            "--defaults-file=${STACK_CONFIG_FILE}"
+          ],
+          "reserved": [
+            {
+              "key": "lower-case-table-names",
+              "reason": "is fixed when Stack creates the data directory"
+            },
+            {
+              "key": "innodb-page-size",
+              "reason": "is fixed when Stack creates the data directory"
+            },
+            {
+              "key": "skip-networking",
+              "reason": "is where clients connect, which Stack sets on the command line"
+            },
+            {
+              "key": "symbolic-links",
+              "reason": "lets tables live outside the data directory Stack manages"
+            },
+            {
+              "key": "character-sets-dir",
+              "reason": "reads server files from outside the installation Stack manages"
+            },
+            {
+              "key": "lc-messages-dir",
+              "reason": "reads server files from outside the installation Stack manages"
+            }
+          ]
+        },
+        "stop_signal": "SIGTERM",
+        "default_port": 3306,
+        "account_name_limit": 32,
+        "connection": {
+          "DATABASE_URL": "mysql://{group}:${DB_PASSWORD}@127.0.0.1:{port}/{group}",
+          "DB_URL": "mysql://{group}:${DB_PASSWORD}@127.0.0.1:{port}/{group}",
+          "DB_HOST": "127.0.0.1",
+          "DB_PORT": "{port}",
+          "DB_USERNAME": "{group}",
+          "DB_DATABASE": "{group}"
+        },
+        "laravel_connection": {
+          "DB_CONNECTION": "mysql"
+        },
+        "provision": "set -eu\numask 077\nexport MYSQL_TEST_LOGIN_FILE=\"$STACK_DATA_DIR/no-login-path\"\nexport MYSQL_PWD=\"$MYSQL_ADMIN_PASSWORD\"\nadmin() {\n  \"$STACK_INSTALL_DIR/bin/mysql\" --no-defaults --protocol=SOCKET --socket=\"$STACK_SOCKET_DIR/mysqld.sock\" --user=stack_admin --batch --skip-column-names \"$@\"\n}\nrefuse() {\n  printf '%s\\n' \"$1\" >&2\n  exit 1\n}\nlabel() {\n  case \"$1\" in\n    '' | *[!a-z0-9-]*) refuse \"$2 is not a name Stack writes into SQL\" ;;\n  esac\n}\nlabel \"$STACK_GROUP\" 'the group name'\naccount=\"$STACK_GROUP\"\ndatabase=\"$STACK_GROUP\"\nkind=group\ncase \"$DB_PASSWORD\" in\n  '' | *[!0-9a-f]*) refuse 'the account password is not hexadecimal' ;;\nesac\nproblem=\"$(printf \"SELECT CASE\n  WHEN EXISTS (SELECT 1 FROM mysql.user WHERE User = '%s' AND Host = '%%')\n    AND NOT EXISTS (SELECT 1 FROM INFORMATION_SCHEMA.USER_ATTRIBUTES WHERE USER = '%s' AND HOST = '%%'\n      AND JSON_UNQUOTE(JSON_EXTRACT(ATTRIBUTE, '\\$.stack')) = '%s')\n    THEN 'the account belongs to another owner; inspect existing state'\n  WHEN EXISTS (SELECT 1 FROM INFORMATION_SCHEMA.USER_PRIVILEGES WHERE GRANTEE = '''%s''@''%%''' AND PRIVILEGE_TYPE <> 'USAGE')\n    OR EXISTS (SELECT 1 FROM mysql.role_edges WHERE (FROM_USER = '%s' AND FROM_HOST = '%%') OR (TO_USER = '%s' AND TO_HOST = '%%'))\n    THEN 'the account has privileges Stack did not give it; inspect existing state'\n  WHEN EXISTS (SELECT 1 FROM INFORMATION_SCHEMA.SCHEMATA WHERE SCHEMA_NAME = '%s')\n    AND NOT EXISTS (SELECT 1 FROM mysql.db WHERE Db = '%s' AND User = '%s' AND Host = '%%')\n    THEN 'database belongs to another owner; inspect existing state'\n  WHEN EXISTS (SELECT 1 FROM mysql.db WHERE Db = '%s' AND NOT (User = '%s' AND Host = '%%'))\n    THEN 'database access grants conflict; inspect existing state'\n  ELSE '' END;\\n\" \"$account\" \"$account\" \"$kind\" \"$account\" \"$account\" \"$account\" \"$database\" \"$database\" \"$account\" \"$database\" \"$account\" | admin)\"\n[ -z \"$problem\" ] || refuse \"$problem\"\nprintf \"CREATE USER IF NOT EXISTS '%s'@'%%' IDENTIFIED BY '%s' ATTRIBUTE '{\\\"stack\\\": \\\"%s\\\"}';\nALTER USER '%s'@'%%' IDENTIFIED BY '%s';\nGRANT ALL ON \\`%s\\`.* TO '%s'@'%%';\nCREATE DATABASE IF NOT EXISTS \\`%s\\`;\\n\" \"$account\" \"$DB_PASSWORD\" \"$kind\" \"$account\" \"$DB_PASSWORD\" \"$database\" \"$account\" \"$database\" | admin\nrm -rf \"$STACK_DATA_DIR/accounts\"\n",
+        "bin_dir": "bin",
+        "commands": [
+          "mysql",
+          "mysqldump",
+          "mysqladmin"
+        ],
+        "ready": "MYSQL_TEST_LOGIN_FILE=\"$STACK_DATA_DIR/no-login-path\" MYSQL_PWD=\"$MYSQL_ADMIN_PASSWORD\" \"$STACK_INSTALL_DIR/bin/mysqladmin\" --no-defaults --protocol=SOCKET --socket=\"$STACK_SOCKET_DIR/mysqld.sock\" --user=stack_admin status >/dev/null",
+        "secrets": [
+          "MYSQL_ADMIN_PASSWORD"
+        ],
+        "group_secrets": [
+          "DB_PASSWORD"
+        ],
+        "database_provision": "set -eu\numask 077\nexport MYSQL_TEST_LOGIN_FILE=\"$STACK_DATA_DIR/no-login-path\"\nexport MYSQL_PWD=\"$MYSQL_ADMIN_PASSWORD\"\nadmin() {\n  \"$STACK_INSTALL_DIR/bin/mysql\" --no-defaults --protocol=SOCKET --socket=\"$STACK_SOCKET_DIR/mysqld.sock\" --user=stack_admin --batch --skip-column-names \"$@\"\n}\nrefuse() {\n  printf '%s\\n' \"$1\" >&2\n  exit 1\n}\nlabel() {\n  case \"$1\" in\n    '' | *[!a-z0-9-]*) refuse \"$2 is not a name Stack writes into SQL\" ;;\n  esac\n}\naccount_name() {\n  case \"$1\" in\n    '' | *[!a-z0-9_-]*) refuse \"$2 is not a name Stack writes into SQL\" ;;\n  esac\n}\nlabel \"$STACK_DATABASE\" 'the database name'\naccount_name \"$STACK_DATABASE_USER\" 'the database account'\naccount=\"$STACK_DATABASE_USER\"\ndatabase=\"$STACK_DATABASE\"\nkind=database\ncase \"$DB_PASSWORD\" in\n  '' | *[!0-9a-f]*) refuse 'the account password is not hexadecimal' ;;\nesac\nproblem=\"$(printf \"SELECT CASE\n  WHEN EXISTS (SELECT 1 FROM mysql.user WHERE User = '%s' AND Host = '%%')\n    AND NOT EXISTS (SELECT 1 FROM INFORMATION_SCHEMA.USER_ATTRIBUTES WHERE USER = '%s' AND HOST = '%%'\n      AND JSON_UNQUOTE(JSON_EXTRACT(ATTRIBUTE, '\\$.stack')) = '%s')\n    THEN 'the account belongs to another owner; inspect existing state'\n  WHEN EXISTS (SELECT 1 FROM INFORMATION_SCHEMA.USER_PRIVILEGES WHERE GRANTEE = '''%s''@''%%''' AND PRIVILEGE_TYPE <> 'USAGE')\n    OR EXISTS (SELECT 1 FROM mysql.role_edges WHERE (FROM_USER = '%s' AND FROM_HOST = '%%') OR (TO_USER = '%s' AND TO_HOST = '%%'))\n    THEN 'the account has privileges Stack did not give it; inspect existing state'\n  WHEN EXISTS (SELECT 1 FROM INFORMATION_SCHEMA.SCHEMATA WHERE SCHEMA_NAME = '%s')\n    AND NOT EXISTS (SELECT 1 FROM mysql.db WHERE Db = '%s' AND User = '%s' AND Host = '%%')\n    THEN 'database belongs to another owner; inspect existing state'\n  WHEN EXISTS (SELECT 1 FROM mysql.db WHERE Db = '%s' AND NOT (User = '%s' AND Host = '%%'))\n    THEN 'database access grants conflict; inspect existing state'\n  ELSE '' END;\\n\" \"$account\" \"$account\" \"$kind\" \"$account\" \"$account\" \"$account\" \"$database\" \"$database\" \"$account\" \"$database\" \"$account\" | admin)\"\n[ -z \"$problem\" ] || refuse \"$problem\"\nprintf \"CREATE USER IF NOT EXISTS '%s'@'%%' IDENTIFIED BY '%s' ATTRIBUTE '{\\\"stack\\\": \\\"%s\\\"}';\nALTER USER '%s'@'%%' IDENTIFIED BY '%s';\nGRANT ALL ON \\`%s\\`.* TO '%s'@'%%';\nCREATE DATABASE IF NOT EXISTS \\`%s\\`;\\n\" \"$account\" \"$DB_PASSWORD\" \"$kind\" \"$account\" \"$DB_PASSWORD\" \"$database\" \"$account\" \"$database\" | admin\nrm -rf \"$STACK_DATA_DIR/accounts\"\n",
+        "group_rename": "set -eu\numask 077\nexport MYSQL_TEST_LOGIN_FILE=\"$STACK_DATA_DIR/no-login-path\"\nexport MYSQL_PWD=\"$MYSQL_ADMIN_PASSWORD\"\nadmin() {\n  \"$STACK_INSTALL_DIR/bin/mysql\" --no-defaults --protocol=SOCKET --socket=\"$STACK_SOCKET_DIR/mysqld.sock\" --user=stack_admin --batch --skip-column-names \"$@\"\n}\nrefuse() {\n  printf '%s\\n' \"$1\" >&2\n  exit 1\n}\nlabel() {\n  case \"$1\" in\n    '' | *[!a-z0-9-]*) refuse \"$2 is not a name Stack writes into SQL\" ;;\n  esac\n}\nlabel \"$STACK_OLD_GROUP\" 'the old group name'\nlabel \"$STACK_GROUP\" 'the group name'\nold=\"$STACK_OLD_GROUP\"\nnew=\"$STACK_GROUP\"\nobjects=\"$(printf \"SELECT (SELECT COUNT(*) FROM INFORMATION_SCHEMA.VIEWS WHERE TABLE_SCHEMA = '%s')\n  + (SELECT COUNT(*) FROM INFORMATION_SCHEMA.TRIGGERS WHERE TRIGGER_SCHEMA = '%s')\n  + (SELECT COUNT(*) FROM INFORMATION_SCHEMA.ROUTINES WHERE ROUTINE_SCHEMA = '%s')\n  + (SELECT COUNT(*) FROM INFORMATION_SCHEMA.EVENTS WHERE EVENT_SCHEMA = '%s');\\n\" \"$old\" \"$old\" \"$old\" \"$old\" | admin)\"\n[ \"$objects\" = 0 ] || refuse \"the group's database holds views, triggers, routines or events, which MySQL cannot move to another database; dump the database, drop them, and restore the dump after the rename\"\nproblem=\"$(printf \"SELECT CASE\n  WHEN EXISTS (SELECT 1 FROM mysql.db WHERE Db = '%s' AND User NOT IN ('%s', '%s'))\n    THEN 'the new group name has a database another account may use; inspect existing state'\n  ELSE '' END;\\n\" \"$new\" \"$old\" \"$new\" | admin)\"\n[ -z \"$problem\" ] || refuse \"$problem\"\nif [ \"$(printf \"SELECT COUNT(*) FROM INFORMATION_SCHEMA.SCHEMATA WHERE SCHEMA_NAME = '%s';\\n\" \"$old\" | admin)\" = 1 ]; then\n  printf \"SET SESSION group_concat_max_len = 1073741824;\nCREATE DATABASE IF NOT EXISTS \\`%s\\`;\nSET @moves = (SELECT CONCAT('RENAME TABLE ', GROUP_CONCAT(CONCAT('\\`%s\\`.\\`', REPLACE(TABLE_NAME, '\\`', '\\`\\`'), '\\` TO \\`%s\\`.\\`', REPLACE(TABLE_NAME, '\\`', '\\`\\`'), '\\`') SEPARATOR ', '))\n  FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA = '%s' AND TABLE_TYPE = 'BASE TABLE');\nSET @moves = COALESCE(@moves, 'DO 0');\nPREPARE moving FROM @moves;\nEXECUTE moving;\nDEALLOCATE PREPARE moving;\nDROP DATABASE \\`%s\\`;\\n\" \"$new\" \"$old\" \"$new\" \"$old\" \"$old\" | admin\nfi\nif [ \"$(printf \"SELECT COUNT(*) FROM mysql.user WHERE User IN ('%s', '%s') AND Host = '%%';\\n\" \"$old\" \"$new\" | admin)\" = 1 ] &&\n  [ \"$(printf \"SELECT COUNT(*) FROM mysql.user WHERE User = '%s' AND Host = '%%';\\n\" \"$old\" | admin)\" = 1 ]; then\n  printf \"RENAME USER '%s'@'%%' TO '%s'@'%%';\\n\" \"$old\" \"$new\" | admin\nfi\nif [ \"$(printf \"SELECT COUNT(*) FROM mysql.user WHERE User = '%s' AND Host = '%%';\\n\" \"$new\" | admin)\" = 1 ]; then\n  printf \"GRANT ALL ON \\`%s\\`.* TO '%s'@'%%';\\nREVOKE IF EXISTS ALL ON \\`%s\\`.* FROM '%s'@'%%';\\n\" \"$new\" \"$new\" \"$old\" \"$new\" | admin\nfi\n",
+        "database_rename": "set -eu\numask 077\nexport MYSQL_TEST_LOGIN_FILE=\"$STACK_DATA_DIR/no-login-path\"\nexport MYSQL_PWD=\"$MYSQL_ADMIN_PASSWORD\"\nadmin() {\n  \"$STACK_INSTALL_DIR/bin/mysql\" --no-defaults --protocol=SOCKET --socket=\"$STACK_SOCKET_DIR/mysqld.sock\" --user=stack_admin --batch --skip-column-names \"$@\"\n}\nrefuse() {\n  printf '%s\\n' \"$1\" >&2\n  exit 1\n}\naccount_name() {\n  case \"$1\" in\n    '' | *[!a-z0-9_-]*) refuse \"$2 is not a name Stack writes into SQL\" ;;\n  esac\n}\naccount_name \"$STACK_OLD_DATABASE_USER\" 'the old database account'\naccount_name \"$STACK_DATABASE_USER\" 'the database account'\nold=\"$STACK_OLD_DATABASE_USER\"\nnew=\"$STACK_DATABASE_USER\"\nif [ \"$(printf \"SELECT COUNT(*) FROM mysql.user WHERE User IN ('%s', '%s') AND Host = '%%';\\n\" \"$old\" \"$new\" | admin)\" = 1 ] &&\n  [ \"$(printf \"SELECT COUNT(*) FROM mysql.user WHERE User = '%s' AND Host = '%%';\\n\" \"$old\" | admin)\" = 1 ]; then\n  objects=\"$(printf \"SELECT (SELECT COUNT(*) FROM INFORMATION_SCHEMA.VIEWS WHERE DEFINER = '%s@%%')\n  + (SELECT COUNT(*) FROM INFORMATION_SCHEMA.TRIGGERS WHERE DEFINER = '%s@%%')\n  + (SELECT COUNT(*) FROM INFORMATION_SCHEMA.ROUTINES WHERE DEFINER = '%s@%%')\n  + (SELECT COUNT(*) FROM INFORMATION_SCHEMA.EVENTS WHERE DEFINER = '%s@%%');\\n\" \"$old\" \"$old\" \"$old\" \"$old\" | admin)\"\n  [ \"$objects\" = 0 ] || refuse \"the database account $old defines views, triggers, routines or events, whose DEFINER would name an account that no longer exists after the rename; dump its database, drop them, and restore the dump after the rename\"\n  printf \"RENAME USER '%s'@'%%' TO '%s'@'%%';\\n\" \"$old\" \"$new\" | admin\nfi\n",
+        "database_reset": "set -eu\numask 077\nexport MYSQL_TEST_LOGIN_FILE=\"$STACK_DATA_DIR/no-login-path\"\nexport MYSQL_PWD=\"$MYSQL_ADMIN_PASSWORD\"\nadmin() {\n  \"$STACK_INSTALL_DIR/bin/mysql\" --no-defaults --protocol=SOCKET --socket=\"$STACK_SOCKET_DIR/mysqld.sock\" --user=stack_admin --batch --skip-column-names \"$@\"\n}\nrefuse() {\n  printf '%s\\n' \"$1\" >&2\n  exit 1\n}\nlabel() {\n  case \"$1\" in\n    '' | *[!a-z0-9-]*) refuse \"$2 is not a name Stack writes into SQL\" ;;\n  esac\n}\naccount_name() {\n  case \"$1\" in\n    '' | *[!a-z0-9_-]*) refuse \"$2 is not a name Stack writes into SQL\" ;;\n  esac\n}\nlabel \"$STACK_DATABASE\" 'the database name'\naccount_name \"$STACK_DATABASE_USER\" 'the database account'\nproblem=\"$(printf \"SELECT CASE\n  WHEN NOT EXISTS (SELECT 1 FROM INFORMATION_SCHEMA.USER_ATTRIBUTES WHERE USER = '%s' AND HOST = '%%'\n    AND JSON_UNQUOTE(JSON_EXTRACT(ATTRIBUTE, '\\$.stack')) IN ('group', 'database'))\n    THEN 'the database account does not exist; run stack up to provision it'\n  WHEN '%s' IN ('mysql', 'information_schema', 'performance_schema', 'sys')\n    OR EXISTS (SELECT 1 FROM INFORMATION_SCHEMA.SCHEMATA WHERE SCHEMA_NAME = '%s')\n    AND NOT EXISTS (SELECT 1 FROM mysql.db WHERE Db = '%s' AND User = '%s' AND Host = '%%')\n    THEN 'database belongs to another owner; inspect existing state'\n  ELSE '' END;\\n\" \"$STACK_DATABASE_USER\" \"$STACK_DATABASE\" \"$STACK_DATABASE\" \"$STACK_DATABASE\" \"$STACK_DATABASE_USER\" | admin)\"\n[ -z \"$problem\" ] || refuse \"$problem\"\nprintf 'DROP DATABASE IF EXISTS `%s`;\\nCREATE DATABASE `%s`;\\n' \"$STACK_DATABASE\" \"$STACK_DATABASE\" | admin\n",
+        "database_clone": "set -eu\numask 077\nexport MYSQL_TEST_LOGIN_FILE=\"$STACK_DATA_DIR/no-login-path\"\nexport MYSQL_PWD=\"$MYSQL_ADMIN_PASSWORD\"\nadmin() {\n  \"$STACK_INSTALL_DIR/bin/mysql\" --no-defaults --protocol=SOCKET --socket=\"$STACK_SOCKET_DIR/mysqld.sock\" --user=stack_admin --batch --skip-column-names \"$@\"\n}\nrefuse() {\n  printf '%s\\n' \"$1\" >&2\n  exit 1\n}\nlabel() {\n  case \"$1\" in\n    '' | *[!a-z0-9-]*) refuse \"$2 is not a name Stack writes into SQL\" ;;\n  esac\n}\naccount_name() {\n  case \"$1\" in\n    '' | *[!a-z0-9_-]*) refuse \"$2 is not a name Stack writes into SQL\" ;;\n  esac\n}\nlabel \"$STACK_DATABASE\" 'the database name'\naccount_name \"$STACK_DATABASE_USER\" 'the database account'\nproblem=\"$(printf \"SELECT CASE\n  WHEN NOT EXISTS (SELECT 1 FROM INFORMATION_SCHEMA.USER_ATTRIBUTES WHERE USER = '%s' AND HOST = '%%'\n    AND JSON_UNQUOTE(JSON_EXTRACT(ATTRIBUTE, '\\$.stack')) IN ('group', 'database'))\n    THEN 'the database account does not exist; run stack up to provision it'\n  WHEN '%s' IN ('mysql', 'information_schema', 'performance_schema', 'sys')\n    OR EXISTS (SELECT 1 FROM INFORMATION_SCHEMA.SCHEMATA WHERE SCHEMA_NAME = '%s')\n    AND NOT EXISTS (SELECT 1 FROM mysql.db WHERE Db = '%s' AND User = '%s' AND Host = '%%')\n    THEN 'database belongs to another owner; inspect existing state'\n  ELSE '' END;\\n\" \"$STACK_DATABASE_USER\" \"$STACK_DATABASE\" \"$STACK_DATABASE\" \"$STACK_DATABASE\" \"$STACK_DATABASE_USER\" | admin)\"\n[ -z \"$problem\" ] || refuse \"$problem\"\nlabel \"$STACK_SOURCE_DATABASE\" 'the source database name'\naccount_name \"$STACK_SOURCE_DATABASE_USER\" 'the source database account'\nproblem=\"$(printf \"SELECT CASE\n  WHEN '%s' IN ('mysql', 'information_schema', 'performance_schema', 'sys')\n    OR NOT EXISTS (SELECT 1 FROM INFORMATION_SCHEMA.SCHEMATA WHERE SCHEMA_NAME = '%s')\n    OR NOT EXISTS (SELECT 1 FROM mysql.db WHERE Db = '%s' AND User = '%s' AND Host = '%%')\n    THEN 'the source database does not belong to its account; inspect existing state'\n  ELSE '' END;\\n\" \"$STACK_SOURCE_DATABASE\" \"$STACK_SOURCE_DATABASE\" \"$STACK_SOURCE_DATABASE\" \"$STACK_SOURCE_DATABASE_USER\" | admin)\"\n[ -z \"$problem\" ] || refuse \"$problem\"\ndump() {\n  \"$STACK_INSTALL_DIR/bin/mysqldump\" --no-defaults --protocol=SOCKET --socket=\"$STACK_SOCKET_DIR/mysqld.sock\" --user=stack_admin --single-transaction --routines --triggers --events --no-tablespaces --set-gtid-purged=OFF --hex-blob --default-character-set=utf8mb4 \"$1\"\n}\n[ -n \"${STACK_DATABASE_PASSWORD:-}\" ] || refuse 'Stack passed no password for the database account'\nfailed=\"$STACK_DATA_DIR/replay-failed.$$\"\ntrap 'rm -f \"$failed\"' EXIT\nreplay() {\n  { LC_ALL=C sed '/^INSERT INTO /!s/DEFINER=`[^`]*`@`[^`]*`//g' || : > \"$failed\"; } |\n    MYSQL_PWD=\"$STACK_DATABASE_PASSWORD\" \"$STACK_INSTALL_DIR/bin/mysql\" --no-defaults --protocol=SOCKET --socket=\"$STACK_SOCKET_DIR/mysqld.sock\" --user=\"$STACK_DATABASE_USER\" --batch --binary-mode --database=\"$STACK_DATABASE\"\n  [ ! -e \"$failed\" ] || refuse \"$1\"\n}\nprintf \"DROP DATABASE IF EXISTS \\`%s\\`;\\nGRANT ALL ON \\`%s\\`.* TO '%s'@'%%';\\nCREATE DATABASE \\`%s\\`;\\n\" \"$STACK_DATABASE\" \"$STACK_DATABASE\" \"$STACK_DATABASE_USER\" \"$STACK_DATABASE\" | admin\n{ dump \"$STACK_SOURCE_DATABASE\" || : > \"$failed\"; } | replay 'the source database could not be copied'\n",
+        "database_dump": "set -eu\numask 077\nexport MYSQL_TEST_LOGIN_FILE=\"$STACK_DATA_DIR/no-login-path\"\nexport MYSQL_PWD=\"$MYSQL_ADMIN_PASSWORD\"\nadmin() {\n  \"$STACK_INSTALL_DIR/bin/mysql\" --no-defaults --protocol=SOCKET --socket=\"$STACK_SOCKET_DIR/mysqld.sock\" --user=stack_admin --batch --skip-column-names \"$@\"\n}\nrefuse() {\n  printf '%s\\n' \"$1\" >&2\n  exit 1\n}\nlabel() {\n  case \"$1\" in\n    '' | *[!a-z0-9-]*) refuse \"$2 is not a name Stack writes into SQL\" ;;\n  esac\n}\naccount_name() {\n  case \"$1\" in\n    '' | *[!a-z0-9_-]*) refuse \"$2 is not a name Stack writes into SQL\" ;;\n  esac\n}\nlabel \"$STACK_DATABASE\" 'the database name'\naccount_name \"$STACK_DATABASE_USER\" 'the database account'\nproblem=\"$(printf \"SELECT CASE\n  WHEN NOT EXISTS (SELECT 1 FROM INFORMATION_SCHEMA.USER_ATTRIBUTES WHERE USER = '%s' AND HOST = '%%'\n    AND JSON_UNQUOTE(JSON_EXTRACT(ATTRIBUTE, '\\$.stack')) IN ('group', 'database'))\n    THEN 'the database account does not exist; run stack up to provision it'\n  WHEN '%s' IN ('mysql', 'information_schema', 'performance_schema', 'sys')\n    OR EXISTS (SELECT 1 FROM INFORMATION_SCHEMA.SCHEMATA WHERE SCHEMA_NAME = '%s')\n    AND NOT EXISTS (SELECT 1 FROM mysql.db WHERE Db = '%s' AND User = '%s' AND Host = '%%')\n    THEN 'database belongs to another owner; inspect existing state'\n  ELSE '' END;\\n\" \"$STACK_DATABASE_USER\" \"$STACK_DATABASE\" \"$STACK_DATABASE\" \"$STACK_DATABASE\" \"$STACK_DATABASE_USER\" | admin)\"\n[ -z \"$problem\" ] || refuse \"$problem\"\n[ \"$(printf \"SELECT COUNT(*) FROM INFORMATION_SCHEMA.SCHEMATA WHERE SCHEMA_NAME = '%s';\\n\" \"$STACK_DATABASE\" | admin)\" = 1 ] ||\n  refuse 'the database does not exist; run stack up to provision it'\ndump() {\n  \"$STACK_INSTALL_DIR/bin/mysqldump\" --no-defaults --protocol=SOCKET --socket=\"$STACK_SOCKET_DIR/mysqld.sock\" --user=stack_admin --single-transaction --routines --triggers --events --no-tablespaces --set-gtid-purged=OFF --hex-blob --default-character-set=utf8mb4 \"$1\"\n}\ndump \"$STACK_DATABASE\"\n",
+        "database_restore": "set -eu\numask 077\nexport MYSQL_TEST_LOGIN_FILE=\"$STACK_DATA_DIR/no-login-path\"\nexport MYSQL_PWD=\"$MYSQL_ADMIN_PASSWORD\"\nadmin() {\n  \"$STACK_INSTALL_DIR/bin/mysql\" --no-defaults --protocol=SOCKET --socket=\"$STACK_SOCKET_DIR/mysqld.sock\" --user=stack_admin --batch --skip-column-names \"$@\"\n}\nrefuse() {\n  printf '%s\\n' \"$1\" >&2\n  exit 1\n}\nlabel() {\n  case \"$1\" in\n    '' | *[!a-z0-9-]*) refuse \"$2 is not a name Stack writes into SQL\" ;;\n  esac\n}\naccount_name() {\n  case \"$1\" in\n    '' | *[!a-z0-9_-]*) refuse \"$2 is not a name Stack writes into SQL\" ;;\n  esac\n}\nlabel \"$STACK_DATABASE\" 'the database name'\naccount_name \"$STACK_DATABASE_USER\" 'the database account'\nproblem=\"$(printf \"SELECT CASE\n  WHEN NOT EXISTS (SELECT 1 FROM INFORMATION_SCHEMA.USER_ATTRIBUTES WHERE USER = '%s' AND HOST = '%%'\n    AND JSON_UNQUOTE(JSON_EXTRACT(ATTRIBUTE, '\\$.stack')) IN ('group', 'database'))\n    THEN 'the database account does not exist; run stack up to provision it'\n  WHEN '%s' IN ('mysql', 'information_schema', 'performance_schema', 'sys')\n    OR EXISTS (SELECT 1 FROM INFORMATION_SCHEMA.SCHEMATA WHERE SCHEMA_NAME = '%s')\n    AND NOT EXISTS (SELECT 1 FROM mysql.db WHERE Db = '%s' AND User = '%s' AND Host = '%%')\n    THEN 'database belongs to another owner; inspect existing state'\n  ELSE '' END;\\n\" \"$STACK_DATABASE_USER\" \"$STACK_DATABASE\" \"$STACK_DATABASE\" \"$STACK_DATABASE\" \"$STACK_DATABASE_USER\" | admin)\"\n[ -z \"$problem\" ] || refuse \"$problem\"\n[ -n \"${STACK_DATABASE_PASSWORD:-}\" ] || refuse 'Stack passed no password for the database account'\nfailed=\"$STACK_DATA_DIR/replay-failed.$$\"\ntrap 'rm -f \"$failed\"' EXIT\nreplay() {\n  { LC_ALL=C sed '/^INSERT INTO /!s/DEFINER=`[^`]*`@`[^`]*`//g' || : > \"$failed\"; } |\n    MYSQL_PWD=\"$STACK_DATABASE_PASSWORD\" \"$STACK_INSTALL_DIR/bin/mysql\" --no-defaults --protocol=SOCKET --socket=\"$STACK_SOCKET_DIR/mysqld.sock\" --user=\"$STACK_DATABASE_USER\" --batch --binary-mode --database=\"$STACK_DATABASE\"\n  [ ! -e \"$failed\" ] || refuse \"$1\"\n}\nprintf 'CREATE DATABASE IF NOT EXISTS `%s`;\\n' \"$STACK_DATABASE\" | admin\nreplay 'the dump could not be read whole'\n",
+        "database_connection": {
+          "DATABASE_URL": "mysql://{database_user}:${DB_PASSWORD}@127.0.0.1:{port}/{database}",
+          "DB_URL": "mysql://{database_user}:${DB_PASSWORD}@127.0.0.1:{port}/{database}",
+          "DB_HOST": "127.0.0.1",
+          "DB_PORT": "{port}",
+          "DB_USERNAME": "{database_user}",
+          "DB_DATABASE": "{database}"
+        },
+        "client_environment": {
+          "MYSQL_HOST": "{host}",
+          "MYSQL_TCP_PORT": "{port}",
+          "MYSQL_PWD": "${DB_PASSWORD}"
+        },
+        "database_client_environment": {
+          "MYSQL_HOST": "{host}",
+          "MYSQL_TCP_PORT": "{port}",
+          "MYSQL_PWD": "${DB_PASSWORD}"
+        },
+        "shareable": true,
+        "client_arguments": [
+          "--user={group}",
+          "--database={group}"
+        ],
+        "database_client_arguments": [
+          "--user={database_user}",
+          "--database={database}"
+        ]
+      },
+      "lifecycle": {
+        "lts": "2026-04-21",
+        "end": "2034-04-30"
+      },
+      "requires": [
+        "account_name_limit",
+        "database_provision_any_type"
+      ],
+      "notes": [
+        {
+          "name": "accounts",
+          "text": "The server listens on 127.0.0.1 only. Each account holds every privilege on its own database and none elsewhere, and Stack's administrator, stack_admin, signs in only through the instance's socket. The mysql client takes no user from the environment, so outside stack db shell run mysql -u \"$DB_USERNAME\" \"$DB_DATABASE\"."
+        },
+        {
+          "name": "group_rename",
+          "text": "A group rename moves its database's tables to the new name, and is refused while that database holds views, triggers, routines or events, which MySQL cannot move. An explicit database keeps its name but its account is renamed, so the rename is also refused while that account defines a view, trigger, routine or event, whose DEFINER would name an account that no longer exists; dump the database, drop those objects, and restore the dump after the rename."
+        },
+        {
+          "name": "restore",
+          "text": "stack db restore and stack db clone replay a mysqldump file as the database's own account, without its DEFINER clauses; a file that names another database or needs administrator privileges is refused, and a failed restore keeps what it replayed, because MySQL commits each table definition at once."
+        },
+        {
+          "name": "versions",
+          "text": "A newer release upgrades the data directory in place when it starts; an older release cannot open it again, so dump the databases before moving an instance to a newer version."
+        }
+      ],
+      "recipes": [
+        {
+          "title": "Laravel with MySQL and Valkey",
+          "yaml": "group: shop\nruntimes:\n  php: \"8.4\"\nservices:\n  - {name: db, type: mysql, version: \"8.4\", commands: [mysql]}\n  - {name: cache, type: valkey}\nsites:\n  - {name: app, type: laravel}\n",
+          "gives": "Gives the site DATABASE_URL, the DB_* variables and DB_CONNECTION=mysql, and the REDIS_* variables; service-prefixed copies such as DB_DATABASE_URL come too, and mysql joins the shell with MYSQL_HOST, MYSQL_TCP_PORT and MYSQL_PWD."
+        },
+        {
+          "title": "Several databases on one server",
+          "yaml": "group: shop\nservices:\n  - name: db\n    type: mysql\n    databases:\n      - {name: app, env_prefix: \"\"}\n      - {name: wallet, env_prefix: WALLET}\n",
+          "gives": "Gives DATABASE_URL and the DB_* variables for app, and the same names prefixed WALLET_ for wallet, such as WALLET_DATABASE_URL; each database has its own account."
+        },
+        {
+          "title": "One server shared by several groups",
+          "yaml": "group: shop\nservices:\n  - {name: db, type: mysql, shared: local}\n",
+          "gives": "Gives shop DATABASE_URL and the DB_* variables, served by one MySQL process for every group naming shared: local; no group can open another's database."
+        },
+        {
+          "title": "Server settings from the repository",
+          "yaml": "group: shop\nservices:\n  - name: db\n    type: mysql\n    config: [config/mysql/dev.cnf]\n",
+          "gives": "Reads config/mysql/dev.cnf, such as a [mysqld] group setting max_connections = 50, after Stack's main file; Stack refuses the settings it keeps for itself, listed under CONFIG FILES."
+        }
+      ]
+    },
+    {
+      "type": "mysql",
+      "category": "database",
+      "summary": "MySQL, one database and account per group.",
+      "support": "lts",
+      "version": "8.4.13",
+      "description": "MySQL 8.4 LTS, supported until April 2032",
+      "artifacts": {
+        "darwin/arm64": {
+          "url": "https://github.com/luewell/stack-binaries/releases/download/mysql-8.4.13/mysql-8.4.13-aarch64-apple-darwin.tar.gz",
+          "digest": {
+            "algorithm": "sha256",
+            "value": "3abda390e9402b616d8f34d1bf7fe19e8345e7c193ee64dfdce905b6ed3dcd86"
+          },
+          "archive": "tar.gz",
+          "paths": [
+            "bin",
+            "lib",
+            "share"
+          ],
+          "strip": 1
+        },
+        "linux/amd64": {
+          "url": "https://github.com/luewell/stack-binaries/releases/download/mysql-8.4.13/mysql-8.4.13-x86_64-unknown-linux-gnu.tar.gz",
+          "digest": {
+            "algorithm": "sha256",
+            "value": "58606588e2e8fed96a2f09e5a0c999c1f887667dd9d35c1260c55367b33a182e"
+          },
+          "archive": "tar.gz",
+          "paths": [
+            "bin",
+            "lib",
+            "share"
+          ],
+          "strip": 1
+        },
+        "linux/arm64": {
+          "url": "https://github.com/luewell/stack-binaries/releases/download/mysql-8.4.13/mysql-8.4.13-aarch64-unknown-linux-gnu.tar.gz",
+          "digest": {
+            "algorithm": "sha256",
+            "value": "ee75e2faa9cae14e892229d40a9c23e43af56cd7f9119cc4798fa0fd12c28546"
+          },
+          "archive": "tar.gz",
+          "paths": [
+            "bin",
+            "lib",
+            "share"
+          ],
+          "strip": 1
+        }
+      },
+      "runtime": {
+        "initialise": "set -eu\numask 077\ncase \"${MYSQL_ADMIN_PASSWORD:-}\" in\n  '' | *[!0-9a-f]*) printf '%s\\n' 'the administrator password is not hexadecimal' >&2; exit 1 ;;\nesac\nif [ -e \"$STACK_DATA_DIR/mysql-data\" ]; then\n  printf '%s\\n' 'mysql-data exists without its system tablespace; preserve it and choose an empty instance directory.' >&2\n  exit 1\nfi\nbuilding=\"$STACK_DATA_DIR/mysql-data.initialising\"\ninit_file=\"$STACK_DATA_DIR/initialise.sql\"\ntrap 'rm -f \"$init_file\"' EXIT\nrm -rf \"$building\"\nprintf \"CREATE USER 'stack_admin'@'localhost' IDENTIFIED BY '%s';\\nGRANT ALL ON *.* TO 'stack_admin'@'localhost' WITH GRANT OPTION;\\nDROP USER 'root'@'localhost';\\n\" \"$MYSQL_ADMIN_PASSWORD\" > \"$init_file\"\n\"$STACK_INSTALL_DIR/bin/mysqld\" --no-defaults --initialize-insecure --basedir=\"$STACK_INSTALL_DIR\" --datadir=\"$building\" --init-file=\"$init_file\" --skip-log-bin --mysqlx=OFF\nmv \"$building\" \"$STACK_DATA_DIR/mysql-data\"\n",
+        "initialised_marker": "mysql-data/mysql.ibd",
+        "start": "umask 077\ncase \"${1:-}\" in\n  --defaults-file=*) ;;\n  *) set -- --no-defaults ;;\nesac\nmkdir -p \"$STACK_DATA_DIR/files\"\nexec \"$STACK_INSTALL_DIR/bin/mysqld\" \"$@\" --basedir=\"$STACK_INSTALL_DIR\" --datadir=\"$STACK_DATA_DIR/mysql-data\" --bind-address=127.0.0.1 --port=\"$STACK_PORT\" --socket=\"$STACK_SOCKET_DIR/mysqld.sock\" --mysqlx=OFF --skip-log-bin --skip-name-resolve --local-infile=OFF --secure-file-priv=\"$STACK_DATA_DIR/files\" --pid-file=\"$STACK_DATA_DIR/mysqld.pid\"\n",
+        "extend": {
+          "mechanism": "include",
+          "syntax": "mycnf",
+          "suffix": ".cnf",
+          "file": "my.cnf",
+          "arguments": [
+            "--defaults-file=${STACK_CONFIG_FILE}"
+          ],
+          "reserved": [
+            {
+              "key": "lower-case-table-names",
+              "reason": "is fixed when Stack creates the data directory"
+            },
+            {
+              "key": "innodb-page-size",
+              "reason": "is fixed when Stack creates the data directory"
+            },
+            {
+              "key": "skip-networking",
+              "reason": "is where clients connect, which Stack sets on the command line"
+            },
+            {
+              "key": "symbolic-links",
+              "reason": "lets tables live outside the data directory Stack manages"
+            },
+            {
+              "key": "character-sets-dir",
+              "reason": "reads server files from outside the installation Stack manages"
+            },
+            {
+              "key": "lc-messages-dir",
+              "reason": "reads server files from outside the installation Stack manages"
+            }
+          ]
+        },
+        "stop_signal": "SIGTERM",
+        "default_port": 3306,
+        "account_name_limit": 32,
+        "connection": {
+          "DATABASE_URL": "mysql://{group}:${DB_PASSWORD}@127.0.0.1:{port}/{group}",
+          "DB_URL": "mysql://{group}:${DB_PASSWORD}@127.0.0.1:{port}/{group}",
+          "DB_HOST": "127.0.0.1",
+          "DB_PORT": "{port}",
+          "DB_USERNAME": "{group}",
+          "DB_DATABASE": "{group}"
+        },
+        "laravel_connection": {
+          "DB_CONNECTION": "mysql"
+        },
+        "provision": "set -eu\numask 077\nexport MYSQL_TEST_LOGIN_FILE=\"$STACK_DATA_DIR/no-login-path\"\nexport MYSQL_PWD=\"$MYSQL_ADMIN_PASSWORD\"\nadmin() {\n  \"$STACK_INSTALL_DIR/bin/mysql\" --no-defaults --protocol=SOCKET --socket=\"$STACK_SOCKET_DIR/mysqld.sock\" --user=stack_admin --batch --skip-column-names \"$@\"\n}\nrefuse() {\n  printf '%s\\n' \"$1\" >&2\n  exit 1\n}\nlabel() {\n  case \"$1\" in\n    '' | *[!a-z0-9-]*) refuse \"$2 is not a name Stack writes into SQL\" ;;\n  esac\n}\nlabel \"$STACK_GROUP\" 'the group name'\naccount=\"$STACK_GROUP\"\ndatabase=\"$STACK_GROUP\"\nkind=group\ncase \"$DB_PASSWORD\" in\n  '' | *[!0-9a-f]*) refuse 'the account password is not hexadecimal' ;;\nesac\nproblem=\"$(printf \"SELECT CASE\n  WHEN EXISTS (SELECT 1 FROM mysql.user WHERE User = '%s' AND Host = '%%')\n    AND NOT EXISTS (SELECT 1 FROM INFORMATION_SCHEMA.USER_ATTRIBUTES WHERE USER = '%s' AND HOST = '%%'\n      AND JSON_UNQUOTE(JSON_EXTRACT(ATTRIBUTE, '\\$.stack')) = '%s')\n    THEN 'the account belongs to another owner; inspect existing state'\n  WHEN EXISTS (SELECT 1 FROM INFORMATION_SCHEMA.USER_PRIVILEGES WHERE GRANTEE = '''%s''@''%%''' AND PRIVILEGE_TYPE <> 'USAGE')\n    OR EXISTS (SELECT 1 FROM mysql.role_edges WHERE (FROM_USER = '%s' AND FROM_HOST = '%%') OR (TO_USER = '%s' AND TO_HOST = '%%'))\n    THEN 'the account has privileges Stack did not give it; inspect existing state'\n  WHEN EXISTS (SELECT 1 FROM INFORMATION_SCHEMA.SCHEMATA WHERE SCHEMA_NAME = '%s')\n    AND NOT EXISTS (SELECT 1 FROM mysql.db WHERE Db = '%s' AND User = '%s' AND Host = '%%')\n    THEN 'database belongs to another owner; inspect existing state'\n  WHEN EXISTS (SELECT 1 FROM mysql.db WHERE Db = '%s' AND NOT (User = '%s' AND Host = '%%'))\n    THEN 'database access grants conflict; inspect existing state'\n  ELSE '' END;\\n\" \"$account\" \"$account\" \"$kind\" \"$account\" \"$account\" \"$account\" \"$database\" \"$database\" \"$account\" \"$database\" \"$account\" | admin)\"\n[ -z \"$problem\" ] || refuse \"$problem\"\nprintf \"CREATE USER IF NOT EXISTS '%s'@'%%' IDENTIFIED BY '%s' ATTRIBUTE '{\\\"stack\\\": \\\"%s\\\"}';\nALTER USER '%s'@'%%' IDENTIFIED BY '%s';\nGRANT ALL ON \\`%s\\`.* TO '%s'@'%%';\nCREATE DATABASE IF NOT EXISTS \\`%s\\`;\\n\" \"$account\" \"$DB_PASSWORD\" \"$kind\" \"$account\" \"$DB_PASSWORD\" \"$database\" \"$account\" \"$database\" | admin\nrm -rf \"$STACK_DATA_DIR/accounts\"\n",
+        "bin_dir": "bin",
+        "commands": [
+          "mysql",
+          "mysqldump",
+          "mysqladmin"
+        ],
+        "ready": "MYSQL_TEST_LOGIN_FILE=\"$STACK_DATA_DIR/no-login-path\" MYSQL_PWD=\"$MYSQL_ADMIN_PASSWORD\" \"$STACK_INSTALL_DIR/bin/mysqladmin\" --no-defaults --protocol=SOCKET --socket=\"$STACK_SOCKET_DIR/mysqld.sock\" --user=stack_admin status >/dev/null",
+        "secrets": [
+          "MYSQL_ADMIN_PASSWORD"
+        ],
+        "group_secrets": [
+          "DB_PASSWORD"
+        ],
+        "database_provision": "set -eu\numask 077\nexport MYSQL_TEST_LOGIN_FILE=\"$STACK_DATA_DIR/no-login-path\"\nexport MYSQL_PWD=\"$MYSQL_ADMIN_PASSWORD\"\nadmin() {\n  \"$STACK_INSTALL_DIR/bin/mysql\" --no-defaults --protocol=SOCKET --socket=\"$STACK_SOCKET_DIR/mysqld.sock\" --user=stack_admin --batch --skip-column-names \"$@\"\n}\nrefuse() {\n  printf '%s\\n' \"$1\" >&2\n  exit 1\n}\nlabel() {\n  case \"$1\" in\n    '' | *[!a-z0-9-]*) refuse \"$2 is not a name Stack writes into SQL\" ;;\n  esac\n}\naccount_name() {\n  case \"$1\" in\n    '' | *[!a-z0-9_-]*) refuse \"$2 is not a name Stack writes into SQL\" ;;\n  esac\n}\nlabel \"$STACK_DATABASE\" 'the database name'\naccount_name \"$STACK_DATABASE_USER\" 'the database account'\naccount=\"$STACK_DATABASE_USER\"\ndatabase=\"$STACK_DATABASE\"\nkind=database\ncase \"$DB_PASSWORD\" in\n  '' | *[!0-9a-f]*) refuse 'the account password is not hexadecimal' ;;\nesac\nproblem=\"$(printf \"SELECT CASE\n  WHEN EXISTS (SELECT 1 FROM mysql.user WHERE User = '%s' AND Host = '%%')\n    AND NOT EXISTS (SELECT 1 FROM INFORMATION_SCHEMA.USER_ATTRIBUTES WHERE USER = '%s' AND HOST = '%%'\n      AND JSON_UNQUOTE(JSON_EXTRACT(ATTRIBUTE, '\\$.stack')) = '%s')\n    THEN 'the account belongs to another owner; inspect existing state'\n  WHEN EXISTS (SELECT 1 FROM INFORMATION_SCHEMA.USER_PRIVILEGES WHERE GRANTEE = '''%s''@''%%''' AND PRIVILEGE_TYPE <> 'USAGE')\n    OR EXISTS (SELECT 1 FROM mysql.role_edges WHERE (FROM_USER = '%s' AND FROM_HOST = '%%') OR (TO_USER = '%s' AND TO_HOST = '%%'))\n    THEN 'the account has privileges Stack did not give it; inspect existing state'\n  WHEN EXISTS (SELECT 1 FROM INFORMATION_SCHEMA.SCHEMATA WHERE SCHEMA_NAME = '%s')\n    AND NOT EXISTS (SELECT 1 FROM mysql.db WHERE Db = '%s' AND User = '%s' AND Host = '%%')\n    THEN 'database belongs to another owner; inspect existing state'\n  WHEN EXISTS (SELECT 1 FROM mysql.db WHERE Db = '%s' AND NOT (User = '%s' AND Host = '%%'))\n    THEN 'database access grants conflict; inspect existing state'\n  ELSE '' END;\\n\" \"$account\" \"$account\" \"$kind\" \"$account\" \"$account\" \"$account\" \"$database\" \"$database\" \"$account\" \"$database\" \"$account\" | admin)\"\n[ -z \"$problem\" ] || refuse \"$problem\"\nprintf \"CREATE USER IF NOT EXISTS '%s'@'%%' IDENTIFIED BY '%s' ATTRIBUTE '{\\\"stack\\\": \\\"%s\\\"}';\nALTER USER '%s'@'%%' IDENTIFIED BY '%s';\nGRANT ALL ON \\`%s\\`.* TO '%s'@'%%';\nCREATE DATABASE IF NOT EXISTS \\`%s\\`;\\n\" \"$account\" \"$DB_PASSWORD\" \"$kind\" \"$account\" \"$DB_PASSWORD\" \"$database\" \"$account\" \"$database\" | admin\nrm -rf \"$STACK_DATA_DIR/accounts\"\n",
+        "group_rename": "set -eu\numask 077\nexport MYSQL_TEST_LOGIN_FILE=\"$STACK_DATA_DIR/no-login-path\"\nexport MYSQL_PWD=\"$MYSQL_ADMIN_PASSWORD\"\nadmin() {\n  \"$STACK_INSTALL_DIR/bin/mysql\" --no-defaults --protocol=SOCKET --socket=\"$STACK_SOCKET_DIR/mysqld.sock\" --user=stack_admin --batch --skip-column-names \"$@\"\n}\nrefuse() {\n  printf '%s\\n' \"$1\" >&2\n  exit 1\n}\nlabel() {\n  case \"$1\" in\n    '' | *[!a-z0-9-]*) refuse \"$2 is not a name Stack writes into SQL\" ;;\n  esac\n}\nlabel \"$STACK_OLD_GROUP\" 'the old group name'\nlabel \"$STACK_GROUP\" 'the group name'\nold=\"$STACK_OLD_GROUP\"\nnew=\"$STACK_GROUP\"\nobjects=\"$(printf \"SELECT (SELECT COUNT(*) FROM INFORMATION_SCHEMA.VIEWS WHERE TABLE_SCHEMA = '%s')\n  + (SELECT COUNT(*) FROM INFORMATION_SCHEMA.TRIGGERS WHERE TRIGGER_SCHEMA = '%s')\n  + (SELECT COUNT(*) FROM INFORMATION_SCHEMA.ROUTINES WHERE ROUTINE_SCHEMA = '%s')\n  + (SELECT COUNT(*) FROM INFORMATION_SCHEMA.EVENTS WHERE EVENT_SCHEMA = '%s');\\n\" \"$old\" \"$old\" \"$old\" \"$old\" | admin)\"\n[ \"$objects\" = 0 ] || refuse \"the group's database holds views, triggers, routines or events, which MySQL cannot move to another database; dump the database, drop them, and restore the dump after the rename\"\nproblem=\"$(printf \"SELECT CASE\n  WHEN EXISTS (SELECT 1 FROM mysql.db WHERE Db = '%s' AND User NOT IN ('%s', '%s'))\n    THEN 'the new group name has a database another account may use; inspect existing state'\n  ELSE '' END;\\n\" \"$new\" \"$old\" \"$new\" | admin)\"\n[ -z \"$problem\" ] || refuse \"$problem\"\nif [ \"$(printf \"SELECT COUNT(*) FROM INFORMATION_SCHEMA.SCHEMATA WHERE SCHEMA_NAME = '%s';\\n\" \"$old\" | admin)\" = 1 ]; then\n  printf \"SET SESSION group_concat_max_len = 1073741824;\nCREATE DATABASE IF NOT EXISTS \\`%s\\`;\nSET @moves = (SELECT CONCAT('RENAME TABLE ', GROUP_CONCAT(CONCAT('\\`%s\\`.\\`', REPLACE(TABLE_NAME, '\\`', '\\`\\`'), '\\` TO \\`%s\\`.\\`', REPLACE(TABLE_NAME, '\\`', '\\`\\`'), '\\`') SEPARATOR ', '))\n  FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA = '%s' AND TABLE_TYPE = 'BASE TABLE');\nSET @moves = COALESCE(@moves, 'DO 0');\nPREPARE moving FROM @moves;\nEXECUTE moving;\nDEALLOCATE PREPARE moving;\nDROP DATABASE \\`%s\\`;\\n\" \"$new\" \"$old\" \"$new\" \"$old\" \"$old\" | admin\nfi\nif [ \"$(printf \"SELECT COUNT(*) FROM mysql.user WHERE User IN ('%s', '%s') AND Host = '%%';\\n\" \"$old\" \"$new\" | admin)\" = 1 ] &&\n  [ \"$(printf \"SELECT COUNT(*) FROM mysql.user WHERE User = '%s' AND Host = '%%';\\n\" \"$old\" | admin)\" = 1 ]; then\n  printf \"RENAME USER '%s'@'%%' TO '%s'@'%%';\\n\" \"$old\" \"$new\" | admin\nfi\nif [ \"$(printf \"SELECT COUNT(*) FROM mysql.user WHERE User = '%s' AND Host = '%%';\\n\" \"$new\" | admin)\" = 1 ]; then\n  printf \"GRANT ALL ON \\`%s\\`.* TO '%s'@'%%';\\nREVOKE IF EXISTS ALL ON \\`%s\\`.* FROM '%s'@'%%';\\n\" \"$new\" \"$new\" \"$old\" \"$new\" | admin\nfi\n",
+        "database_rename": "set -eu\numask 077\nexport MYSQL_TEST_LOGIN_FILE=\"$STACK_DATA_DIR/no-login-path\"\nexport MYSQL_PWD=\"$MYSQL_ADMIN_PASSWORD\"\nadmin() {\n  \"$STACK_INSTALL_DIR/bin/mysql\" --no-defaults --protocol=SOCKET --socket=\"$STACK_SOCKET_DIR/mysqld.sock\" --user=stack_admin --batch --skip-column-names \"$@\"\n}\nrefuse() {\n  printf '%s\\n' \"$1\" >&2\n  exit 1\n}\naccount_name() {\n  case \"$1\" in\n    '' | *[!a-z0-9_-]*) refuse \"$2 is not a name Stack writes into SQL\" ;;\n  esac\n}\naccount_name \"$STACK_OLD_DATABASE_USER\" 'the old database account'\naccount_name \"$STACK_DATABASE_USER\" 'the database account'\nold=\"$STACK_OLD_DATABASE_USER\"\nnew=\"$STACK_DATABASE_USER\"\nif [ \"$(printf \"SELECT COUNT(*) FROM mysql.user WHERE User IN ('%s', '%s') AND Host = '%%';\\n\" \"$old\" \"$new\" | admin)\" = 1 ] &&\n  [ \"$(printf \"SELECT COUNT(*) FROM mysql.user WHERE User = '%s' AND Host = '%%';\\n\" \"$old\" | admin)\" = 1 ]; then\n  objects=\"$(printf \"SELECT (SELECT COUNT(*) FROM INFORMATION_SCHEMA.VIEWS WHERE DEFINER = '%s@%%')\n  + (SELECT COUNT(*) FROM INFORMATION_SCHEMA.TRIGGERS WHERE DEFINER = '%s@%%')\n  + (SELECT COUNT(*) FROM INFORMATION_SCHEMA.ROUTINES WHERE DEFINER = '%s@%%')\n  + (SELECT COUNT(*) FROM INFORMATION_SCHEMA.EVENTS WHERE DEFINER = '%s@%%');\\n\" \"$old\" \"$old\" \"$old\" \"$old\" | admin)\"\n  [ \"$objects\" = 0 ] || refuse \"the database account $old defines views, triggers, routines or events, whose DEFINER would name an account that no longer exists after the rename; dump its database, drop them, and restore the dump after the rename\"\n  printf \"RENAME USER '%s'@'%%' TO '%s'@'%%';\\n\" \"$old\" \"$new\" | admin\nfi\n",
+        "database_reset": "set -eu\numask 077\nexport MYSQL_TEST_LOGIN_FILE=\"$STACK_DATA_DIR/no-login-path\"\nexport MYSQL_PWD=\"$MYSQL_ADMIN_PASSWORD\"\nadmin() {\n  \"$STACK_INSTALL_DIR/bin/mysql\" --no-defaults --protocol=SOCKET --socket=\"$STACK_SOCKET_DIR/mysqld.sock\" --user=stack_admin --batch --skip-column-names \"$@\"\n}\nrefuse() {\n  printf '%s\\n' \"$1\" >&2\n  exit 1\n}\nlabel() {\n  case \"$1\" in\n    '' | *[!a-z0-9-]*) refuse \"$2 is not a name Stack writes into SQL\" ;;\n  esac\n}\naccount_name() {\n  case \"$1\" in\n    '' | *[!a-z0-9_-]*) refuse \"$2 is not a name Stack writes into SQL\" ;;\n  esac\n}\nlabel \"$STACK_DATABASE\" 'the database name'\naccount_name \"$STACK_DATABASE_USER\" 'the database account'\nproblem=\"$(printf \"SELECT CASE\n  WHEN NOT EXISTS (SELECT 1 FROM INFORMATION_SCHEMA.USER_ATTRIBUTES WHERE USER = '%s' AND HOST = '%%'\n    AND JSON_UNQUOTE(JSON_EXTRACT(ATTRIBUTE, '\\$.stack')) IN ('group', 'database'))\n    THEN 'the database account does not exist; run stack up to provision it'\n  WHEN '%s' IN ('mysql', 'information_schema', 'performance_schema', 'sys')\n    OR EXISTS (SELECT 1 FROM INFORMATION_SCHEMA.SCHEMATA WHERE SCHEMA_NAME = '%s')\n    AND NOT EXISTS (SELECT 1 FROM mysql.db WHERE Db = '%s' AND User = '%s' AND Host = '%%')\n    THEN 'database belongs to another owner; inspect existing state'\n  ELSE '' END;\\n\" \"$STACK_DATABASE_USER\" \"$STACK_DATABASE\" \"$STACK_DATABASE\" \"$STACK_DATABASE\" \"$STACK_DATABASE_USER\" | admin)\"\n[ -z \"$problem\" ] || refuse \"$problem\"\nprintf 'DROP DATABASE IF EXISTS `%s`;\\nCREATE DATABASE `%s`;\\n' \"$STACK_DATABASE\" \"$STACK_DATABASE\" | admin\n",
+        "database_clone": "set -eu\numask 077\nexport MYSQL_TEST_LOGIN_FILE=\"$STACK_DATA_DIR/no-login-path\"\nexport MYSQL_PWD=\"$MYSQL_ADMIN_PASSWORD\"\nadmin() {\n  \"$STACK_INSTALL_DIR/bin/mysql\" --no-defaults --protocol=SOCKET --socket=\"$STACK_SOCKET_DIR/mysqld.sock\" --user=stack_admin --batch --skip-column-names \"$@\"\n}\nrefuse() {\n  printf '%s\\n' \"$1\" >&2\n  exit 1\n}\nlabel() {\n  case \"$1\" in\n    '' | *[!a-z0-9-]*) refuse \"$2 is not a name Stack writes into SQL\" ;;\n  esac\n}\naccount_name() {\n  case \"$1\" in\n    '' | *[!a-z0-9_-]*) refuse \"$2 is not a name Stack writes into SQL\" ;;\n  esac\n}\nlabel \"$STACK_DATABASE\" 'the database name'\naccount_name \"$STACK_DATABASE_USER\" 'the database account'\nproblem=\"$(printf \"SELECT CASE\n  WHEN NOT EXISTS (SELECT 1 FROM INFORMATION_SCHEMA.USER_ATTRIBUTES WHERE USER = '%s' AND HOST = '%%'\n    AND JSON_UNQUOTE(JSON_EXTRACT(ATTRIBUTE, '\\$.stack')) IN ('group', 'database'))\n    THEN 'the database account does not exist; run stack up to provision it'\n  WHEN '%s' IN ('mysql', 'information_schema', 'performance_schema', 'sys')\n    OR EXISTS (SELECT 1 FROM INFORMATION_SCHEMA.SCHEMATA WHERE SCHEMA_NAME = '%s')\n    AND NOT EXISTS (SELECT 1 FROM mysql.db WHERE Db = '%s' AND User = '%s' AND Host = '%%')\n    THEN 'database belongs to another owner; inspect existing state'\n  ELSE '' END;\\n\" \"$STACK_DATABASE_USER\" \"$STACK_DATABASE\" \"$STACK_DATABASE\" \"$STACK_DATABASE\" \"$STACK_DATABASE_USER\" | admin)\"\n[ -z \"$problem\" ] || refuse \"$problem\"\nlabel \"$STACK_SOURCE_DATABASE\" 'the source database name'\naccount_name \"$STACK_SOURCE_DATABASE_USER\" 'the source database account'\nproblem=\"$(printf \"SELECT CASE\n  WHEN '%s' IN ('mysql', 'information_schema', 'performance_schema', 'sys')\n    OR NOT EXISTS (SELECT 1 FROM INFORMATION_SCHEMA.SCHEMATA WHERE SCHEMA_NAME = '%s')\n    OR NOT EXISTS (SELECT 1 FROM mysql.db WHERE Db = '%s' AND User = '%s' AND Host = '%%')\n    THEN 'the source database does not belong to its account; inspect existing state'\n  ELSE '' END;\\n\" \"$STACK_SOURCE_DATABASE\" \"$STACK_SOURCE_DATABASE\" \"$STACK_SOURCE_DATABASE\" \"$STACK_SOURCE_DATABASE_USER\" | admin)\"\n[ -z \"$problem\" ] || refuse \"$problem\"\ndump() {\n  \"$STACK_INSTALL_DIR/bin/mysqldump\" --no-defaults --protocol=SOCKET --socket=\"$STACK_SOCKET_DIR/mysqld.sock\" --user=stack_admin --single-transaction --routines --triggers --events --no-tablespaces --set-gtid-purged=OFF --hex-blob --default-character-set=utf8mb4 \"$1\"\n}\n[ -n \"${STACK_DATABASE_PASSWORD:-}\" ] || refuse 'Stack passed no password for the database account'\nfailed=\"$STACK_DATA_DIR/replay-failed.$$\"\ntrap 'rm -f \"$failed\"' EXIT\nreplay() {\n  { LC_ALL=C sed '/^INSERT INTO /!s/DEFINER=`[^`]*`@`[^`]*`//g' || : > \"$failed\"; } |\n    MYSQL_PWD=\"$STACK_DATABASE_PASSWORD\" \"$STACK_INSTALL_DIR/bin/mysql\" --no-defaults --protocol=SOCKET --socket=\"$STACK_SOCKET_DIR/mysqld.sock\" --user=\"$STACK_DATABASE_USER\" --batch --binary-mode --database=\"$STACK_DATABASE\"\n  [ ! -e \"$failed\" ] || refuse \"$1\"\n}\nprintf \"DROP DATABASE IF EXISTS \\`%s\\`;\\nGRANT ALL ON \\`%s\\`.* TO '%s'@'%%';\\nCREATE DATABASE \\`%s\\`;\\n\" \"$STACK_DATABASE\" \"$STACK_DATABASE\" \"$STACK_DATABASE_USER\" \"$STACK_DATABASE\" | admin\n{ dump \"$STACK_SOURCE_DATABASE\" || : > \"$failed\"; } | replay 'the source database could not be copied'\n",
+        "database_dump": "set -eu\numask 077\nexport MYSQL_TEST_LOGIN_FILE=\"$STACK_DATA_DIR/no-login-path\"\nexport MYSQL_PWD=\"$MYSQL_ADMIN_PASSWORD\"\nadmin() {\n  \"$STACK_INSTALL_DIR/bin/mysql\" --no-defaults --protocol=SOCKET --socket=\"$STACK_SOCKET_DIR/mysqld.sock\" --user=stack_admin --batch --skip-column-names \"$@\"\n}\nrefuse() {\n  printf '%s\\n' \"$1\" >&2\n  exit 1\n}\nlabel() {\n  case \"$1\" in\n    '' | *[!a-z0-9-]*) refuse \"$2 is not a name Stack writes into SQL\" ;;\n  esac\n}\naccount_name() {\n  case \"$1\" in\n    '' | *[!a-z0-9_-]*) refuse \"$2 is not a name Stack writes into SQL\" ;;\n  esac\n}\nlabel \"$STACK_DATABASE\" 'the database name'\naccount_name \"$STACK_DATABASE_USER\" 'the database account'\nproblem=\"$(printf \"SELECT CASE\n  WHEN NOT EXISTS (SELECT 1 FROM INFORMATION_SCHEMA.USER_ATTRIBUTES WHERE USER = '%s' AND HOST = '%%'\n    AND JSON_UNQUOTE(JSON_EXTRACT(ATTRIBUTE, '\\$.stack')) IN ('group', 'database'))\n    THEN 'the database account does not exist; run stack up to provision it'\n  WHEN '%s' IN ('mysql', 'information_schema', 'performance_schema', 'sys')\n    OR EXISTS (SELECT 1 FROM INFORMATION_SCHEMA.SCHEMATA WHERE SCHEMA_NAME = '%s')\n    AND NOT EXISTS (SELECT 1 FROM mysql.db WHERE Db = '%s' AND User = '%s' AND Host = '%%')\n    THEN 'database belongs to another owner; inspect existing state'\n  ELSE '' END;\\n\" \"$STACK_DATABASE_USER\" \"$STACK_DATABASE\" \"$STACK_DATABASE\" \"$STACK_DATABASE\" \"$STACK_DATABASE_USER\" | admin)\"\n[ -z \"$problem\" ] || refuse \"$problem\"\n[ \"$(printf \"SELECT COUNT(*) FROM INFORMATION_SCHEMA.SCHEMATA WHERE SCHEMA_NAME = '%s';\\n\" \"$STACK_DATABASE\" | admin)\" = 1 ] ||\n  refuse 'the database does not exist; run stack up to provision it'\ndump() {\n  \"$STACK_INSTALL_DIR/bin/mysqldump\" --no-defaults --protocol=SOCKET --socket=\"$STACK_SOCKET_DIR/mysqld.sock\" --user=stack_admin --single-transaction --routines --triggers --events --no-tablespaces --set-gtid-purged=OFF --hex-blob --default-character-set=utf8mb4 \"$1\"\n}\ndump \"$STACK_DATABASE\"\n",
+        "database_restore": "set -eu\numask 077\nexport MYSQL_TEST_LOGIN_FILE=\"$STACK_DATA_DIR/no-login-path\"\nexport MYSQL_PWD=\"$MYSQL_ADMIN_PASSWORD\"\nadmin() {\n  \"$STACK_INSTALL_DIR/bin/mysql\" --no-defaults --protocol=SOCKET --socket=\"$STACK_SOCKET_DIR/mysqld.sock\" --user=stack_admin --batch --skip-column-names \"$@\"\n}\nrefuse() {\n  printf '%s\\n' \"$1\" >&2\n  exit 1\n}\nlabel() {\n  case \"$1\" in\n    '' | *[!a-z0-9-]*) refuse \"$2 is not a name Stack writes into SQL\" ;;\n  esac\n}\naccount_name() {\n  case \"$1\" in\n    '' | *[!a-z0-9_-]*) refuse \"$2 is not a name Stack writes into SQL\" ;;\n  esac\n}\nlabel \"$STACK_DATABASE\" 'the database name'\naccount_name \"$STACK_DATABASE_USER\" 'the database account'\nproblem=\"$(printf \"SELECT CASE\n  WHEN NOT EXISTS (SELECT 1 FROM INFORMATION_SCHEMA.USER_ATTRIBUTES WHERE USER = '%s' AND HOST = '%%'\n    AND JSON_UNQUOTE(JSON_EXTRACT(ATTRIBUTE, '\\$.stack')) IN ('group', 'database'))\n    THEN 'the database account does not exist; run stack up to provision it'\n  WHEN '%s' IN ('mysql', 'information_schema', 'performance_schema', 'sys')\n    OR EXISTS (SELECT 1 FROM INFORMATION_SCHEMA.SCHEMATA WHERE SCHEMA_NAME = '%s')\n    AND NOT EXISTS (SELECT 1 FROM mysql.db WHERE Db = '%s' AND User = '%s' AND Host = '%%')\n    THEN 'database belongs to another owner; inspect existing state'\n  ELSE '' END;\\n\" \"$STACK_DATABASE_USER\" \"$STACK_DATABASE\" \"$STACK_DATABASE\" \"$STACK_DATABASE\" \"$STACK_DATABASE_USER\" | admin)\"\n[ -z \"$problem\" ] || refuse \"$problem\"\n[ -n \"${STACK_DATABASE_PASSWORD:-}\" ] || refuse 'Stack passed no password for the database account'\nfailed=\"$STACK_DATA_DIR/replay-failed.$$\"\ntrap 'rm -f \"$failed\"' EXIT\nreplay() {\n  { LC_ALL=C sed '/^INSERT INTO /!s/DEFINER=`[^`]*`@`[^`]*`//g' || : > \"$failed\"; } |\n    MYSQL_PWD=\"$STACK_DATABASE_PASSWORD\" \"$STACK_INSTALL_DIR/bin/mysql\" --no-defaults --protocol=SOCKET --socket=\"$STACK_SOCKET_DIR/mysqld.sock\" --user=\"$STACK_DATABASE_USER\" --batch --binary-mode --database=\"$STACK_DATABASE\"\n  [ ! -e \"$failed\" ] || refuse \"$1\"\n}\nprintf 'CREATE DATABASE IF NOT EXISTS `%s`;\\n' \"$STACK_DATABASE\" | admin\nreplay 'the dump could not be read whole'\n",
+        "database_connection": {
+          "DATABASE_URL": "mysql://{database_user}:${DB_PASSWORD}@127.0.0.1:{port}/{database}",
+          "DB_URL": "mysql://{database_user}:${DB_PASSWORD}@127.0.0.1:{port}/{database}",
+          "DB_HOST": "127.0.0.1",
+          "DB_PORT": "{port}",
+          "DB_USERNAME": "{database_user}",
+          "DB_DATABASE": "{database}"
+        },
+        "client_environment": {
+          "MYSQL_HOST": "{host}",
+          "MYSQL_TCP_PORT": "{port}",
+          "MYSQL_PWD": "${DB_PASSWORD}"
+        },
+        "database_client_environment": {
+          "MYSQL_HOST": "{host}",
+          "MYSQL_TCP_PORT": "{port}",
+          "MYSQL_PWD": "${DB_PASSWORD}"
+        },
+        "shareable": true,
+        "client_arguments": [
+          "--user={group}",
+          "--database={group}"
+        ],
+        "database_client_arguments": [
+          "--user={database_user}",
+          "--database={database}"
+        ]
+      },
+      "lifecycle": {
+        "lts": "2024-04-30",
+        "end": "2032-04-30"
+      },
+      "requires": [
+        "account_name_limit",
+        "database_provision_any_type"
+      ],
+      "notes": [
+        {
+          "name": "accounts",
+          "text": "The server listens on 127.0.0.1 only. Each account holds every privilege on its own database and none elsewhere, and Stack's administrator, stack_admin, signs in only through the instance's socket. The mysql client takes no user from the environment, so outside stack db shell run mysql -u \"$DB_USERNAME\" \"$DB_DATABASE\"."
+        },
+        {
+          "name": "group_rename",
+          "text": "A group rename moves its database's tables to the new name, and is refused while that database holds views, triggers, routines or events, which MySQL cannot move. An explicit database keeps its name but its account is renamed, so the rename is also refused while that account defines a view, trigger, routine or event, whose DEFINER would name an account that no longer exists; dump the database, drop those objects, and restore the dump after the rename."
+        },
+        {
+          "name": "restore",
+          "text": "stack db restore and stack db clone replay a mysqldump file as the database's own account, without its DEFINER clauses; a file that names another database or needs administrator privileges is refused, and a failed restore keeps what it replayed, because MySQL commits each table definition at once."
+        },
+        {
+          "name": "versions",
+          "text": "A newer release upgrades the data directory in place when it starts; an older release cannot open it again, so dump the databases before moving an instance to a newer version."
+        }
+      ],
+      "recipes": [
+        {
+          "title": "Laravel with MySQL and Valkey",
+          "yaml": "group: shop\nruntimes:\n  php: \"8.4\"\nservices:\n  - {name: db, type: mysql, version: \"8.4\", commands: [mysql]}\n  - {name: cache, type: valkey}\nsites:\n  - {name: app, type: laravel}\n",
+          "gives": "Gives the site DATABASE_URL, the DB_* variables and DB_CONNECTION=mysql, and the REDIS_* variables; service-prefixed copies such as DB_DATABASE_URL come too, and mysql joins the shell with MYSQL_HOST, MYSQL_TCP_PORT and MYSQL_PWD."
+        },
+        {
+          "title": "Several databases on one server",
+          "yaml": "group: shop\nservices:\n  - name: db\n    type: mysql\n    databases:\n      - {name: app, env_prefix: \"\"}\n      - {name: wallet, env_prefix: WALLET}\n",
+          "gives": "Gives DATABASE_URL and the DB_* variables for app, and the same names prefixed WALLET_ for wallet, such as WALLET_DATABASE_URL; each database has its own account."
+        },
+        {
+          "title": "One server shared by several groups",
+          "yaml": "group: shop\nservices:\n  - {name: db, type: mysql, shared: local}\n",
+          "gives": "Gives shop DATABASE_URL and the DB_* variables, served by one MySQL process for every group naming shared: local; no group can open another's database."
+        },
+        {
+          "title": "Server settings from the repository",
+          "yaml": "group: shop\nservices:\n  - name: db\n    type: mysql\n    config: [config/mysql/dev.cnf]\n",
+          "gives": "Reads config/mysql/dev.cnf, such as a [mysqld] group setting max_connections = 50, after Stack's main file; Stack refuses the settings it keeps for itself, listed under CONFIG FILES."
+        }
+      ]
+    },
+    {
       "type": "postgres",
       "category": "database",
       "summary": "PostgreSQL, one database and role per group.",
@@ -953,6 +1450,10 @@
         "database_provision": "set -e\nPGPASSWORD=\"$POSTGRES_ADMIN_PASSWORD\" \"$STACK_INSTALL_DIR/bin/psql\" -h \"$STACK_SOCKET_DIR\" -p \"$STACK_PORT\" -U stack_admin -d postgres -X -w -q -v ON_ERROR_STOP=1 -v ECHO=none <<'SQL'\nSET log_statement = 'none';\nSET log_min_error_statement = 'panic';\nSET log_min_duration_statement = -1;\nSET log_min_duration_sample = -1;\nSET log_transaction_sample_rate = 0;\nSET debug_print_parse = off;\nSET debug_print_rewritten = off;\nSET debug_print_plan = off;\nSET password_encryption = 'scram-sha-256';\n\\getenv database_password DB_PASSWORD\n\\getenv database_name STACK_DATABASE\n\\getenv database_user STACK_DATABASE_USER\nSELECT set_config('stack.database_name', :'database_name', false), set_config('stack.database_user', :'database_user', false) \\gset\nDO $provision$\nDECLARE\n  database_name text := current_setting('stack.database_name');\n  database_user text := current_setting('stack.database_user');\n  role_oid oid;\nBEGIN\n  SELECT oid INTO role_oid FROM pg_roles WHERE rolname = database_user;\n  IF role_oid IS NOT NULL AND (\n    shobj_description(role_oid, 'pg_authid') IS DISTINCT FROM 'stack:database:' || database_user\n    OR EXISTS (SELECT FROM pg_roles WHERE oid = role_oid AND\n      (rolsuper OR rolcreatedb OR rolcreaterole OR rolreplication OR rolbypassrls OR NOT rolcanlogin))\n    OR EXISTS (SELECT FROM pg_auth_members WHERE roleid = role_oid OR member = role_oid)\n  ) THEN\n    RAISE EXCEPTION 'database role ownership or privileges conflict; inspect existing state';\n  END IF;\n  IF EXISTS (SELECT FROM pg_database WHERE datname = database_name AND\n    (role_oid IS NULL OR datdba <> role_oid)) THEN\n    RAISE EXCEPTION 'database belongs to another owner; inspect existing state';\n  END IF;\n  IF EXISTS (\n    SELECT FROM pg_database AS database_entry,\n      LATERAL aclexplode(COALESCE(database_entry.datacl, acldefault('d', database_entry.datdba))) AS access_entry\n    WHERE database_entry.datname = database_name\n      AND access_entry.grantee <> role_oid\n      AND access_entry.grantee <> (SELECT oid FROM pg_roles WHERE rolname = 'stack_admin')\n      AND NOT (access_entry.grantee = 0 AND NOT database_entry.datallowconn)\n  ) THEN\n    RAISE EXCEPTION 'database access grants conflict; inspect existing state';\n  END IF;\n  IF role_oid IS NULL THEN\n    EXECUTE format('CREATE ROLE %I LOGIN NOSUPERUSER NOCREATEDB NOCREATEROLE NOREPLICATION NOBYPASSRLS', database_user);\n    EXECUTE format('COMMENT ON ROLE %I IS %L', database_user, 'stack:database:' || database_user);\n  END IF;\nEND\n$provision$;\nALTER ROLE :\"database_user\" PASSWORD :'database_password';\nREVOKE ALL ON DATABASE postgres, template0, template1 FROM PUBLIC;\nSELECT format('CREATE DATABASE %I OWNER %I ALLOW_CONNECTIONS false', :'database_name', :'database_user')\n  WHERE NOT EXISTS (SELECT FROM pg_database WHERE datname = :'database_name')\\gexec\nREVOKE ALL ON DATABASE :\"database_name\" FROM PUBLIC;\nALTER DATABASE :\"database_name\" ALLOW_CONNECTIONS true;\nSQL\n",
         "group_rename": "set -e\nPGPASSWORD=\"$POSTGRES_ADMIN_PASSWORD\" \"$STACK_INSTALL_DIR/bin/psql\" -h \"$STACK_SOCKET_DIR\" -p \"$STACK_PORT\" -U stack_admin -d postgres -X -w -q -v ON_ERROR_STOP=1 -v ECHO=none <<'SQL'\nSET log_statement = 'none';\n\\getenv old_group STACK_OLD_GROUP\n\\getenv new_group STACK_GROUP\nSELECT format('ALTER DATABASE %I RENAME TO %I', :'old_group', :'new_group')\n  WHERE EXISTS (SELECT FROM pg_database WHERE datname = :'old_group')\n    AND NOT EXISTS (SELECT FROM pg_database WHERE datname = :'new_group')\\gexec\nSELECT format('ALTER ROLE %I RENAME TO %I', :'old_group', :'new_group')\n  WHERE EXISTS (SELECT FROM pg_roles WHERE rolname = :'old_group')\n    AND NOT EXISTS (SELECT FROM pg_roles WHERE rolname = :'new_group')\\gexec\nSQL\n",
         "database_rename": "set -e\nPGPASSWORD=\"$POSTGRES_ADMIN_PASSWORD\" \"$STACK_INSTALL_DIR/bin/psql\" -h \"$STACK_SOCKET_DIR\" -p \"$STACK_PORT\" -U stack_admin -d postgres -X -w -q -v ON_ERROR_STOP=1 -v ECHO=none <<'SQL'\nSET log_statement = 'none';\n\\getenv old_user STACK_OLD_DATABASE_USER\n\\getenv new_user STACK_DATABASE_USER\nSELECT format('ALTER ROLE %I RENAME TO %I', :'old_user', :'new_user')\n  WHERE EXISTS (SELECT FROM pg_roles WHERE rolname = :'old_user')\n    AND NOT EXISTS (SELECT FROM pg_roles WHERE rolname = :'new_user')\\gexec\nSELECT format('COMMENT ON ROLE %I IS %L', :'new_user', 'stack:database:' || :'new_user')\n  WHERE EXISTS (SELECT FROM pg_roles WHERE rolname = :'new_user')\\gexec\nSQL\n",
+        "database_reset": "set -e\nPGPASSWORD=\"$POSTGRES_ADMIN_PASSWORD\" \"$STACK_INSTALL_DIR/bin/psql\" -h \"$STACK_SOCKET_DIR\" -p \"$STACK_PORT\" -U stack_admin -X -w -q -v ON_ERROR_STOP=1 -v ECHO=none -d postgres <<'SQL'\n\\getenv database_name STACK_DATABASE\n\\getenv database_user STACK_DATABASE_USER\nSELECT set_config('stack.database_name', :'database_name', false), set_config('stack.database_user', :'database_user', false) \\gset\nDO $check$\nDECLARE\n  database_name text := current_setting('stack.database_name');\n  database_user text := current_setting('stack.database_user');\n  role_oid oid;\nBEGIN\n  SELECT oid INTO role_oid FROM pg_roles WHERE rolname = database_user AND NOT rolsuper;\n  IF role_oid IS NULL THEN\n    RAISE EXCEPTION 'the database account does not exist; run stack up to provision it';\n  END IF;\n  IF database_name IN ('postgres', 'template0', 'template1') OR EXISTS (SELECT FROM pg_database\n    WHERE datname = database_name AND (datistemplate OR datdba <> role_oid)) THEN\n    RAISE EXCEPTION 'database belongs to another owner; inspect existing state';\n  END IF;\nEND\n$check$;\nSELECT format('DROP DATABASE IF EXISTS %I WITH (FORCE)', :'database_name')\\gexec\nSELECT format('CREATE DATABASE %I OWNER %I ALLOW_CONNECTIONS false', :'database_name', :'database_user')\\gexec\nREVOKE ALL ON DATABASE :\"database_name\" FROM PUBLIC;\nALTER DATABASE :\"database_name\" ALLOW_CONNECTIONS true;\nSQL\n",
+        "database_clone": "set -e\ncase \"$STACK_DATABASE\" in\n  *=* | *://*) printf '%s\\n' 'the database name would be read as a connection string' >&2; exit 1 ;;\nesac\nPGPASSWORD=\"$POSTGRES_ADMIN_PASSWORD\" \"$STACK_INSTALL_DIR/bin/psql\" -h \"$STACK_SOCKET_DIR\" -p \"$STACK_PORT\" -U stack_admin -X -w -q -v ON_ERROR_STOP=1 -v ECHO=none -d postgres <<'SQL'\n\\getenv database_name STACK_DATABASE\n\\getenv database_user STACK_DATABASE_USER\nSELECT set_config('stack.database_name', :'database_name', false), set_config('stack.database_user', :'database_user', false) \\gset\nDO $check$\nDECLARE\n  database_name text := current_setting('stack.database_name');\n  database_user text := current_setting('stack.database_user');\n  role_oid oid;\nBEGIN\n  SELECT oid INTO role_oid FROM pg_roles WHERE rolname = database_user AND NOT rolsuper;\n  IF role_oid IS NULL THEN\n    RAISE EXCEPTION 'the database account does not exist; run stack up to provision it';\n  END IF;\n  IF database_name IN ('postgres', 'template0', 'template1') OR EXISTS (SELECT FROM pg_database\n    WHERE datname = database_name AND (datistemplate OR datdba <> role_oid)) THEN\n    RAISE EXCEPTION 'database belongs to another owner; inspect existing state';\n  END IF;\nEND\n$check$;\n\\getenv source_name STACK_SOURCE_DATABASE\n\\getenv source_user STACK_SOURCE_DATABASE_USER\nSELECT format('DO $refuse$ BEGIN RAISE EXCEPTION %L; END $refuse$', 'the source database does not belong to its account; inspect existing state')\n  WHERE :'source_name' IN ('postgres', 'template0', 'template1') OR NOT EXISTS (SELECT FROM pg_database\n    WHERE datname = :'source_name' AND NOT datistemplate\n      AND datdba = (SELECT oid FROM pg_roles WHERE rolname = :'source_user' AND NOT rolsuper))\\gexec\nSQL\nstatus=0\nPGPASSWORD=\"$POSTGRES_ADMIN_PASSWORD\" \"$STACK_INSTALL_DIR/bin/psql\" -h \"$STACK_SOCKET_DIR\" -p \"$STACK_PORT\" -U stack_admin -X -w -q -v ON_ERROR_STOP=1 -v ECHO=none -d postgres <<'SQL' || status=$?\n\\getenv database_name STACK_DATABASE\n\\getenv database_user STACK_DATABASE_USER\n\\getenv source_name STACK_SOURCE_DATABASE\nSELECT format('DROP DATABASE IF EXISTS %I WITH (FORCE)', :'database_name')\\gexec\nALTER DATABASE :\"source_name\" ALLOW_CONNECTIONS false;\nSELECT count(pg_terminate_backend(pid)) AS terminated FROM pg_stat_activity\n  WHERE datname = :'source_name' AND pid <> pg_backend_pid() \\gset\nSELECT format('CREATE DATABASE %I TEMPLATE %I OWNER %I ALLOW_CONNECTIONS false', :'database_name', :'source_name', :'database_user')\\gexec\nSQL\nPGPASSWORD=\"$POSTGRES_ADMIN_PASSWORD\" \"$STACK_INSTALL_DIR/bin/psql\" -h \"$STACK_SOCKET_DIR\" -p \"$STACK_PORT\" -U stack_admin -X -w -q -v ON_ERROR_STOP=1 -v ECHO=none -d postgres <<'SQL'\n\\getenv source_name STACK_SOURCE_DATABASE\nALTER DATABASE :\"source_name\" ALLOW_CONNECTIONS true;\nSQL\n[ \"$status\" -eq 0 ] || exit \"$status\"\nPGPASSWORD=\"$POSTGRES_ADMIN_PASSWORD\" \"$STACK_INSTALL_DIR/bin/psql\" -h \"$STACK_SOCKET_DIR\" -p \"$STACK_PORT\" -U stack_admin -X -w -q -v ON_ERROR_STOP=1 -v ECHO=none -d postgres <<'SQL'\n\\getenv database_name STACK_DATABASE\nREVOKE ALL ON DATABASE :\"database_name\" FROM PUBLIC;\nALTER DATABASE :\"database_name\" ALLOW_CONNECTIONS true;\nSQL\nPGPASSWORD=\"$POSTGRES_ADMIN_PASSWORD\" \"$STACK_INSTALL_DIR/bin/psql\" -h \"$STACK_SOCKET_DIR\" -p \"$STACK_PORT\" -U stack_admin -X -w -q -v ON_ERROR_STOP=1 -v ECHO=none -d \"$STACK_DATABASE\" <<'SQL'\nSET search_path = pg_catalog;\n\\getenv database_user STACK_DATABASE_USER\n\\getenv source_user STACK_SOURCE_DATABASE_USER\nSELECT set_config('stack.database_user', :'database_user', false), set_config('stack.source_user', :'source_user', false) \\gset\nDO $reassign$\nDECLARE\n  database_user text := current_setting('stack.database_user');\n  source_user text := current_setting('stack.source_user');\n  kept text[];\n  kept_database text;\nBEGIN\n  SELECT coalesce(array_agg(datname), '{}') INTO kept FROM pg_database\n    WHERE datdba = (SELECT oid FROM pg_roles WHERE rolname = source_user) AND datname <> current_database();\n  EXECUTE format('REASSIGN OWNED BY %I TO %I', source_user, database_user);\n  FOREACH kept_database IN ARRAY kept LOOP\n    EXECUTE format('ALTER DATABASE %I OWNER TO %I', kept_database, source_user);\n  END LOOP;\nEND\n$reassign$;\nSQL\n",
+        "database_dump": "set -e\ncase \"$STACK_DATABASE\" in\n  *=* | *://*) printf '%s\\n' 'the database name would be read as a connection string' >&2; exit 1 ;;\nesac\nPGPASSWORD=\"$POSTGRES_ADMIN_PASSWORD\" \"$STACK_INSTALL_DIR/bin/psql\" -h \"$STACK_SOCKET_DIR\" -p \"$STACK_PORT\" -U stack_admin -X -w -q -v ON_ERROR_STOP=1 -v ECHO=none -d postgres >&2 <<'SQL'\n\\getenv database_name STACK_DATABASE\n\\getenv database_user STACK_DATABASE_USER\nSELECT set_config('stack.database_name', :'database_name', false), set_config('stack.database_user', :'database_user', false) \\gset\nDO $check$\nDECLARE\n  database_name text := current_setting('stack.database_name');\n  database_user text := current_setting('stack.database_user');\n  role_oid oid;\nBEGIN\n  SELECT oid INTO role_oid FROM pg_roles WHERE rolname = database_user AND NOT rolsuper;\n  IF role_oid IS NULL THEN\n    RAISE EXCEPTION 'the database account does not exist; run stack up to provision it';\n  END IF;\n  IF database_name IN ('postgres', 'template0', 'template1') OR EXISTS (SELECT FROM pg_database\n    WHERE datname = database_name AND (datistemplate OR datdba <> role_oid)) THEN\n    RAISE EXCEPTION 'database belongs to another owner; inspect existing state';\n  END IF;\nEND\n$check$;\nSQL\nPGPASSWORD=\"$POSTGRES_ADMIN_PASSWORD\" exec \"$STACK_INSTALL_DIR/bin/pg_dump\" -h \"$STACK_SOCKET_DIR\" -p \"$STACK_PORT\" -U stack_admin -w --format=custom --dbname=\"$STACK_DATABASE\"\n",
+        "database_restore": "set -e\ncase \"$STACK_DATABASE\" in\n  *=* | *://*) printf '%s\\n' 'the database name would be read as a connection string' >&2; exit 1 ;;\nesac\nPGPASSWORD=\"$POSTGRES_ADMIN_PASSWORD\" \"$STACK_INSTALL_DIR/bin/psql\" -h \"$STACK_SOCKET_DIR\" -p \"$STACK_PORT\" -U stack_admin -X -w -q -v ON_ERROR_STOP=1 -v ECHO=none -d postgres <<'SQL'\n\\getenv database_name STACK_DATABASE\n\\getenv database_user STACK_DATABASE_USER\nSELECT set_config('stack.database_name', :'database_name', false), set_config('stack.database_user', :'database_user', false) \\gset\nDO $check$\nDECLARE\n  database_name text := current_setting('stack.database_name');\n  database_user text := current_setting('stack.database_user');\n  role_oid oid;\nBEGIN\n  SELECT oid INTO role_oid FROM pg_roles WHERE rolname = database_user AND NOT rolsuper;\n  IF role_oid IS NULL THEN\n    RAISE EXCEPTION 'the database account does not exist; run stack up to provision it';\n  END IF;\n  IF database_name IN ('postgres', 'template0', 'template1') OR EXISTS (SELECT FROM pg_database\n    WHERE datname = database_name AND (datistemplate OR datdba <> role_oid)) THEN\n    RAISE EXCEPTION 'database belongs to another owner; inspect existing state';\n  END IF;\nEND\n$check$;\nSQL\n[ -n \"${STACK_DATABASE_PASSWORD:-}\" ] || { printf '%s\\n' 'Stack passed no password for the database account' >&2; exit 1; }\nPGPASSWORD=\"$STACK_DATABASE_PASSWORD\" exec \"$STACK_INSTALL_DIR/bin/pg_restore\" -h \"$STACK_SOCKET_DIR\" -p \"$STACK_PORT\" -U \"$STACK_DATABASE_USER\" -w --clean --if-exists --no-owner --no-privileges --single-transaction --exit-on-error --dbname=\"$STACK_DATABASE\"\n",
         "database_connection": {
           "DATABASE_URL": "postgres://{database_user}:${DB_PASSWORD}@127.0.0.1:{port}/{database}?sslmode=disable",
           "DB_URL": "postgres://{database_user}:${DB_PASSWORD}@127.0.0.1:{port}/{database}?sslmode=disable",
@@ -1370,6 +1871,10 @@
         "database_provision": "set -e\nPGPASSWORD=\"$POSTGRES_ADMIN_PASSWORD\" \"$STACK_INSTALL_DIR/bin/psql\" -h \"$STACK_SOCKET_DIR\" -p \"$STACK_PORT\" -U stack_admin -d postgres -X -w -q -v ON_ERROR_STOP=1 -v ECHO=none <<'SQL'\nSET log_statement = 'none';\nSET log_min_error_statement = 'panic';\nSET log_min_duration_statement = -1;\nSET log_min_duration_sample = -1;\nSET log_transaction_sample_rate = 0;\nSET debug_print_parse = off;\nSET debug_print_rewritten = off;\nSET debug_print_plan = off;\nSET password_encryption = 'scram-sha-256';\n\\getenv database_password DB_PASSWORD\n\\getenv database_name STACK_DATABASE\n\\getenv database_user STACK_DATABASE_USER\nSELECT set_config('stack.database_name', :'database_name', false), set_config('stack.database_user', :'database_user', false) \\gset\nDO $provision$\nDECLARE\n  database_name text := current_setting('stack.database_name');\n  database_user text := current_setting('stack.database_user');\n  role_oid oid;\nBEGIN\n  SELECT oid INTO role_oid FROM pg_roles WHERE rolname = database_user;\n  IF role_oid IS NOT NULL AND (\n    shobj_description(role_oid, 'pg_authid') IS DISTINCT FROM 'stack:database:' || database_user\n    OR EXISTS (SELECT FROM pg_roles WHERE oid = role_oid AND\n      (rolsuper OR rolcreatedb OR rolcreaterole OR rolreplication OR rolbypassrls OR NOT rolcanlogin))\n    OR EXISTS (SELECT FROM pg_auth_members WHERE roleid = role_oid OR member = role_oid)\n  ) THEN\n    RAISE EXCEPTION 'database role ownership or privileges conflict; inspect existing state';\n  END IF;\n  IF EXISTS (SELECT FROM pg_database WHERE datname = database_name AND\n    (role_oid IS NULL OR datdba <> role_oid)) THEN\n    RAISE EXCEPTION 'database belongs to another owner; inspect existing state';\n  END IF;\n  IF EXISTS (\n    SELECT FROM pg_database AS database_entry,\n      LATERAL aclexplode(COALESCE(database_entry.datacl, acldefault('d', database_entry.datdba))) AS access_entry\n    WHERE database_entry.datname = database_name\n      AND access_entry.grantee <> role_oid\n      AND access_entry.grantee <> (SELECT oid FROM pg_roles WHERE rolname = 'stack_admin')\n      AND NOT (access_entry.grantee = 0 AND NOT database_entry.datallowconn)\n  ) THEN\n    RAISE EXCEPTION 'database access grants conflict; inspect existing state';\n  END IF;\n  IF role_oid IS NULL THEN\n    EXECUTE format('CREATE ROLE %I LOGIN NOSUPERUSER NOCREATEDB NOCREATEROLE NOREPLICATION NOBYPASSRLS', database_user);\n    EXECUTE format('COMMENT ON ROLE %I IS %L', database_user, 'stack:database:' || database_user);\n  END IF;\nEND\n$provision$;\nALTER ROLE :\"database_user\" PASSWORD :'database_password';\nREVOKE ALL ON DATABASE postgres, template0, template1 FROM PUBLIC;\nSELECT format('CREATE DATABASE %I OWNER %I ALLOW_CONNECTIONS false', :'database_name', :'database_user')\n  WHERE NOT EXISTS (SELECT FROM pg_database WHERE datname = :'database_name')\\gexec\nREVOKE ALL ON DATABASE :\"database_name\" FROM PUBLIC;\nALTER DATABASE :\"database_name\" ALLOW_CONNECTIONS true;\nSQL\n",
         "group_rename": "set -e\nPGPASSWORD=\"$POSTGRES_ADMIN_PASSWORD\" \"$STACK_INSTALL_DIR/bin/psql\" -h \"$STACK_SOCKET_DIR\" -p \"$STACK_PORT\" -U stack_admin -d postgres -X -w -q -v ON_ERROR_STOP=1 -v ECHO=none <<'SQL'\nSET log_statement = 'none';\n\\getenv old_group STACK_OLD_GROUP\n\\getenv new_group STACK_GROUP\nSELECT format('ALTER DATABASE %I RENAME TO %I', :'old_group', :'new_group')\n  WHERE EXISTS (SELECT FROM pg_database WHERE datname = :'old_group')\n    AND NOT EXISTS (SELECT FROM pg_database WHERE datname = :'new_group')\\gexec\nSELECT format('ALTER ROLE %I RENAME TO %I', :'old_group', :'new_group')\n  WHERE EXISTS (SELECT FROM pg_roles WHERE rolname = :'old_group')\n    AND NOT EXISTS (SELECT FROM pg_roles WHERE rolname = :'new_group')\\gexec\nSQL\n",
         "database_rename": "set -e\nPGPASSWORD=\"$POSTGRES_ADMIN_PASSWORD\" \"$STACK_INSTALL_DIR/bin/psql\" -h \"$STACK_SOCKET_DIR\" -p \"$STACK_PORT\" -U stack_admin -d postgres -X -w -q -v ON_ERROR_STOP=1 -v ECHO=none <<'SQL'\nSET log_statement = 'none';\n\\getenv old_user STACK_OLD_DATABASE_USER\n\\getenv new_user STACK_DATABASE_USER\nSELECT format('ALTER ROLE %I RENAME TO %I', :'old_user', :'new_user')\n  WHERE EXISTS (SELECT FROM pg_roles WHERE rolname = :'old_user')\n    AND NOT EXISTS (SELECT FROM pg_roles WHERE rolname = :'new_user')\\gexec\nSELECT format('COMMENT ON ROLE %I IS %L', :'new_user', 'stack:database:' || :'new_user')\n  WHERE EXISTS (SELECT FROM pg_roles WHERE rolname = :'new_user')\\gexec\nSQL\n",
+        "database_reset": "set -e\nPGPASSWORD=\"$POSTGRES_ADMIN_PASSWORD\" \"$STACK_INSTALL_DIR/bin/psql\" -h \"$STACK_SOCKET_DIR\" -p \"$STACK_PORT\" -U stack_admin -X -w -q -v ON_ERROR_STOP=1 -v ECHO=none -d postgres <<'SQL'\n\\getenv database_name STACK_DATABASE\n\\getenv database_user STACK_DATABASE_USER\nSELECT set_config('stack.database_name', :'database_name', false), set_config('stack.database_user', :'database_user', false) \\gset\nDO $check$\nDECLARE\n  database_name text := current_setting('stack.database_name');\n  database_user text := current_setting('stack.database_user');\n  role_oid oid;\nBEGIN\n  SELECT oid INTO role_oid FROM pg_roles WHERE rolname = database_user AND NOT rolsuper;\n  IF role_oid IS NULL THEN\n    RAISE EXCEPTION 'the database account does not exist; run stack up to provision it';\n  END IF;\n  IF database_name IN ('postgres', 'template0', 'template1') OR EXISTS (SELECT FROM pg_database\n    WHERE datname = database_name AND (datistemplate OR datdba <> role_oid)) THEN\n    RAISE EXCEPTION 'database belongs to another owner; inspect existing state';\n  END IF;\nEND\n$check$;\nSELECT format('DROP DATABASE IF EXISTS %I WITH (FORCE)', :'database_name')\\gexec\nSELECT format('CREATE DATABASE %I OWNER %I ALLOW_CONNECTIONS false', :'database_name', :'database_user')\\gexec\nREVOKE ALL ON DATABASE :\"database_name\" FROM PUBLIC;\nALTER DATABASE :\"database_name\" ALLOW_CONNECTIONS true;\nSQL\n",
+        "database_clone": "set -e\ncase \"$STACK_DATABASE\" in\n  *=* | *://*) printf '%s\\n' 'the database name would be read as a connection string' >&2; exit 1 ;;\nesac\nPGPASSWORD=\"$POSTGRES_ADMIN_PASSWORD\" \"$STACK_INSTALL_DIR/bin/psql\" -h \"$STACK_SOCKET_DIR\" -p \"$STACK_PORT\" -U stack_admin -X -w -q -v ON_ERROR_STOP=1 -v ECHO=none -d postgres <<'SQL'\n\\getenv database_name STACK_DATABASE\n\\getenv database_user STACK_DATABASE_USER\nSELECT set_config('stack.database_name', :'database_name', false), set_config('stack.database_user', :'database_user', false) \\gset\nDO $check$\nDECLARE\n  database_name text := current_setting('stack.database_name');\n  database_user text := current_setting('stack.database_user');\n  role_oid oid;\nBEGIN\n  SELECT oid INTO role_oid FROM pg_roles WHERE rolname = database_user AND NOT rolsuper;\n  IF role_oid IS NULL THEN\n    RAISE EXCEPTION 'the database account does not exist; run stack up to provision it';\n  END IF;\n  IF database_name IN ('postgres', 'template0', 'template1') OR EXISTS (SELECT FROM pg_database\n    WHERE datname = database_name AND (datistemplate OR datdba <> role_oid)) THEN\n    RAISE EXCEPTION 'database belongs to another owner; inspect existing state';\n  END IF;\nEND\n$check$;\n\\getenv source_name STACK_SOURCE_DATABASE\n\\getenv source_user STACK_SOURCE_DATABASE_USER\nSELECT format('DO $refuse$ BEGIN RAISE EXCEPTION %L; END $refuse$', 'the source database does not belong to its account; inspect existing state')\n  WHERE :'source_name' IN ('postgres', 'template0', 'template1') OR NOT EXISTS (SELECT FROM pg_database\n    WHERE datname = :'source_name' AND NOT datistemplate\n      AND datdba = (SELECT oid FROM pg_roles WHERE rolname = :'source_user' AND NOT rolsuper))\\gexec\nSQL\nstatus=0\nPGPASSWORD=\"$POSTGRES_ADMIN_PASSWORD\" \"$STACK_INSTALL_DIR/bin/psql\" -h \"$STACK_SOCKET_DIR\" -p \"$STACK_PORT\" -U stack_admin -X -w -q -v ON_ERROR_STOP=1 -v ECHO=none -d postgres <<'SQL' || status=$?\n\\getenv database_name STACK_DATABASE\n\\getenv database_user STACK_DATABASE_USER\n\\getenv source_name STACK_SOURCE_DATABASE\nSELECT format('DROP DATABASE IF EXISTS %I WITH (FORCE)', :'database_name')\\gexec\nALTER DATABASE :\"source_name\" ALLOW_CONNECTIONS false;\nSELECT count(pg_terminate_backend(pid)) AS terminated FROM pg_stat_activity\n  WHERE datname = :'source_name' AND pid <> pg_backend_pid() \\gset\nSELECT format('CREATE DATABASE %I TEMPLATE %I OWNER %I ALLOW_CONNECTIONS false', :'database_name', :'source_name', :'database_user')\\gexec\nSQL\nPGPASSWORD=\"$POSTGRES_ADMIN_PASSWORD\" \"$STACK_INSTALL_DIR/bin/psql\" -h \"$STACK_SOCKET_DIR\" -p \"$STACK_PORT\" -U stack_admin -X -w -q -v ON_ERROR_STOP=1 -v ECHO=none -d postgres <<'SQL'\n\\getenv source_name STACK_SOURCE_DATABASE\nALTER DATABASE :\"source_name\" ALLOW_CONNECTIONS true;\nSQL\n[ \"$status\" -eq 0 ] || exit \"$status\"\nPGPASSWORD=\"$POSTGRES_ADMIN_PASSWORD\" \"$STACK_INSTALL_DIR/bin/psql\" -h \"$STACK_SOCKET_DIR\" -p \"$STACK_PORT\" -U stack_admin -X -w -q -v ON_ERROR_STOP=1 -v ECHO=none -d postgres <<'SQL'\n\\getenv database_name STACK_DATABASE\nREVOKE ALL ON DATABASE :\"database_name\" FROM PUBLIC;\nALTER DATABASE :\"database_name\" ALLOW_CONNECTIONS true;\nSQL\nPGPASSWORD=\"$POSTGRES_ADMIN_PASSWORD\" \"$STACK_INSTALL_DIR/bin/psql\" -h \"$STACK_SOCKET_DIR\" -p \"$STACK_PORT\" -U stack_admin -X -w -q -v ON_ERROR_STOP=1 -v ECHO=none -d \"$STACK_DATABASE\" <<'SQL'\nSET search_path = pg_catalog;\n\\getenv database_user STACK_DATABASE_USER\n\\getenv source_user STACK_SOURCE_DATABASE_USER\nSELECT set_config('stack.database_user', :'database_user', false), set_config('stack.source_user', :'source_user', false) \\gset\nDO $reassign$\nDECLARE\n  database_user text := current_setting('stack.database_user');\n  source_user text := current_setting('stack.source_user');\n  kept text[];\n  kept_database text;\nBEGIN\n  SELECT coalesce(array_agg(datname), '{}') INTO kept FROM pg_database\n    WHERE datdba = (SELECT oid FROM pg_roles WHERE rolname = source_user) AND datname <> current_database();\n  EXECUTE format('REASSIGN OWNED BY %I TO %I', source_user, database_user);\n  FOREACH kept_database IN ARRAY kept LOOP\n    EXECUTE format('ALTER DATABASE %I OWNER TO %I', kept_database, source_user);\n  END LOOP;\nEND\n$reassign$;\nSQL\n",
+        "database_dump": "set -e\ncase \"$STACK_DATABASE\" in\n  *=* | *://*) printf '%s\\n' 'the database name would be read as a connection string' >&2; exit 1 ;;\nesac\nPGPASSWORD=\"$POSTGRES_ADMIN_PASSWORD\" \"$STACK_INSTALL_DIR/bin/psql\" -h \"$STACK_SOCKET_DIR\" -p \"$STACK_PORT\" -U stack_admin -X -w -q -v ON_ERROR_STOP=1 -v ECHO=none -d postgres >&2 <<'SQL'\n\\getenv database_name STACK_DATABASE\n\\getenv database_user STACK_DATABASE_USER\nSELECT set_config('stack.database_name', :'database_name', false), set_config('stack.database_user', :'database_user', false) \\gset\nDO $check$\nDECLARE\n  database_name text := current_setting('stack.database_name');\n  database_user text := current_setting('stack.database_user');\n  role_oid oid;\nBEGIN\n  SELECT oid INTO role_oid FROM pg_roles WHERE rolname = database_user AND NOT rolsuper;\n  IF role_oid IS NULL THEN\n    RAISE EXCEPTION 'the database account does not exist; run stack up to provision it';\n  END IF;\n  IF database_name IN ('postgres', 'template0', 'template1') OR EXISTS (SELECT FROM pg_database\n    WHERE datname = database_name AND (datistemplate OR datdba <> role_oid)) THEN\n    RAISE EXCEPTION 'database belongs to another owner; inspect existing state';\n  END IF;\nEND\n$check$;\nSQL\nPGPASSWORD=\"$POSTGRES_ADMIN_PASSWORD\" exec \"$STACK_INSTALL_DIR/bin/pg_dump\" -h \"$STACK_SOCKET_DIR\" -p \"$STACK_PORT\" -U stack_admin -w --format=custom --dbname=\"$STACK_DATABASE\"\n",
+        "database_restore": "set -e\ncase \"$STACK_DATABASE\" in\n  *=* | *://*) printf '%s\\n' 'the database name would be read as a connection string' >&2; exit 1 ;;\nesac\nPGPASSWORD=\"$POSTGRES_ADMIN_PASSWORD\" \"$STACK_INSTALL_DIR/bin/psql\" -h \"$STACK_SOCKET_DIR\" -p \"$STACK_PORT\" -U stack_admin -X -w -q -v ON_ERROR_STOP=1 -v ECHO=none -d postgres <<'SQL'\n\\getenv database_name STACK_DATABASE\n\\getenv database_user STACK_DATABASE_USER\nSELECT set_config('stack.database_name', :'database_name', false), set_config('stack.database_user', :'database_user', false) \\gset\nDO $check$\nDECLARE\n  database_name text := current_setting('stack.database_name');\n  database_user text := current_setting('stack.database_user');\n  role_oid oid;\nBEGIN\n  SELECT oid INTO role_oid FROM pg_roles WHERE rolname = database_user AND NOT rolsuper;\n  IF role_oid IS NULL THEN\n    RAISE EXCEPTION 'the database account does not exist; run stack up to provision it';\n  END IF;\n  IF database_name IN ('postgres', 'template0', 'template1') OR EXISTS (SELECT FROM pg_database\n    WHERE datname = database_name AND (datistemplate OR datdba <> role_oid)) THEN\n    RAISE EXCEPTION 'database belongs to another owner; inspect existing state';\n  END IF;\nEND\n$check$;\nSQL\n[ -n \"${STACK_DATABASE_PASSWORD:-}\" ] || { printf '%s\\n' 'Stack passed no password for the database account' >&2; exit 1; }\nPGPASSWORD=\"$STACK_DATABASE_PASSWORD\" exec \"$STACK_INSTALL_DIR/bin/pg_restore\" -h \"$STACK_SOCKET_DIR\" -p \"$STACK_PORT\" -U \"$STACK_DATABASE_USER\" -w --clean --if-exists --no-owner --no-privileges --single-transaction --exit-on-error --dbname=\"$STACK_DATABASE\"\n",
         "database_connection": {
           "DATABASE_URL": "postgres://{database_user}:${DB_PASSWORD}@127.0.0.1:{port}/{database}?sslmode=disable",
           "DB_URL": "postgres://{database_user}:${DB_PASSWORD}@127.0.0.1:{port}/{database}?sslmode=disable",
@@ -1750,6 +2255,10 @@
         "database_provision": "set -e\nPGPASSWORD=\"$POSTGRES_ADMIN_PASSWORD\" \"$STACK_INSTALL_DIR/bin/psql\" -h \"$STACK_SOCKET_DIR\" -p \"$STACK_PORT\" -U stack_admin -d postgres -X -w -q -v ON_ERROR_STOP=1 -v ECHO=none <<'SQL'\nSET log_statement = 'none';\nSET log_min_error_statement = 'panic';\nSET log_min_duration_statement = -1;\nSET log_min_duration_sample = -1;\nSET log_transaction_sample_rate = 0;\nSET debug_print_parse = off;\nSET debug_print_rewritten = off;\nSET debug_print_plan = off;\nSET password_encryption = 'scram-sha-256';\n\\getenv database_password DB_PASSWORD\n\\getenv database_name STACK_DATABASE\n\\getenv database_user STACK_DATABASE_USER\nSELECT set_config('stack.database_name', :'database_name', false), set_config('stack.database_user', :'database_user', false) \\gset\nDO $provision$\nDECLARE\n  database_name text := current_setting('stack.database_name');\n  database_user text := current_setting('stack.database_user');\n  role_oid oid;\nBEGIN\n  SELECT oid INTO role_oid FROM pg_roles WHERE rolname = database_user;\n  IF role_oid IS NOT NULL AND (\n    shobj_description(role_oid, 'pg_authid') IS DISTINCT FROM 'stack:database:' || database_user\n    OR EXISTS (SELECT FROM pg_roles WHERE oid = role_oid AND\n      (rolsuper OR rolcreatedb OR rolcreaterole OR rolreplication OR rolbypassrls OR NOT rolcanlogin))\n    OR EXISTS (SELECT FROM pg_auth_members WHERE roleid = role_oid OR member = role_oid)\n  ) THEN\n    RAISE EXCEPTION 'database role ownership or privileges conflict; inspect existing state';\n  END IF;\n  IF EXISTS (SELECT FROM pg_database WHERE datname = database_name AND\n    (role_oid IS NULL OR datdba <> role_oid)) THEN\n    RAISE EXCEPTION 'database belongs to another owner; inspect existing state';\n  END IF;\n  IF EXISTS (\n    SELECT FROM pg_database AS database_entry,\n      LATERAL aclexplode(COALESCE(database_entry.datacl, acldefault('d', database_entry.datdba))) AS access_entry\n    WHERE database_entry.datname = database_name\n      AND access_entry.grantee <> role_oid\n      AND access_entry.grantee <> (SELECT oid FROM pg_roles WHERE rolname = 'stack_admin')\n      AND NOT (access_entry.grantee = 0 AND NOT database_entry.datallowconn)\n  ) THEN\n    RAISE EXCEPTION 'database access grants conflict; inspect existing state';\n  END IF;\n  IF role_oid IS NULL THEN\n    EXECUTE format('CREATE ROLE %I LOGIN NOSUPERUSER NOCREATEDB NOCREATEROLE NOREPLICATION NOBYPASSRLS', database_user);\n    EXECUTE format('COMMENT ON ROLE %I IS %L', database_user, 'stack:database:' || database_user);\n  END IF;\nEND\n$provision$;\nALTER ROLE :\"database_user\" PASSWORD :'database_password';\nREVOKE ALL ON DATABASE postgres, template0, template1 FROM PUBLIC;\nSELECT format('CREATE DATABASE %I OWNER %I ALLOW_CONNECTIONS false', :'database_name', :'database_user')\n  WHERE NOT EXISTS (SELECT FROM pg_database WHERE datname = :'database_name')\\gexec\nREVOKE ALL ON DATABASE :\"database_name\" FROM PUBLIC;\nALTER DATABASE :\"database_name\" ALLOW_CONNECTIONS true;\nSQL\n",
         "group_rename": "set -e\nPGPASSWORD=\"$POSTGRES_ADMIN_PASSWORD\" \"$STACK_INSTALL_DIR/bin/psql\" -h \"$STACK_SOCKET_DIR\" -p \"$STACK_PORT\" -U stack_admin -d postgres -X -w -q -v ON_ERROR_STOP=1 -v ECHO=none <<'SQL'\nSET log_statement = 'none';\n\\getenv old_group STACK_OLD_GROUP\n\\getenv new_group STACK_GROUP\nSELECT format('ALTER DATABASE %I RENAME TO %I', :'old_group', :'new_group')\n  WHERE EXISTS (SELECT FROM pg_database WHERE datname = :'old_group')\n    AND NOT EXISTS (SELECT FROM pg_database WHERE datname = :'new_group')\\gexec\nSELECT format('ALTER ROLE %I RENAME TO %I', :'old_group', :'new_group')\n  WHERE EXISTS (SELECT FROM pg_roles WHERE rolname = :'old_group')\n    AND NOT EXISTS (SELECT FROM pg_roles WHERE rolname = :'new_group')\\gexec\nSQL\n",
         "database_rename": "set -e\nPGPASSWORD=\"$POSTGRES_ADMIN_PASSWORD\" \"$STACK_INSTALL_DIR/bin/psql\" -h \"$STACK_SOCKET_DIR\" -p \"$STACK_PORT\" -U stack_admin -d postgres -X -w -q -v ON_ERROR_STOP=1 -v ECHO=none <<'SQL'\nSET log_statement = 'none';\n\\getenv old_user STACK_OLD_DATABASE_USER\n\\getenv new_user STACK_DATABASE_USER\nSELECT format('ALTER ROLE %I RENAME TO %I', :'old_user', :'new_user')\n  WHERE EXISTS (SELECT FROM pg_roles WHERE rolname = :'old_user')\n    AND NOT EXISTS (SELECT FROM pg_roles WHERE rolname = :'new_user')\\gexec\nSELECT format('COMMENT ON ROLE %I IS %L', :'new_user', 'stack:database:' || :'new_user')\n  WHERE EXISTS (SELECT FROM pg_roles WHERE rolname = :'new_user')\\gexec\nSQL\n",
+        "database_reset": "set -e\nPGPASSWORD=\"$POSTGRES_ADMIN_PASSWORD\" \"$STACK_INSTALL_DIR/bin/psql\" -h \"$STACK_SOCKET_DIR\" -p \"$STACK_PORT\" -U stack_admin -X -w -q -v ON_ERROR_STOP=1 -v ECHO=none -d postgres <<'SQL'\n\\getenv database_name STACK_DATABASE\n\\getenv database_user STACK_DATABASE_USER\nSELECT set_config('stack.database_name', :'database_name', false), set_config('stack.database_user', :'database_user', false) \\gset\nDO $check$\nDECLARE\n  database_name text := current_setting('stack.database_name');\n  database_user text := current_setting('stack.database_user');\n  role_oid oid;\nBEGIN\n  SELECT oid INTO role_oid FROM pg_roles WHERE rolname = database_user AND NOT rolsuper;\n  IF role_oid IS NULL THEN\n    RAISE EXCEPTION 'the database account does not exist; run stack up to provision it';\n  END IF;\n  IF database_name IN ('postgres', 'template0', 'template1') OR EXISTS (SELECT FROM pg_database\n    WHERE datname = database_name AND (datistemplate OR datdba <> role_oid)) THEN\n    RAISE EXCEPTION 'database belongs to another owner; inspect existing state';\n  END IF;\nEND\n$check$;\nSELECT format('DROP DATABASE IF EXISTS %I WITH (FORCE)', :'database_name')\\gexec\nSELECT format('CREATE DATABASE %I OWNER %I ALLOW_CONNECTIONS false', :'database_name', :'database_user')\\gexec\nREVOKE ALL ON DATABASE :\"database_name\" FROM PUBLIC;\nALTER DATABASE :\"database_name\" ALLOW_CONNECTIONS true;\nSQL\n",
+        "database_clone": "set -e\ncase \"$STACK_DATABASE\" in\n  *=* | *://*) printf '%s\\n' 'the database name would be read as a connection string' >&2; exit 1 ;;\nesac\nPGPASSWORD=\"$POSTGRES_ADMIN_PASSWORD\" \"$STACK_INSTALL_DIR/bin/psql\" -h \"$STACK_SOCKET_DIR\" -p \"$STACK_PORT\" -U stack_admin -X -w -q -v ON_ERROR_STOP=1 -v ECHO=none -d postgres <<'SQL'\n\\getenv database_name STACK_DATABASE\n\\getenv database_user STACK_DATABASE_USER\nSELECT set_config('stack.database_name', :'database_name', false), set_config('stack.database_user', :'database_user', false) \\gset\nDO $check$\nDECLARE\n  database_name text := current_setting('stack.database_name');\n  database_user text := current_setting('stack.database_user');\n  role_oid oid;\nBEGIN\n  SELECT oid INTO role_oid FROM pg_roles WHERE rolname = database_user AND NOT rolsuper;\n  IF role_oid IS NULL THEN\n    RAISE EXCEPTION 'the database account does not exist; run stack up to provision it';\n  END IF;\n  IF database_name IN ('postgres', 'template0', 'template1') OR EXISTS (SELECT FROM pg_database\n    WHERE datname = database_name AND (datistemplate OR datdba <> role_oid)) THEN\n    RAISE EXCEPTION 'database belongs to another owner; inspect existing state';\n  END IF;\nEND\n$check$;\n\\getenv source_name STACK_SOURCE_DATABASE\n\\getenv source_user STACK_SOURCE_DATABASE_USER\nSELECT format('DO $refuse$ BEGIN RAISE EXCEPTION %L; END $refuse$', 'the source database does not belong to its account; inspect existing state')\n  WHERE :'source_name' IN ('postgres', 'template0', 'template1') OR NOT EXISTS (SELECT FROM pg_database\n    WHERE datname = :'source_name' AND NOT datistemplate\n      AND datdba = (SELECT oid FROM pg_roles WHERE rolname = :'source_user' AND NOT rolsuper))\\gexec\nSQL\nstatus=0\nPGPASSWORD=\"$POSTGRES_ADMIN_PASSWORD\" \"$STACK_INSTALL_DIR/bin/psql\" -h \"$STACK_SOCKET_DIR\" -p \"$STACK_PORT\" -U stack_admin -X -w -q -v ON_ERROR_STOP=1 -v ECHO=none -d postgres <<'SQL' || status=$?\n\\getenv database_name STACK_DATABASE\n\\getenv database_user STACK_DATABASE_USER\n\\getenv source_name STACK_SOURCE_DATABASE\nSELECT format('DROP DATABASE IF EXISTS %I WITH (FORCE)', :'database_name')\\gexec\nALTER DATABASE :\"source_name\" ALLOW_CONNECTIONS false;\nSELECT count(pg_terminate_backend(pid)) AS terminated FROM pg_stat_activity\n  WHERE datname = :'source_name' AND pid <> pg_backend_pid() \\gset\nSELECT format('CREATE DATABASE %I TEMPLATE %I OWNER %I ALLOW_CONNECTIONS false', :'database_name', :'source_name', :'database_user')\\gexec\nSQL\nPGPASSWORD=\"$POSTGRES_ADMIN_PASSWORD\" \"$STACK_INSTALL_DIR/bin/psql\" -h \"$STACK_SOCKET_DIR\" -p \"$STACK_PORT\" -U stack_admin -X -w -q -v ON_ERROR_STOP=1 -v ECHO=none -d postgres <<'SQL'\n\\getenv source_name STACK_SOURCE_DATABASE\nALTER DATABASE :\"source_name\" ALLOW_CONNECTIONS true;\nSQL\n[ \"$status\" -eq 0 ] || exit \"$status\"\nPGPASSWORD=\"$POSTGRES_ADMIN_PASSWORD\" \"$STACK_INSTALL_DIR/bin/psql\" -h \"$STACK_SOCKET_DIR\" -p \"$STACK_PORT\" -U stack_admin -X -w -q -v ON_ERROR_STOP=1 -v ECHO=none -d postgres <<'SQL'\n\\getenv database_name STACK_DATABASE\nREVOKE ALL ON DATABASE :\"database_name\" FROM PUBLIC;\nALTER DATABASE :\"database_name\" ALLOW_CONNECTIONS true;\nSQL\nPGPASSWORD=\"$POSTGRES_ADMIN_PASSWORD\" \"$STACK_INSTALL_DIR/bin/psql\" -h \"$STACK_SOCKET_DIR\" -p \"$STACK_PORT\" -U stack_admin -X -w -q -v ON_ERROR_STOP=1 -v ECHO=none -d \"$STACK_DATABASE\" <<'SQL'\nSET search_path = pg_catalog;\n\\getenv database_user STACK_DATABASE_USER\n\\getenv source_user STACK_SOURCE_DATABASE_USER\nSELECT set_config('stack.database_user', :'database_user', false), set_config('stack.source_user', :'source_user', false) \\gset\nDO $reassign$\nDECLARE\n  database_user text := current_setting('stack.database_user');\n  source_user text := current_setting('stack.source_user');\n  kept text[];\n  kept_database text;\nBEGIN\n  SELECT coalesce(array_agg(datname), '{}') INTO kept FROM pg_database\n    WHERE datdba = (SELECT oid FROM pg_roles WHERE rolname = source_user) AND datname <> current_database();\n  EXECUTE format('REASSIGN OWNED BY %I TO %I', source_user, database_user);\n  FOREACH kept_database IN ARRAY kept LOOP\n    EXECUTE format('ALTER DATABASE %I OWNER TO %I', kept_database, source_user);\n  END LOOP;\nEND\n$reassign$;\nSQL\n",
+        "database_dump": "set -e\ncase \"$STACK_DATABASE\" in\n  *=* | *://*) printf '%s\\n' 'the database name would be read as a connection string' >&2; exit 1 ;;\nesac\nPGPASSWORD=\"$POSTGRES_ADMIN_PASSWORD\" \"$STACK_INSTALL_DIR/bin/psql\" -h \"$STACK_SOCKET_DIR\" -p \"$STACK_PORT\" -U stack_admin -X -w -q -v ON_ERROR_STOP=1 -v ECHO=none -d postgres >&2 <<'SQL'\n\\getenv database_name STACK_DATABASE\n\\getenv database_user STACK_DATABASE_USER\nSELECT set_config('stack.database_name', :'database_name', false), set_config('stack.database_user', :'database_user', false) \\gset\nDO $check$\nDECLARE\n  database_name text := current_setting('stack.database_name');\n  database_user text := current_setting('stack.database_user');\n  role_oid oid;\nBEGIN\n  SELECT oid INTO role_oid FROM pg_roles WHERE rolname = database_user AND NOT rolsuper;\n  IF role_oid IS NULL THEN\n    RAISE EXCEPTION 'the database account does not exist; run stack up to provision it';\n  END IF;\n  IF database_name IN ('postgres', 'template0', 'template1') OR EXISTS (SELECT FROM pg_database\n    WHERE datname = database_name AND (datistemplate OR datdba <> role_oid)) THEN\n    RAISE EXCEPTION 'database belongs to another owner; inspect existing state';\n  END IF;\nEND\n$check$;\nSQL\nPGPASSWORD=\"$POSTGRES_ADMIN_PASSWORD\" exec \"$STACK_INSTALL_DIR/bin/pg_dump\" -h \"$STACK_SOCKET_DIR\" -p \"$STACK_PORT\" -U stack_admin -w --format=custom --dbname=\"$STACK_DATABASE\"\n",
+        "database_restore": "set -e\ncase \"$STACK_DATABASE\" in\n  *=* | *://*) printf '%s\\n' 'the database name would be read as a connection string' >&2; exit 1 ;;\nesac\nPGPASSWORD=\"$POSTGRES_ADMIN_PASSWORD\" \"$STACK_INSTALL_DIR/bin/psql\" -h \"$STACK_SOCKET_DIR\" -p \"$STACK_PORT\" -U stack_admin -X -w -q -v ON_ERROR_STOP=1 -v ECHO=none -d postgres <<'SQL'\n\\getenv database_name STACK_DATABASE\n\\getenv database_user STACK_DATABASE_USER\nSELECT set_config('stack.database_name', :'database_name', false), set_config('stack.database_user', :'database_user', false) \\gset\nDO $check$\nDECLARE\n  database_name text := current_setting('stack.database_name');\n  database_user text := current_setting('stack.database_user');\n  role_oid oid;\nBEGIN\n  SELECT oid INTO role_oid FROM pg_roles WHERE rolname = database_user AND NOT rolsuper;\n  IF role_oid IS NULL THEN\n    RAISE EXCEPTION 'the database account does not exist; run stack up to provision it';\n  END IF;\n  IF database_name IN ('postgres', 'template0', 'template1') OR EXISTS (SELECT FROM pg_database\n    WHERE datname = database_name AND (datistemplate OR datdba <> role_oid)) THEN\n    RAISE EXCEPTION 'database belongs to another owner; inspect existing state';\n  END IF;\nEND\n$check$;\nSQL\n[ -n \"${STACK_DATABASE_PASSWORD:-}\" ] || { printf '%s\\n' 'Stack passed no password for the database account' >&2; exit 1; }\nPGPASSWORD=\"$STACK_DATABASE_PASSWORD\" exec \"$STACK_INSTALL_DIR/bin/pg_restore\" -h \"$STACK_SOCKET_DIR\" -p \"$STACK_PORT\" -U \"$STACK_DATABASE_USER\" -w --clean --if-exists --no-owner --no-privileges --single-transaction --exit-on-error --dbname=\"$STACK_DATABASE\"\n",
         "database_connection": {
           "DATABASE_URL": "postgres://{database_user}:${DB_PASSWORD}@127.0.0.1:{port}/{database}?sslmode=disable",
           "DB_URL": "postgres://{database_user}:${DB_PASSWORD}@127.0.0.1:{port}/{database}?sslmode=disable",
@@ -5055,6 +5564,244 @@
           "title": "pnpm and Node.js for a Next.js app",
           "yaml": "group: shop\nruntimes:\n  node: \"24\"\n  pnpm: \"12\"\nsites:\n  - {name: app, type: next}\n",
           "gives": "Gives https://app.shop.test running next, with pnpm and node in the shell."
+        }
+      ]
+    },
+    {
+      "type": "meilisearch",
+      "category": "search",
+      "summary": "Meilisearch full-text search, one instance and key per group.",
+      "support": "current",
+      "version": "1.56.1",
+      "description": "Meilisearch 1.56, the newest release built for every platform",
+      "artifacts": {
+        "darwin/arm64": {
+          "url": "https://github.com/meilisearch/meilisearch/releases/download/v1.56.1/meilisearch-macos-apple-silicon",
+          "digest": {
+            "algorithm": "sha256",
+            "value": "293b48304c8452cf67c5ab3f5882e542bfe63d52f357bb155f576412cb6f739d"
+          },
+          "archive": "none",
+          "paths": [
+            "meilisearch"
+          ],
+          "strip": 0
+        },
+        "linux/amd64": {
+          "url": "https://github.com/meilisearch/meilisearch/releases/download/v1.56.1/meilisearch-linux-amd64",
+          "digest": {
+            "algorithm": "sha256",
+            "value": "b2c7a647d4cdfdd7a901466bfd6797077b849e90f5eb2c0f5b1d05869592e27e"
+          },
+          "archive": "none",
+          "paths": [
+            "meilisearch"
+          ],
+          "strip": 0
+        },
+        "linux/arm64": {
+          "url": "https://github.com/meilisearch/meilisearch/releases/download/v1.56.1/meilisearch-linux-aarch64",
+          "digest": {
+            "algorithm": "sha256",
+            "value": "f73987f92b094fd15b79956f9bfc9e8fc7294ad6ad610ebf8a4403c170890726"
+          },
+          "archive": "none",
+          "paths": [
+            "meilisearch"
+          ],
+          "strip": 0
+        },
+        "windows/amd64": {
+          "url": "https://github.com/meilisearch/meilisearch/releases/download/v1.56.1/meilisearch-windows-amd64.exe",
+          "digest": {
+            "algorithm": "sha256",
+            "value": "ac6d2506cafe862c93a6add533e125a19852339ec21303413120bde84aad3a48"
+          },
+          "archive": "none",
+          "paths": [
+            "meilisearch.exe"
+          ],
+          "strip": 0
+        },
+        "windows/arm64": {
+          "url": "https://github.com/meilisearch/meilisearch/releases/download/v1.56.1/meilisearch-windows-amd64.exe",
+          "digest": {
+            "algorithm": "sha256",
+            "value": "ac6d2506cafe862c93a6add533e125a19852339ec21303413120bde84aad3a48"
+          },
+          "archive": "none",
+          "paths": [
+            "meilisearch.exe"
+          ],
+          "strip": 0
+        }
+      },
+      "runtime": {
+        "start": ": \"${MEILI_MASTER_KEY:?this instance started without the key of its group}\"\nexec \"$STACK_INSTALL_DIR/meilisearch\" --db-path \"$STACK_DATA_DIR/data.ms\" --dump-dir \"$STACK_DATA_DIR/dumps\" --snapshot-dir \"$STACK_DATA_DIR/snapshots\" --http-addr \"127.0.0.1:$STACK_PORT\" --env development --no-analytics\n",
+        "stop_signal": "SIGTERM",
+        "default_port": 7700,
+        "connection": {
+          "MEILISEARCH_HOST": "http://127.0.0.1:{port}",
+          "MEILISEARCH_KEY": "${MEILI_MASTER_KEY}"
+        },
+        "laravel_connection": {
+          "SCOUT_DRIVER": "meilisearch"
+        },
+        "bin_dir": ".",
+        "ready": "url=\"http://127.0.0.1:$STACK_PORT/health\"\nif command -v curl >/dev/null 2>&1; then\n  curl -fsS -o /dev/null \"$url\"\nelse\n  wget -q -O /dev/null \"$url\"\nfi\n",
+        "group_secrets": [
+          "MEILI_MASTER_KEY"
+        ],
+        "windows": {
+          "start": {
+            "arguments": [
+              "${STACK_INSTALL_DIR}/meilisearch.exe",
+              "--db-path",
+              "${STACK_DATA_DIR}/data.ms",
+              "--dump-dir",
+              "${STACK_DATA_DIR}/dumps",
+              "--snapshot-dir",
+              "${STACK_DATA_DIR}/snapshots",
+              "--http-addr",
+              "127.0.0.1:${STACK_PORT}",
+              "--env",
+              "development",
+              "--no-analytics"
+            ]
+          }
+        }
+      },
+      "requires": [
+        "group_secrets_at_start"
+      ],
+      "notes": [
+        {
+          "name": "key",
+          "text": "The server starts with the group's key as its master key, read from its environment, and answers every route but /health only to a request carrying it as Authorization: Bearer; sites get it as MEILISEARCH_KEY and MEILI_MASTER_KEY."
+        },
+        {
+          "name": "data_version",
+          "text": "Meilisearch opens only data its own release wrote and refuses to start on another's, so pin a version, and after changing it remove the instance's data directory and index the records again, as php artisan scout:import does for Laravel."
+        },
+        {
+          "name": "listener",
+          "text": "It listens on 127.0.0.1 over HTTP only, with no Unix socket, and keeps its database, dumps and snapshots in the instance's data directory."
+        },
+        {
+          "name": "group_rename",
+          "text": "A group rename does not carry its data: the index starts empty under the new name, so index the records again, as php artisan scout:import does for Laravel, and the old data directory stays until stack prune --data removes it."
+        }
+      ],
+      "recipes": [
+        {
+          "title": "Laravel Scout with Meilisearch",
+          "yaml": "group: shop\nruntimes:\n  php: \"8.4\"\nservices:\n  - {name: search, type: meilisearch}\nsites:\n  - {name: app, type: laravel}\n",
+          "gives": "Gives the site SCOUT_DRIVER=meilisearch, MEILISEARCH_HOST and MEILISEARCH_KEY, the same prefixed SEARCH_, such as SEARCH_MEILISEARCH_HOST, and APP_URL."
+        },
+        {
+          "title": "A search server for any client",
+          "yaml": "group: shop\nservices:\n  - {name: search, type: meilisearch, version: \"1.56\"}\n",
+          "gives": "Gives MEILISEARCH_HOST, an http://127.0.0.1 URL, and MEILISEARCH_KEY, the key every request needs, pinned to 1.56 so the data stays readable."
+        }
+      ]
+    },
+    {
+      "type": "typesense",
+      "category": "search",
+      "summary": "Typesense full-text search, one instance and key per group.",
+      "support": "current",
+      "version": "30.2",
+      "description": "Typesense 30, the newest release",
+      "artifacts": {
+        "darwin/arm64": {
+          "url": "https://dl.typesense.org/releases/30.2/typesense-server-30.2-darwin-arm64.tar.gz",
+          "digest": {
+            "algorithm": "sha256",
+            "value": "7d8d6d0c33930ad20ea23dd184250547b16615944be891b2078e8a075152fa7e"
+          },
+          "archive": "tar.gz",
+          "paths": [
+            "typesense-server"
+          ],
+          "strip": 0
+        },
+        "linux/amd64": {
+          "url": "https://dl.typesense.org/releases/30.2/typesense-server-30.2-linux-amd64.tar.gz",
+          "digest": {
+            "algorithm": "sha256",
+            "value": "cd791605e7c6cc7be457794f534cd4b9f9d361781adb10e40020efc22840ebc3"
+          },
+          "archive": "tar.gz",
+          "paths": [
+            "typesense-server"
+          ],
+          "strip": 0
+        },
+        "linux/arm64": {
+          "url": "https://dl.typesense.org/releases/30.2/typesense-server-30.2-linux-arm64.tar.gz",
+          "digest": {
+            "algorithm": "sha256",
+            "value": "a9b9d6e2927c863900306290e8532c17f66bdff34ef2ad043b24ed4ccec8a6bc"
+          },
+          "archive": "tar.gz",
+          "paths": [
+            "typesense-server"
+          ],
+          "strip": 0
+        }
+      },
+      "runtime": {
+        "start": ": \"${TYPESENSE_API_KEY:?this instance started without the key of its group}\"\nmkdir -p \"$STACK_DATA_DIR/data\"\nexec \"$STACK_INSTALL_DIR/typesense-server\" --data-dir \"$STACK_DATA_DIR/data\" --api-address 127.0.0.1 --api-port \"$STACK_PORT\" --peering-address 127.0.0.1 --peering-port \"${STACK_PORT_PEERING:?this Typesense entry needs a newer Stack}\"\n",
+        "stop_signal": "SIGTERM",
+        "default_port": 8108,
+        "ports": [
+          "peering"
+        ],
+        "connection": {
+          "TYPESENSE_HOST": "127.0.0.1",
+          "TYPESENSE_PORT": "{port}",
+          "TYPESENSE_PROTOCOL": "http"
+        },
+        "laravel_connection": {
+          "SCOUT_DRIVER": "typesense"
+        },
+        "bin_dir": ".",
+        "ready": "url=\"http://127.0.0.1:$STACK_PORT/health\"\nif command -v curl >/dev/null 2>&1; then\n  curl -fsS -o /dev/null \"$url\"\nelse\n  wget -q -O /dev/null \"$url\"\nfi\n",
+        "group_secrets": [
+          "TYPESENSE_API_KEY"
+        ]
+      },
+      "requires": [
+        "group_secrets_at_start"
+      ],
+      "notes": [
+        {
+          "name": "key",
+          "text": "The server starts with the group's key as its admin API key, read from its environment, and answers every route but /health only to a request carrying it as X-TYPESENSE-API-KEY; sites get it as TYPESENSE_API_KEY."
+        },
+        {
+          "name": "listener",
+          "text": "It listens on 127.0.0.1 over HTTP only, on its port and on a second, peering port Stack allocates for its cluster protocol, and keeps its whole index in memory, writing it to the instance's data directory."
+        },
+        {
+          "name": "peering",
+          "text": "Its peering port, for the cluster protocol, asks for no key: any account on this machine can reach it on 127.0.0.1 and use the built-in pages it serves, such as /flags, /status, /vars, /connections and /raft_stat, to read and change the server's runtime settings, as Typesense 30.2 does. The API key does not protect it, so keep this instance off machines other people sign in to."
+        },
+        {
+          "name": "group_rename",
+          "text": "A group rename does not carry its data: the index starts empty under the new name, so index the records again, as php artisan scout:import does for Laravel, and the old data directory stays until stack prune --data removes it."
+        }
+      ],
+      "recipes": [
+        {
+          "title": "Laravel Scout with Typesense",
+          "yaml": "group: shop\nruntimes:\n  php: \"8.4\"\nservices:\n  - {name: search, type: typesense}\nsites:\n  - {name: app, type: laravel}\n",
+          "gives": "Gives the site SCOUT_DRIVER=typesense, TYPESENSE_HOST, TYPESENSE_PORT, TYPESENSE_PROTOCOL and TYPESENSE_API_KEY, the same prefixed SEARCH_, and APP_URL."
+        },
+        {
+          "title": "A search server for any client",
+          "yaml": "group: shop\nservices:\n  - {name: search, type: typesense}\n",
+          "gives": "Gives TYPESENSE_HOST, TYPESENSE_PORT, TYPESENSE_PROTOCOL=http and TYPESENSE_API_KEY, the key every request needs, and the same prefixed SEARCH_."
         }
       ]
     },

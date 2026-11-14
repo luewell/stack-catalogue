@@ -1,0 +1,242 @@
+{
+  "defaults": {
+    "type": "mysql",
+    "category": "database",
+    "summary": "MySQL, one database and account per group.",
+    "requires": [
+      "account_name_limit",
+      "database_provision_any_type"
+    ],
+    "every_platform": {
+      "archive": "tar.gz",
+      "paths": [
+        "bin",
+        "lib",
+        "share"
+      ],
+      "strip": 1
+    },
+    "artifacts": {
+      "darwin/arm64": {
+        "url": "https://github.com/luewell/stack-binaries/releases/download/mysql-{version}/mysql-{version}-aarch64-apple-darwin.tar.gz"
+      },
+      "linux/amd64": {
+        "url": "https://github.com/luewell/stack-binaries/releases/download/mysql-{version}/mysql-{version}-x86_64-unknown-linux-gnu.tar.gz"
+      },
+      "linux/arm64": {
+        "url": "https://github.com/luewell/stack-binaries/releases/download/mysql-{version}/mysql-{version}-aarch64-unknown-linux-gnu.tar.gz"
+      }
+    },
+    "runtime": {
+      "initialise": "set -eu\numask 077\ncase \"${MYSQL_ADMIN_PASSWORD:-}\" in\n  '' | *[!0-9a-f]*) printf '%s\\n' 'the administrator password is not hexadecimal' >&2; exit 1 ;;\nesac\nif [ -e \"$STACK_DATA_DIR/mysql-data\" ]; then\n  printf '%s\\n' 'mysql-data exists without its system tablespace; preserve it and choose an empty instance directory.' >&2\n  exit 1\nfi\nbuilding=\"$STACK_DATA_DIR/mysql-data.initialising\"\ninit_file=\"$STACK_DATA_DIR/initialise.sql\"\ntrap 'rm -f \"$init_file\"' EXIT\nrm -rf \"$building\"\nprintf \"CREATE USER 'stack_admin'@'localhost' IDENTIFIED BY '%s';\\nGRANT ALL ON *.* TO 'stack_admin'@'localhost' WITH GRANT OPTION;\\nDROP USER 'root'@'localhost';\\n\" \"$MYSQL_ADMIN_PASSWORD\" > \"$init_file\"\n\"$STACK_INSTALL_DIR/bin/mysqld\" --no-defaults --initialize-insecure --basedir=\"$STACK_INSTALL_DIR\" --datadir=\"$building\" --init-file=\"$init_file\" --skip-log-bin --mysqlx=OFF\nmv \"$building\" \"$STACK_DATA_DIR/mysql-data\"\n",
+      "initialised_marker": "mysql-data/mysql.ibd",
+      "start": "umask 077\ncase \"${1:-}\" in\n  --defaults-file=*) ;;\n  *) set -- --no-defaults ;;\nesac\nmkdir -p \"$STACK_DATA_DIR/files\"\nexec \"$STACK_INSTALL_DIR/bin/mysqld\" \"$@\" --basedir=\"$STACK_INSTALL_DIR\" --datadir=\"$STACK_DATA_DIR/mysql-data\" --bind-address=127.0.0.1 --port=\"$STACK_PORT\" --socket=\"$STACK_SOCKET_DIR/mysqld.sock\" --mysqlx=OFF --skip-log-bin --skip-name-resolve --local-infile=OFF --secure-file-priv=\"$STACK_DATA_DIR/files\" --pid-file=\"$STACK_DATA_DIR/mysqld.pid\"\n",
+      "extend": {
+        "mechanism": "include",
+        "syntax": "mycnf",
+        "suffix": ".cnf",
+        "file": "my.cnf",
+        "arguments": [
+          "--defaults-file=${STACK_CONFIG_FILE}"
+        ],
+        "reserved": [
+          {
+            "key": "lower-case-table-names",
+            "reason": "is fixed when Stack creates the data directory"
+          },
+          {
+            "key": "innodb-page-size",
+            "reason": "is fixed when Stack creates the data directory"
+          },
+          {
+            "key": "skip-networking",
+            "reason": "is where clients connect, which Stack sets on the command line"
+          },
+          {
+            "key": "symbolic-links",
+            "reason": "lets tables live outside the data directory Stack manages"
+          },
+          {
+            "key": "character-sets-dir",
+            "reason": "reads server files from outside the installation Stack manages"
+          },
+          {
+            "key": "lc-messages-dir",
+            "reason": "reads server files from outside the installation Stack manages"
+          }
+        ]
+      },
+      "stop_signal": "SIGTERM",
+      "default_port": 3306,
+      "account_name_limit": 32,
+      "connection": {
+        "DATABASE_URL": "mysql://{group}:${DB_PASSWORD}@127.0.0.1:{port}/{group}",
+        "DB_URL": "mysql://{group}:${DB_PASSWORD}@127.0.0.1:{port}/{group}",
+        "DB_HOST": "127.0.0.1",
+        "DB_PORT": "{port}",
+        "DB_USERNAME": "{group}",
+        "DB_DATABASE": "{group}"
+      },
+      "laravel_connection": {
+        "DB_CONNECTION": "mysql"
+      },
+      "provision": "{snippet:admin}\n{snippet:label}\nlabel \"$STACK_GROUP\" 'the group name'\naccount=\"$STACK_GROUP\"\ndatabase=\"$STACK_GROUP\"\nkind=group\n{snippet:provision-account}\n",
+      "bin_dir": "bin",
+      "commands": [
+        "mysql",
+        "mysqldump",
+        "mysqladmin"
+      ],
+      "ready": "MYSQL_TEST_LOGIN_FILE=\"$STACK_DATA_DIR/no-login-path\" MYSQL_PWD=\"$MYSQL_ADMIN_PASSWORD\" \"$STACK_INSTALL_DIR/bin/mysqladmin\" --no-defaults --protocol=SOCKET --socket=\"$STACK_SOCKET_DIR/mysqld.sock\" --user=stack_admin status >/dev/null",
+      "secrets": [
+        "MYSQL_ADMIN_PASSWORD"
+      ],
+      "group_secrets": [
+        "DB_PASSWORD"
+      ],
+      "database_provision": "{snippet:admin}\n{snippet:label}\n{snippet:account-name}\nlabel \"$STACK_DATABASE\" 'the database name'\naccount_name \"$STACK_DATABASE_USER\" 'the database account'\naccount=\"$STACK_DATABASE_USER\"\ndatabase=\"$STACK_DATABASE\"\nkind=database\n{snippet:provision-account}\n",
+      "group_rename": "{snippet:admin}\n{snippet:label}\nlabel \"$STACK_OLD_GROUP\" 'the old group name'\nlabel \"$STACK_GROUP\" 'the group name'\nold=\"$STACK_OLD_GROUP\"\nnew=\"$STACK_GROUP\"\nobjects=\"$(printf \"SELECT (SELECT COUNT(*) FROM INFORMATION_SCHEMA.VIEWS WHERE TABLE_SCHEMA = '%s')\n  + (SELECT COUNT(*) FROM INFORMATION_SCHEMA.TRIGGERS WHERE TRIGGER_SCHEMA = '%s')\n  + (SELECT COUNT(*) FROM INFORMATION_SCHEMA.ROUTINES WHERE ROUTINE_SCHEMA = '%s')\n  + (SELECT COUNT(*) FROM INFORMATION_SCHEMA.EVENTS WHERE EVENT_SCHEMA = '%s');\\n\" \"$old\" \"$old\" \"$old\" \"$old\" | admin)\"\n[ \"$objects\" = 0 ] || refuse \"the group's database holds views, triggers, routines or events, which MySQL cannot move to another database; dump the database, drop them, and restore the dump after the rename\"\nproblem=\"$(printf \"SELECT CASE\n  WHEN EXISTS (SELECT 1 FROM mysql.db WHERE Db = '%s' AND User NOT IN ('%s', '%s'))\n    THEN 'the new group name has a database another account may use; inspect existing state'\n  ELSE '' END;\\n\" \"$new\" \"$old\" \"$new\" | admin)\"\n[ -z \"$problem\" ] || refuse \"$problem\"\nif [ \"$(printf \"SELECT COUNT(*) FROM INFORMATION_SCHEMA.SCHEMATA WHERE SCHEMA_NAME = '%s';\\n\" \"$old\" | admin)\" = 1 ]; then\n  printf \"SET SESSION group_concat_max_len = 1073741824;\nCREATE DATABASE IF NOT EXISTS \\`%s\\`;\nSET @moves = (SELECT CONCAT('RENAME TABLE ', GROUP_CONCAT(CONCAT('\\`%s\\`.\\`', REPLACE(TABLE_NAME, '\\`', '\\`\\`'), '\\` TO \\`%s\\`.\\`', REPLACE(TABLE_NAME, '\\`', '\\`\\`'), '\\`') SEPARATOR ', '))\n  FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA = '%s' AND TABLE_TYPE = 'BASE TABLE');\nSET @moves = COALESCE(@moves, 'DO 0');\nPREPARE moving FROM @moves;\nEXECUTE moving;\nDEALLOCATE PREPARE moving;\nDROP DATABASE \\`%s\\`;\\n\" \"$new\" \"$old\" \"$new\" \"$old\" \"$old\" | admin\nfi\nif [ \"$(printf \"SELECT COUNT(*) FROM mysql.user WHERE User IN ('%s', '%s') AND Host = '%%';\\n\" \"$old\" \"$new\" | admin)\" = 1 ] &&\n  [ \"$(printf \"SELECT COUNT(*) FROM mysql.user WHERE User = '%s' AND Host = '%%';\\n\" \"$old\" | admin)\" = 1 ]; then\n  printf \"RENAME USER '%s'@'%%' TO '%s'@'%%';\\n\" \"$old\" \"$new\" | admin\nfi\nif [ \"$(printf \"SELECT COUNT(*) FROM mysql.user WHERE User = '%s' AND Host = '%%';\\n\" \"$new\" | admin)\" = 1 ]; then\n  printf \"GRANT ALL ON \\`%s\\`.* TO '%s'@'%%';\\nREVOKE IF EXISTS ALL ON \\`%s\\`.* FROM '%s'@'%%';\\n\" \"$new\" \"$new\" \"$old\" \"$new\" | admin\nfi\n",
+      "database_rename": "{snippet:admin}\n{snippet:account-name}\naccount_name \"$STACK_OLD_DATABASE_USER\" 'the old database account'\naccount_name \"$STACK_DATABASE_USER\" 'the database account'\nold=\"$STACK_OLD_DATABASE_USER\"\nnew=\"$STACK_DATABASE_USER\"\nif [ \"$(printf \"SELECT COUNT(*) FROM mysql.user WHERE User IN ('%s', '%s') AND Host = '%%';\\n\" \"$old\" \"$new\" | admin)\" = 1 ] &&\n  [ \"$(printf \"SELECT COUNT(*) FROM mysql.user WHERE User = '%s' AND Host = '%%';\\n\" \"$old\" | admin)\" = 1 ]; then\n  objects=\"$(printf \"SELECT (SELECT COUNT(*) FROM INFORMATION_SCHEMA.VIEWS WHERE DEFINER = '%s@%%')\n  + (SELECT COUNT(*) FROM INFORMATION_SCHEMA.TRIGGERS WHERE DEFINER = '%s@%%')\n  + (SELECT COUNT(*) FROM INFORMATION_SCHEMA.ROUTINES WHERE DEFINER = '%s@%%')\n  + (SELECT COUNT(*) FROM INFORMATION_SCHEMA.EVENTS WHERE DEFINER = '%s@%%');\\n\" \"$old\" \"$old\" \"$old\" \"$old\" | admin)\"\n  [ \"$objects\" = 0 ] || refuse \"the database account $old defines views, triggers, routines or events, whose DEFINER would name an account that no longer exists after the rename; dump its database, drop them, and restore the dump after the rename\"\n  printf \"RENAME USER '%s'@'%%' TO '%s'@'%%';\\n\" \"$old\" \"$new\" | admin\nfi\n",
+      "database_reset": "{snippet:admin}\n{snippet:label}\n{snippet:account-name}\n{snippet:target-owned}\nprintf 'DROP DATABASE IF EXISTS `%s`;\\nCREATE DATABASE `%s`;\\n' \"$STACK_DATABASE\" \"$STACK_DATABASE\" | admin\n",
+      "database_clone": "{snippet:admin}\n{snippet:label}\n{snippet:account-name}\n{snippet:target-owned}\nlabel \"$STACK_SOURCE_DATABASE\" 'the source database name'\naccount_name \"$STACK_SOURCE_DATABASE_USER\" 'the source database account'\nproblem=\"$(printf \"SELECT CASE\n  WHEN '%s' IN ('mysql', 'information_schema', 'performance_schema', 'sys')\n    OR NOT EXISTS (SELECT 1 FROM INFORMATION_SCHEMA.SCHEMATA WHERE SCHEMA_NAME = '%s')\n    OR NOT EXISTS (SELECT 1 FROM mysql.db WHERE Db = '%s' AND User = '%s' AND Host = '%%')\n    THEN 'the source database does not belong to its account; inspect existing state'\n  ELSE '' END;\\n\" \"$STACK_SOURCE_DATABASE\" \"$STACK_SOURCE_DATABASE\" \"$STACK_SOURCE_DATABASE\" \"$STACK_SOURCE_DATABASE_USER\" | admin)\"\n[ -z \"$problem\" ] || refuse \"$problem\"\n{snippet:dump}\n{snippet:replay}\nprintf \"DROP DATABASE IF EXISTS \\`%s\\`;\\nGRANT ALL ON \\`%s\\`.* TO '%s'@'%%';\\nCREATE DATABASE \\`%s\\`;\\n\" \"$STACK_DATABASE\" \"$STACK_DATABASE\" \"$STACK_DATABASE_USER\" \"$STACK_DATABASE\" | admin\n{ dump \"$STACK_SOURCE_DATABASE\" || : > \"$failed\"; } | replay 'the source database could not be copied'\n",
+      "database_dump": "{snippet:admin}\n{snippet:label}\n{snippet:account-name}\n{snippet:target-owned}\n[ \"$(printf \"SELECT COUNT(*) FROM INFORMATION_SCHEMA.SCHEMATA WHERE SCHEMA_NAME = '%s';\\n\" \"$STACK_DATABASE\" | admin)\" = 1 ] ||\n  refuse 'the database does not exist; run stack up to provision it'\n{snippet:dump}\ndump \"$STACK_DATABASE\"\n",
+      "database_restore": "{snippet:admin}\n{snippet:label}\n{snippet:account-name}\n{snippet:target-owned}\n{snippet:replay}\nprintf 'CREATE DATABASE IF NOT EXISTS `%s`;\\n' \"$STACK_DATABASE\" | admin\nreplay 'the dump could not be read whole'\n",
+      "database_connection": {
+        "DATABASE_URL": "mysql://{database_user}:${DB_PASSWORD}@127.0.0.1:{port}/{database}",
+        "DB_URL": "mysql://{database_user}:${DB_PASSWORD}@127.0.0.1:{port}/{database}",
+        "DB_HOST": "127.0.0.1",
+        "DB_PORT": "{port}",
+        "DB_USERNAME": "{database_user}",
+        "DB_DATABASE": "{database}"
+      },
+      "client_environment": {
+        "MYSQL_HOST": "{host}",
+        "MYSQL_TCP_PORT": "{port}",
+        "MYSQL_PWD": "${DB_PASSWORD}"
+      },
+      "database_client_environment": {
+        "MYSQL_HOST": "{host}",
+        "MYSQL_TCP_PORT": "{port}",
+        "MYSQL_PWD": "${DB_PASSWORD}"
+      },
+      "shareable": true,
+      "client_arguments": [
+        "--user={group}",
+        "--database={group}"
+      ],
+      "database_client_arguments": [
+        "--user={database_user}",
+        "--database={database}"
+      ]
+    },
+    "notes": [
+      {
+        "name": "accounts",
+        "text": "The server listens on 127.0.0.1 only. Each account holds every privilege on its own database and none elsewhere, and Stack's administrator, stack_admin, signs in only through the instance's socket. The mysql client takes no user from the environment, so outside stack db shell run mysql -u \"$DB_USERNAME\" \"$DB_DATABASE\"."
+      },
+      {
+        "name": "group_rename",
+        "text": "A group rename moves its database's tables to the new name, and is refused while that database holds views, triggers, routines or events, which MySQL cannot move. An explicit database keeps its name but its account is renamed, so the rename is also refused while that account defines a view, trigger, routine or event, whose DEFINER would name an account that no longer exists; dump the database, drop those objects, and restore the dump after the rename."
+      },
+      {
+        "name": "restore",
+        "text": "stack db restore and stack db clone replay a mysqldump file as the database's own account, without its DEFINER clauses; a file that names another database or needs administrator privileges is refused, and a failed restore keeps what it replayed, because MySQL commits each table definition at once."
+      },
+      {
+        "name": "versions",
+        "text": "A newer release upgrades the data directory in place when it starts; an older release cannot open it again, so dump the databases before moving an instance to a newer version."
+      }
+    ],
+    "recipes": [
+      {
+        "title": "Laravel with MySQL and Valkey",
+        "yaml": "group: shop\nruntimes:\n  php: \"8.4\"\nservices:\n  - {name: db, type: mysql, version: \"8.4\", commands: [mysql]}\n  - {name: cache, type: valkey}\nsites:\n  - {name: app, type: laravel}\n",
+        "gives": "Gives the site DATABASE_URL, the DB_* variables and DB_CONNECTION=mysql, and the REDIS_* variables; service-prefixed copies such as DB_DATABASE_URL come too, and mysql joins the shell with MYSQL_HOST, MYSQL_TCP_PORT and MYSQL_PWD."
+      },
+      {
+        "title": "Several databases on one server",
+        "yaml": "group: shop\nservices:\n  - name: db\n    type: mysql\n    databases:\n      - {name: app, env_prefix: \"\"}\n      - {name: wallet, env_prefix: WALLET}\n",
+        "gives": "Gives DATABASE_URL and the DB_* variables for app, and the same names prefixed WALLET_ for wallet, such as WALLET_DATABASE_URL; each database has its own account."
+      },
+      {
+        "title": "One server shared by several groups",
+        "yaml": "group: shop\nservices:\n  - {name: db, type: mysql, shared: local}\n",
+        "gives": "Gives shop DATABASE_URL and the DB_* variables, served by one MySQL process for every group naming shared: local; no group can open another's database."
+      },
+      {
+        "title": "Server settings from the repository",
+        "yaml": "group: shop\nservices:\n  - name: db\n    type: mysql\n    config: [config/mysql/dev.cnf]\n",
+        "gives": "Reads config/mysql/dev.cnf, such as a [mysqld] group setting max_connections = 50, after Stack's main file; Stack refuses the settings it keeps for itself, listed under CONFIG FILES."
+      }
+    ]
+  },
+  "services": [
+    {
+      "support": "lts",
+      "lifecycle": {
+        "lts": "2026-04-21",
+        "end": "2034-04-30"
+      },
+      "version": "9.7.4",
+      "description": "MySQL 9.7 LTS, supported until April 2034",
+      "artifacts": {
+        "darwin/arm64": {
+          "digest": {
+            "algorithm": "sha256",
+            "value": "c0048e51869f84a68f1312ed82472cf1e972b4c8eea61ea6af203ebdd03b2dd9"
+          }
+        },
+        "linux/amd64": {
+          "digest": {
+            "algorithm": "sha256",
+            "value": "9cad2a79e97195e9915c86dbd4604442359bd6ccdf0980debeae821c1a0a35eb"
+          }
+        },
+        "linux/arm64": {
+          "digest": {
+            "algorithm": "sha256",
+            "value": "eca93cfb89b000d45a6f56c98fc91a5b75365cda3fdac1bd3a19be8272b4445d"
+          }
+        }
+      }
+    },
+    {
+      "support": "lts",
+      "lifecycle": {
+        "lts": "2024-04-30",
+        "end": "2032-04-30"
+      },
+      "version": "8.4.13",
+      "description": "MySQL 8.4 LTS, supported until April 2032",
+      "artifacts": {
+        "darwin/arm64": {
+          "digest": {
+            "algorithm": "sha256",
+            "value": "3abda390e9402b616d8f34d1bf7fe19e8345e7c193ee64dfdce905b6ed3dcd86"
+          }
+        },
+        "linux/amd64": {
+          "digest": {
+            "algorithm": "sha256",
+            "value": "58606588e2e8fed96a2f09e5a0c999c1f887667dd9d35c1260c55367b33a182e"
+          }
+        },
+        "linux/arm64": {
+          "digest": {
+            "algorithm": "sha256",
+            "value": "ee75e2faa9cae14e892229d40a9c23e43af56cd7f9119cc4798fa0fd12c28546"
+          }
+        }
+      }
+    }
+  ],
+  "snippets": {
+    "admin": "set -eu\numask 077\nexport MYSQL_TEST_LOGIN_FILE=\"$STACK_DATA_DIR/no-login-path\"\nexport MYSQL_PWD=\"$MYSQL_ADMIN_PASSWORD\"\nadmin() {\n  \"$STACK_INSTALL_DIR/bin/mysql\" --no-defaults --protocol=SOCKET --socket=\"$STACK_SOCKET_DIR/mysqld.sock\" --user=stack_admin --batch --skip-column-names \"$@\"\n}\nrefuse() {\n  printf '%s\\n' \"$1\" >&2\n  exit 1\n}\n",
+    "label": "label() {\n  case \"$1\" in\n    '' | *[!a-z0-9-]*) refuse \"$2 is not a name Stack writes into SQL\" ;;\n  esac\n}\n",
+    "account-name": "account_name() {\n  case \"$1\" in\n    '' | *[!a-z0-9_-]*) refuse \"$2 is not a name Stack writes into SQL\" ;;\n  esac\n}\n",
+    "provision-account": "case \"$DB_PASSWORD\" in\n  '' | *[!0-9a-f]*) refuse 'the account password is not hexadecimal' ;;\nesac\nproblem=\"$(printf \"SELECT CASE\n  WHEN EXISTS (SELECT 1 FROM mysql.user WHERE User = '%s' AND Host = '%%')\n    AND NOT EXISTS (SELECT 1 FROM INFORMATION_SCHEMA.USER_ATTRIBUTES WHERE USER = '%s' AND HOST = '%%'\n      AND JSON_UNQUOTE(JSON_EXTRACT(ATTRIBUTE, '\\$.stack')) = '%s')\n    THEN 'the account belongs to another owner; inspect existing state'\n  WHEN EXISTS (SELECT 1 FROM INFORMATION_SCHEMA.USER_PRIVILEGES WHERE GRANTEE = '''%s''@''%%''' AND PRIVILEGE_TYPE <> 'USAGE')\n    OR EXISTS (SELECT 1 FROM mysql.role_edges WHERE (FROM_USER = '%s' AND FROM_HOST = '%%') OR (TO_USER = '%s' AND TO_HOST = '%%'))\n    THEN 'the account has privileges Stack did not give it; inspect existing state'\n  WHEN EXISTS (SELECT 1 FROM INFORMATION_SCHEMA.SCHEMATA WHERE SCHEMA_NAME = '%s')\n    AND NOT EXISTS (SELECT 1 FROM mysql.db WHERE Db = '%s' AND User = '%s' AND Host = '%%')\n    THEN 'database belongs to another owner; inspect existing state'\n  WHEN EXISTS (SELECT 1 FROM mysql.db WHERE Db = '%s' AND NOT (User = '%s' AND Host = '%%'))\n    THEN 'database access grants conflict; inspect existing state'\n  ELSE '' END;\\n\" \"$account\" \"$account\" \"$kind\" \"$account\" \"$account\" \"$account\" \"$database\" \"$database\" \"$account\" \"$database\" \"$account\" | admin)\"\n[ -z \"$problem\" ] || refuse \"$problem\"\nprintf \"CREATE USER IF NOT EXISTS '%s'@'%%' IDENTIFIED BY '%s' ATTRIBUTE '{\\\"stack\\\": \\\"%s\\\"}';\nALTER USER '%s'@'%%' IDENTIFIED BY '%s';\nGRANT ALL ON \\`%s\\`.* TO '%s'@'%%';\nCREATE DATABASE IF NOT EXISTS \\`%s\\`;\\n\" \"$account\" \"$DB_PASSWORD\" \"$kind\" \"$account\" \"$DB_PASSWORD\" \"$database\" \"$account\" \"$database\" | admin\nrm -rf \"$STACK_DATA_DIR/accounts\"\n",
+    "target-owned": "label \"$STACK_DATABASE\" 'the database name'\naccount_name \"$STACK_DATABASE_USER\" 'the database account'\nproblem=\"$(printf \"SELECT CASE\n  WHEN NOT EXISTS (SELECT 1 FROM INFORMATION_SCHEMA.USER_ATTRIBUTES WHERE USER = '%s' AND HOST = '%%'\n    AND JSON_UNQUOTE(JSON_EXTRACT(ATTRIBUTE, '\\$.stack')) IN ('group', 'database'))\n    THEN 'the database account does not exist; run stack up to provision it'\n  WHEN '%s' IN ('mysql', 'information_schema', 'performance_schema', 'sys')\n    OR EXISTS (SELECT 1 FROM INFORMATION_SCHEMA.SCHEMATA WHERE SCHEMA_NAME = '%s')\n    AND NOT EXISTS (SELECT 1 FROM mysql.db WHERE Db = '%s' AND User = '%s' AND Host = '%%')\n    THEN 'database belongs to another owner; inspect existing state'\n  ELSE '' END;\\n\" \"$STACK_DATABASE_USER\" \"$STACK_DATABASE\" \"$STACK_DATABASE\" \"$STACK_DATABASE\" \"$STACK_DATABASE_USER\" | admin)\"\n[ -z \"$problem\" ] || refuse \"$problem\"\n",
+    "dump": "dump() {\n  \"$STACK_INSTALL_DIR/bin/mysqldump\" --no-defaults --protocol=SOCKET --socket=\"$STACK_SOCKET_DIR/mysqld.sock\" --user=stack_admin --single-transaction --routines --triggers --events --no-tablespaces --set-gtid-purged=OFF --hex-blob --default-character-set=utf8mb4 \"$1\"\n}\n",
+    "replay": "[ -n \"${STACK_DATABASE_PASSWORD:-}\" ] || refuse 'Stack passed no password for the database account'\nfailed=\"$STACK_DATA_DIR/replay-failed.$$\"\ntrap 'rm -f \"$failed\"' EXIT\nreplay() {\n  { LC_ALL=C sed '/^INSERT INTO /!s/DEFINER=`[^`]*`@`[^`]*`//g' || : > \"$failed\"; } |\n    MYSQL_PWD=\"$STACK_DATABASE_PASSWORD\" \"$STACK_INSTALL_DIR/bin/mysql\" --no-defaults --protocol=SOCKET --socket=\"$STACK_SOCKET_DIR/mysqld.sock\" --user=\"$STACK_DATABASE_USER\" --batch --binary-mode --database=\"$STACK_DATABASE\"\n  [ ! -e \"$failed\" ] || refuse \"$1\"\n}\n"
+  }
+}
