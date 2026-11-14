@@ -2,6 +2,7 @@
   "defaults": {
     "type": "s3",
     "category": "storage",
+    "summary": "S3-compatible object storage, buckets per group.",
     "every_platform": {
       "archive": "tar.gz",
       "paths": [
@@ -131,7 +132,24 @@
           "ownership_attribute": "acl"
         }
       }
-    }
+    },
+    "recipes": [
+      {
+        "title": "Private and public buckets",
+        "yaml": "group: shop\nservices:\n  - name: files\n    type: s3\n    buckets:\n      - {name: uploads}\n      - {name: public, publish: true}\n",
+        "gives": "Gives S3_PRIVATE_BUCKET=b.shop.uploads, S3_PUBLIC_BUCKET=b.shop.public and S3_PUBLIC_BASE_URL=https://public.s3.shop.test, with S3_ENDPOINT, the S3_* and AWS_* access keys and the AWS_* endpoint settings."
+      },
+      {
+        "title": "A bucket with variables of its own",
+        "yaml": "group: shop\nservices:\n  - name: files\n    type: s3\n    buckets:\n      - {name: media, env_prefix: MEDIA}\n",
+        "gives": "Gives MEDIA_BUCKET=b.shop.media, MEDIA_ENDPOINT, MEDIA_DEFAULT_REGION, MEDIA_ACCESS_KEY_ID, MEDIA_SECRET_ACCESS_KEY and an empty MEDIA_URL, as the bucket is not published, beside the service's own variables."
+      },
+      {
+        "title": "Uploads from the browser",
+        "yaml": "group: shop\nservices:\n  - name: files\n    type: s3\n    buckets:\n      - name: uploads\n        cors: {allowed_origins: [\"https://app.shop.test\"]}\n",
+        "gives": "Gives a bucket that answers CORS requests from https://app.shop.test with GET, HEAD and PUT."
+      }
+    ]
   },
   "services": [
     {

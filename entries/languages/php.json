@@ -3,6 +3,7 @@
     "type": "php",
     "kind": "runtime",
     "category": "language",
+    "summary": "PHP, serving php and laravel sites through PHP-FPM.",
     "every_platform": {
       "archive": "tar.gz",
       "paths": [
@@ -129,7 +130,19 @@
           ]
         }
       }
-    }
+    },
+    "recipes": [
+      {
+        "title": "Laravel site with Composer",
+        "yaml": "group: shop\nruntimes:\n  php: \"8.4\"\n  composer: \"2\"\nsites:\n  - {name: app, type: laravel}\n",
+        "gives": "Gives https://app.shop.test served from public/ through PHP-FPM, and php and composer in the shell."
+      },
+      {
+        "title": "PHP settings from the repository",
+        "yaml": "group: shop\nruntimes:\n  php:\n    version: \"8.4\"\n    config: [config/php.ini]\nsites:\n  - {name: app, type: php}\n",
+        "gives": "Gives https://app.shop.test, served from public/ through PHP-FPM, and php in the shell; PHP-FPM and the shell's php both read config/php.ini after the engine's own settings."
+      }
+    ]
   },
   "services": [
     {

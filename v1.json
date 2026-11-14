@@ -24,6 +24,7 @@
     {
       "type": "valkey",
       "category": "cache",
+      "summary": "Valkey, a Redis-compatible key-value store.",
       "support": "current",
       "version": "9.1.1",
       "description": "Valkey, the BSD-licensed Redis fork",
@@ -107,143 +108,143 @@
             },
             {
               "key": "enable-module-command",
-              "reason": "would let clients load code into the server"
+              "reason": "lets clients load modules, change protected settings or run debugging commands"
             },
             {
               "key": "enable-debug-command",
-              "reason": "would let clients run debugging commands"
+              "reason": "lets clients load modules, change protected settings or run debugging commands"
             },
             {
               "key": "enable-protected-configs",
-              "reason": "would let clients change protected settings such as dir"
+              "reason": "lets clients load modules, change protected settings or run debugging commands"
             },
             {
               "key": "user",
-              "reason": "defines accounts beside Stack's ACL file, which Valkey refuses"
+              "reason": "decides who may sign in, which Stack's ACL file decides"
             },
             {
               "key": "aclfile",
-              "reason": "holds the accounts Stack manages"
+              "reason": "decides who may sign in, which Stack's ACL file decides"
             },
             {
               "key": "requirepass",
-              "reason": "changes the password of Stack's administrator"
+              "reason": "decides who may sign in, which Stack's ACL file decides"
             },
             {
               "key": "primaryauth",
-              "reason": "signs in to another server as a replica"
+              "reason": "sets up replication from another server, whose data would replace the data Stack manages"
             },
             {
               "key": "masterauth",
-              "reason": "signs in to another server as a replica"
+              "reason": "sets up replication from another server, whose data would replace the data Stack manages"
             },
             {
               "key": "primaryuser",
-              "reason": "signs in to another server as a replica"
+              "reason": "sets up replication from another server, whose data would replace the data Stack manages"
             },
             {
               "key": "masteruser",
-              "reason": "signs in to another server as a replica"
+              "reason": "sets up replication from another server, whose data would replace the data Stack manages"
             },
             {
               "key": "replicaof",
-              "reason": "turns the server into a replica of another"
+              "reason": "sets up replication from another server, whose data would replace the data Stack manages"
             },
             {
               "key": "slaveof",
-              "reason": "turns the server into a replica of another"
+              "reason": "sets up replication from another server, whose data would replace the data Stack manages"
             },
             {
               "key": "rename-command",
-              "reason": "would hide commands Stack provisions and stops the server with"
+              "reason": "renames the commands Stack needs to provision and stop the server"
             },
             {
               "key": "sentinel",
-              "reason": "runs a different server mode"
+              "reason": "runs the server in a mode or process Stack does not supervise"
             },
             {
               "key": "dir",
-              "reason": "is the data directory Stack manages, which Stack sets on the command line"
+              "reason": "decides where or how data is stored, which Stack sets on the command line"
             },
             {
               "key": "port",
-              "reason": "is where Stack's clients connect, which Stack sets on the command line"
+              "reason": "is where clients connect, which Stack sets on the command line"
             },
             {
               "key": "bind",
-              "reason": "is where Stack's clients connect, which Stack sets on the command line"
+              "reason": "is where clients connect, which Stack sets on the command line"
             },
             {
               "key": "unixsocket",
-              "reason": "is the private socket Stack connects through, which Stack sets on the command line"
+              "reason": "is where clients connect, which Stack sets on the command line"
             },
             {
               "key": "unixsocketperm",
-              "reason": "decides who may reach the server's private socket"
+              "reason": "decides who may connect to the server"
             },
             {
               "key": "unixsocketgroup",
-              "reason": "decides who may reach the server's private socket"
+              "reason": "decides who may connect to the server"
             },
             {
               "key": "protected-mode",
-              "reason": "guards the server against connections Stack did not set up"
+              "reason": "decides who may connect to the server"
             },
             {
               "key": "tls-port",
-              "reason": "listens where Stack did not ask"
+              "reason": "opens a listener Stack does not set up"
             },
             {
               "key": "rdma-port",
-              "reason": "listens where Stack did not ask"
+              "reason": "opens a listener Stack does not set up"
             },
             {
               "key": "rdma-bind",
-              "reason": "listens where Stack did not ask"
+              "reason": "opens a listener Stack does not set up"
             },
             {
               "key": "cluster-enabled",
-              "reason": "opens a cluster bus port Stack did not ask for"
+              "reason": "opens a listener Stack does not set up"
             },
             {
               "key": "cluster-port",
-              "reason": "listens where Stack did not ask"
+              "reason": "opens a listener Stack does not set up"
             },
             {
               "key": "daemonize",
-              "reason": "detaches the server from the process Stack supervises"
+              "reason": "runs the server in a mode or process Stack does not supervise"
             },
             {
               "key": "appendonly",
-              "reason": "is set by Stack on the command line"
+              "reason": "decides where or how data is stored, which Stack sets on the command line"
             },
             {
               "key": "pidfile",
-              "reason": "writes files Stack does not manage"
+              "reason": "writes files or logs Stack does not manage"
             },
             {
               "key": "logfile",
-              "reason": "writes files Stack does not manage"
+              "reason": "writes files or logs Stack does not manage"
             },
             {
               "key": "syslog-enabled",
-              "reason": "writes files Stack does not manage"
+              "reason": "writes files or logs Stack does not manage"
             },
             {
               "key": "syslog-ident",
-              "reason": "writes files Stack does not manage"
+              "reason": "writes files or logs Stack does not manage"
             },
             {
               "key": "syslog-facility",
-              "reason": "writes files Stack does not manage"
+              "reason": "writes files or logs Stack does not manage"
             },
             {
               "key": "cluster-config-file",
-              "reason": "writes files Stack does not manage"
+              "reason": "writes files or logs Stack does not manage"
             },
             {
               "key": "dbfilename",
-              "reason": "names a file in the data directory, where Stack keeps its ACL file"
+              "reason": "writes files or logs Stack does not manage"
             }
           ]
         },
@@ -294,11 +295,29 @@
       },
       "aliases": [
         "redis"
+      ],
+      "recipes": [
+        {
+          "title": "Cache for a Laravel site",
+          "yaml": "group: shop\nruntimes:\n  php: \"8.4\"\nservices:\n  - {name: cache, type: valkey}\nsites:\n  - {name: app, type: laravel}\n",
+          "gives": "Gives the site REDIS_URL, REDIS_HOST, REDIS_PORT, REDIS_USERNAME and REDIS_PASSWORD, and the same five prefixed CACHE_, such as CACHE_REDIS_URL."
+        },
+        {
+          "title": "Two stores, one holding the bare names",
+          "yaml": "group: shop\nservices:\n  - {name: cache, type: valkey, default: true}\n  - {name: queue, type: valkey}\n",
+          "gives": "Gives the five REDIS_* variables to cache, the default, and every variable again prefixed CACHE_ or QUEUE_ for each store, such as CACHE_REDIS_URL and QUEUE_REDIS_URL."
+        },
+        {
+          "title": "valkey-cli in the shell",
+          "yaml": "group: shop\nservices:\n  - {name: cache, type: valkey, commands: [valkey-cli]}\n",
+          "gives": "Gives valkey-cli in the shell, and the REDIS_* variables; \"valkey-cli -u $REDIS_URL\" signs in as the group's account."
+        }
       ]
     },
     {
       "type": "mongodb",
       "category": "database",
+      "summary": "MongoDB, one database and account per group.",
       "support": "lts",
       "version": "8.0.32",
       "description": "MongoDB 8.0, the long-term release",
@@ -414,11 +433,24 @@
             "secret": "MONGODB_ADMIN_PASSWORD"
           }
         }
-      }
+      },
+      "recipes": [
+        {
+          "title": "A database for the group",
+          "yaml": "group: shop\nservices:\n  - {name: docs, type: mongodb}\n",
+          "gives": "Gives MONGODB_URI, MONGODB_HOST, MONGODB_PORT, MONGODB_DATABASE, MONGODB_USERNAME and MONGODB_PASSWORD for a database and account named shop, and the same six prefixed DOCS_."
+        },
+        {
+          "title": "Two databases on one server",
+          "yaml": "group: shop\nservices:\n  - name: docs\n    type: mongodb\n    databases:\n      - {name: app, env_prefix: \"\"}\n      - {name: events, env_prefix: EVENTS}\n",
+          "gives": "Gives the MONGODB_* variables for app, and the same names prefixed EVENTS_ for events, such as EVENTS_MONGODB_URI; each database has its own account."
+        }
+      ]
     },
     {
       "type": "mongodb",
       "category": "database",
+      "summary": "MongoDB, one database and account per group.",
       "support": "current",
       "version": "8.3.11",
       "description": "MongoDB 8.3, the newest release",
@@ -534,15 +566,28 @@
             "secret": "MONGODB_ADMIN_PASSWORD"
           }
         }
-      }
+      },
+      "recipes": [
+        {
+          "title": "A database for the group",
+          "yaml": "group: shop\nservices:\n  - {name: docs, type: mongodb}\n",
+          "gives": "Gives MONGODB_URI, MONGODB_HOST, MONGODB_PORT, MONGODB_DATABASE, MONGODB_USERNAME and MONGODB_PASSWORD for a database and account named shop, and the same six prefixed DOCS_."
+        },
+        {
+          "title": "Two databases on one server",
+          "yaml": "group: shop\nservices:\n  - name: docs\n    type: mongodb\n    databases:\n      - {name: app, env_prefix: \"\"}\n      - {name: events, env_prefix: EVENTS}\n",
+          "gives": "Gives the MONGODB_* variables for app, and the same names prefixed EVENTS_ for events, such as EVENTS_MONGODB_URI; each database has its own account."
+        }
+      ]
     },
     {
       "type": "mongosh",
       "kind": "runtime",
       "category": "database",
+      "summary": "The MongoDB shell, a client for mongodb services.",
       "support": "current",
       "version": "2.12.0",
-      "description": "The MongoDB Shell, the current line",
+      "description": "mongosh 2, the current line",
       "artifacts": {
         "darwin/arm64": {
           "url": "https://github.com/mongodb-js/mongosh/releases/download/v2.12.0/mongosh-2.12.0-darwin-arm64.zip",
@@ -611,11 +656,19 @@
           "mongosh"
         ],
         "bin_dir": "bin"
-      }
+      },
+      "recipes": [
+        {
+          "title": "The MongoDB shell beside a MongoDB service",
+          "yaml": "group: shop\nruntimes:\n  mongosh: \"2\"\nservices:\n  - {name: docs, type: mongodb}\n",
+          "gives": "Gives mongosh in the shell, and the MONGODB_* variables from docs; \"mongosh $MONGODB_URI\" connects as the group's account."
+        }
+      ]
     },
     {
       "type": "postgres",
       "category": "database",
+      "summary": "PostgreSQL, one database and role per group.",
       "support": "lts",
       "version": "18.6.0",
       "description": "PostgreSQL 18, supported until November 2030",
@@ -708,35 +761,35 @@
           "reserved": [
             {
               "key": "shared_preload_libraries",
-              "reason": "loads libraries into the server"
+              "reason": "loads code into the server or its sessions"
             },
             {
               "key": "session_preload_libraries",
-              "reason": "loads libraries into every session"
+              "reason": "loads code into the server or its sessions"
             },
             {
               "key": "local_preload_libraries",
-              "reason": "loads libraries into every session"
+              "reason": "loads code into the server or its sessions"
             },
             {
               "key": "dynamic_library_path",
-              "reason": "decides where the server loads libraries from"
+              "reason": "loads code into the server or its sessions"
             },
             {
               "key": "extension_control_path",
-              "reason": "decides where the server finds extensions to load"
+              "reason": "loads code into the server or its sessions"
             },
             {
               "key": "jit_provider",
-              "reason": "loads a library into the server"
+              "reason": "loads code into the server or its sessions"
             },
             {
               "key": "oauth_validator_libraries",
-              "reason": "loads libraries into the server"
+              "reason": "loads code into the server or its sessions"
             },
             {
               "key": "archive_library",
-              "reason": "loads a library into the server"
+              "reason": "loads code into the server or its sessions"
             },
             {
               "key": "archive_command",
@@ -760,43 +813,43 @@
             },
             {
               "key": "listen_addresses",
-              "reason": "is where Stack's clients connect, which Stack sets on the command line"
+              "reason": "is where clients connect, which Stack sets on the command line"
             },
             {
               "key": "port",
-              "reason": "is where Stack's clients connect, which Stack sets on the command line"
+              "reason": "is where clients connect, which Stack sets on the command line"
             },
             {
               "key": "unix_socket_directories",
-              "reason": "is where Stack's clients connect, which Stack sets on the command line"
+              "reason": "is where clients connect, which Stack sets on the command line"
             },
             {
               "key": "unix_socket_group",
-              "reason": "decides who may reach the server's private socket"
+              "reason": "decides who may reach the socket or sign in"
             },
             {
               "key": "unix_socket_permissions",
-              "reason": "decides who may reach the server's private socket"
+              "reason": "decides who may reach the socket or sign in"
             },
             {
               "key": "data_directory",
-              "reason": "is the cluster Stack manages"
+              "reason": "is the cluster and main file Stack manages"
             },
             {
               "key": "config_file",
-              "reason": "is the main file Stack generates"
+              "reason": "is the cluster and main file Stack manages"
             },
             {
               "key": "hba_file",
-              "reason": "decides who may sign in, which Stack keeps to its own accounts"
+              "reason": "decides who may reach the socket or sign in"
             },
             {
               "key": "ident_file",
-              "reason": "decides who may sign in, which Stack keeps to its own accounts"
+              "reason": "decides who may reach the socket or sign in"
             },
             {
               "key": "external_pid_file",
-              "reason": "writes a file outside the cluster Stack manages"
+              "reason": "writes files outside the cluster Stack manages"
             },
             {
               "key": "logging_collector",
@@ -974,6 +1027,23 @@
           }
         }
       },
+      "recipes": [
+        {
+          "title": "Laravel with PostgreSQL, Valkey and S3",
+          "yaml": "group: shop\nruntimes:\n  php: \"8.4\"\nservices:\n  - {name: db, type: postgres, version: \"18\", commands: [psql]}\n  - {name: cache, type: valkey}\n  - name: files\n    type: s3\n    buckets:\n      - {name: uploads}\n      - {name: public, publish: true}\nsites:\n  - {name: app, type: laravel}\n",
+          "gives": "Gives the site DATABASE_URL, the DB_* variables and DB_CONNECTION=pgsql; the REDIS_* variables; the AWS_* and S3_* variables, AWS_BUCKET=b.shop.uploads among them; and APP_URL. Service-prefixed copies such as DB_DATABASE_URL and CACHE_REDIS_URL come too, and psql joins the shell."
+        },
+        {
+          "title": "Several databases on one server",
+          "yaml": "group: shop\nservices:\n  - name: db\n    type: postgres\n    databases:\n      - {name: app, env_prefix: \"\"}\n      - {name: wallet, env_prefix: WALLET}\n",
+          "gives": "Gives DATABASE_URL and the DB_* variables for app, and the same names prefixed WALLET_ for wallet, such as WALLET_DATABASE_URL; each database has its own role."
+        },
+        {
+          "title": "One server shared by several groups",
+          "yaml": "group: shop\nservices:\n  - {name: db, type: postgres, version: \"18\", shared: local}\n",
+          "gives": "Gives shop DATABASE_URL and the DB_* variables, served by one PostgreSQL process for every group naming shared: local; no group can open another's database."
+        }
+      ],
       "image": {
         "repository": "docker.io/library/postgres",
         "tag": "18.6-bookworm",
@@ -1015,6 +1085,7 @@
     {
       "type": "postgres",
       "category": "database",
+      "summary": "PostgreSQL, one database and role per group.",
       "support": "lts",
       "version": "17.11.0",
       "description": "PostgreSQL 17, supported until November 2029",
@@ -1107,35 +1178,35 @@
           "reserved": [
             {
               "key": "shared_preload_libraries",
-              "reason": "loads libraries into the server"
+              "reason": "loads code into the server or its sessions"
             },
             {
               "key": "session_preload_libraries",
-              "reason": "loads libraries into every session"
+              "reason": "loads code into the server or its sessions"
             },
             {
               "key": "local_preload_libraries",
-              "reason": "loads libraries into every session"
+              "reason": "loads code into the server or its sessions"
             },
             {
               "key": "dynamic_library_path",
-              "reason": "decides where the server loads libraries from"
+              "reason": "loads code into the server or its sessions"
             },
             {
               "key": "extension_control_path",
-              "reason": "decides where the server finds extensions to load"
+              "reason": "loads code into the server or its sessions"
             },
             {
               "key": "jit_provider",
-              "reason": "loads a library into the server"
+              "reason": "loads code into the server or its sessions"
             },
             {
               "key": "oauth_validator_libraries",
-              "reason": "loads libraries into the server"
+              "reason": "loads code into the server or its sessions"
             },
             {
               "key": "archive_library",
-              "reason": "loads a library into the server"
+              "reason": "loads code into the server or its sessions"
             },
             {
               "key": "archive_command",
@@ -1159,43 +1230,43 @@
             },
             {
               "key": "listen_addresses",
-              "reason": "is where Stack's clients connect, which Stack sets on the command line"
+              "reason": "is where clients connect, which Stack sets on the command line"
             },
             {
               "key": "port",
-              "reason": "is where Stack's clients connect, which Stack sets on the command line"
+              "reason": "is where clients connect, which Stack sets on the command line"
             },
             {
               "key": "unix_socket_directories",
-              "reason": "is where Stack's clients connect, which Stack sets on the command line"
+              "reason": "is where clients connect, which Stack sets on the command line"
             },
             {
               "key": "unix_socket_group",
-              "reason": "decides who may reach the server's private socket"
+              "reason": "decides who may reach the socket or sign in"
             },
             {
               "key": "unix_socket_permissions",
-              "reason": "decides who may reach the server's private socket"
+              "reason": "decides who may reach the socket or sign in"
             },
             {
               "key": "data_directory",
-              "reason": "is the cluster Stack manages"
+              "reason": "is the cluster and main file Stack manages"
             },
             {
               "key": "config_file",
-              "reason": "is the main file Stack generates"
+              "reason": "is the cluster and main file Stack manages"
             },
             {
               "key": "hba_file",
-              "reason": "decides who may sign in, which Stack keeps to its own accounts"
+              "reason": "decides who may reach the socket or sign in"
             },
             {
               "key": "ident_file",
-              "reason": "decides who may sign in, which Stack keeps to its own accounts"
+              "reason": "decides who may reach the socket or sign in"
             },
             {
               "key": "external_pid_file",
-              "reason": "writes a file outside the cluster Stack manages"
+              "reason": "writes files outside the cluster Stack manages"
             },
             {
               "key": "logging_collector",
@@ -1372,11 +1443,29 @@
             "restricted": true
           }
         }
-      }
+      },
+      "recipes": [
+        {
+          "title": "Laravel with PostgreSQL, Valkey and S3",
+          "yaml": "group: shop\nruntimes:\n  php: \"8.4\"\nservices:\n  - {name: db, type: postgres, version: \"18\", commands: [psql]}\n  - {name: cache, type: valkey}\n  - name: files\n    type: s3\n    buckets:\n      - {name: uploads}\n      - {name: public, publish: true}\nsites:\n  - {name: app, type: laravel}\n",
+          "gives": "Gives the site DATABASE_URL, the DB_* variables and DB_CONNECTION=pgsql; the REDIS_* variables; the AWS_* and S3_* variables, AWS_BUCKET=b.shop.uploads among them; and APP_URL. Service-prefixed copies such as DB_DATABASE_URL and CACHE_REDIS_URL come too, and psql joins the shell."
+        },
+        {
+          "title": "Several databases on one server",
+          "yaml": "group: shop\nservices:\n  - name: db\n    type: postgres\n    databases:\n      - {name: app, env_prefix: \"\"}\n      - {name: wallet, env_prefix: WALLET}\n",
+          "gives": "Gives DATABASE_URL and the DB_* variables for app, and the same names prefixed WALLET_ for wallet, such as WALLET_DATABASE_URL; each database has its own role."
+        },
+        {
+          "title": "One server shared by several groups",
+          "yaml": "group: shop\nservices:\n  - {name: db, type: postgres, version: \"18\", shared: local}\n",
+          "gives": "Gives shop DATABASE_URL and the DB_* variables, served by one PostgreSQL process for every group naming shared: local; no group can open another's database."
+        }
+      ]
     },
     {
       "type": "postgres",
       "category": "database",
+      "summary": "PostgreSQL, one database and role per group.",
       "support": "lts",
       "version": "16.15.0",
       "description": "PostgreSQL 16, supported until November 2028",
@@ -1469,35 +1558,35 @@
           "reserved": [
             {
               "key": "shared_preload_libraries",
-              "reason": "loads libraries into the server"
+              "reason": "loads code into the server or its sessions"
             },
             {
               "key": "session_preload_libraries",
-              "reason": "loads libraries into every session"
+              "reason": "loads code into the server or its sessions"
             },
             {
               "key": "local_preload_libraries",
-              "reason": "loads libraries into every session"
+              "reason": "loads code into the server or its sessions"
             },
             {
               "key": "dynamic_library_path",
-              "reason": "decides where the server loads libraries from"
+              "reason": "loads code into the server or its sessions"
             },
             {
               "key": "extension_control_path",
-              "reason": "decides where the server finds extensions to load"
+              "reason": "loads code into the server or its sessions"
             },
             {
               "key": "jit_provider",
-              "reason": "loads a library into the server"
+              "reason": "loads code into the server or its sessions"
             },
             {
               "key": "oauth_validator_libraries",
-              "reason": "loads libraries into the server"
+              "reason": "loads code into the server or its sessions"
             },
             {
               "key": "archive_library",
-              "reason": "loads a library into the server"
+              "reason": "loads code into the server or its sessions"
             },
             {
               "key": "archive_command",
@@ -1521,43 +1610,43 @@
             },
             {
               "key": "listen_addresses",
-              "reason": "is where Stack's clients connect, which Stack sets on the command line"
+              "reason": "is where clients connect, which Stack sets on the command line"
             },
             {
               "key": "port",
-              "reason": "is where Stack's clients connect, which Stack sets on the command line"
+              "reason": "is where clients connect, which Stack sets on the command line"
             },
             {
               "key": "unix_socket_directories",
-              "reason": "is where Stack's clients connect, which Stack sets on the command line"
+              "reason": "is where clients connect, which Stack sets on the command line"
             },
             {
               "key": "unix_socket_group",
-              "reason": "decides who may reach the server's private socket"
+              "reason": "decides who may reach the socket or sign in"
             },
             {
               "key": "unix_socket_permissions",
-              "reason": "decides who may reach the server's private socket"
+              "reason": "decides who may reach the socket or sign in"
             },
             {
               "key": "data_directory",
-              "reason": "is the cluster Stack manages"
+              "reason": "is the cluster and main file Stack manages"
             },
             {
               "key": "config_file",
-              "reason": "is the main file Stack generates"
+              "reason": "is the cluster and main file Stack manages"
             },
             {
               "key": "hba_file",
-              "reason": "decides who may sign in, which Stack keeps to its own accounts"
+              "reason": "decides who may reach the socket or sign in"
             },
             {
               "key": "ident_file",
-              "reason": "decides who may sign in, which Stack keeps to its own accounts"
+              "reason": "decides who may reach the socket or sign in"
             },
             {
               "key": "external_pid_file",
-              "reason": "writes a file outside the cluster Stack manages"
+              "reason": "writes files outside the cluster Stack manages"
             },
             {
               "key": "logging_collector",
@@ -1734,7 +1823,24 @@
             "restricted": true
           }
         }
-      }
+      },
+      "recipes": [
+        {
+          "title": "Laravel with PostgreSQL, Valkey and S3",
+          "yaml": "group: shop\nruntimes:\n  php: \"8.4\"\nservices:\n  - {name: db, type: postgres, version: \"18\", commands: [psql]}\n  - {name: cache, type: valkey}\n  - name: files\n    type: s3\n    buckets:\n      - {name: uploads}\n      - {name: public, publish: true}\nsites:\n  - {name: app, type: laravel}\n",
+          "gives": "Gives the site DATABASE_URL, the DB_* variables and DB_CONNECTION=pgsql; the REDIS_* variables; the AWS_* and S3_* variables, AWS_BUCKET=b.shop.uploads among them; and APP_URL. Service-prefixed copies such as DB_DATABASE_URL and CACHE_REDIS_URL come too, and psql joins the shell."
+        },
+        {
+          "title": "Several databases on one server",
+          "yaml": "group: shop\nservices:\n  - name: db\n    type: postgres\n    databases:\n      - {name: app, env_prefix: \"\"}\n      - {name: wallet, env_prefix: WALLET}\n",
+          "gives": "Gives DATABASE_URL and the DB_* variables for app, and the same names prefixed WALLET_ for wallet, such as WALLET_DATABASE_URL; each database has its own role."
+        },
+        {
+          "title": "One server shared by several groups",
+          "yaml": "group: shop\nservices:\n  - {name: db, type: postgres, version: \"18\", shared: local}\n",
+          "gives": "Gives shop DATABASE_URL and the DB_* variables, served by one PostgreSQL process for every group naming shared: local; no group can open another's database."
+        }
+      ]
     },
     {
       "type": "busybox",
@@ -1775,6 +1881,7 @@
       "type": "bun",
       "kind": "runtime",
       "category": "language",
+      "summary": "Bun, a JavaScript runtime and package manager.",
       "support": "end of life",
       "version": "1.1.18",
       "description": "Bun 1.1, past end of life: Bun fixes only its newest release",
@@ -1867,6 +1974,13 @@
         }
       },
       "resolver": "github.com/oven-sh/bun",
+      "recipes": [
+        {
+          "title": "Bun in the shell",
+          "yaml": "group: shop\nruntimes:\n  bun: \"1.4\"\n",
+          "gives": "Gives bun in the shell, and NODE_EXTRA_CA_CERTS so it trusts the sites Stack serves."
+        }
+      ],
       "image": {
         "repository": "docker.io/oven/bun",
         "tag": "1.1.18-debian",
@@ -1897,9 +2011,10 @@
       "type": "bun",
       "kind": "runtime",
       "category": "language",
+      "summary": "Bun, a JavaScript runtime and package manager.",
       "support": "current",
       "version": "1.4.2",
-      "description": "Bun 1.4, the only line Bun backports anything to",
+      "description": "Bun 1.4, the newest line and the only one Bun fixes",
       "artifacts": {
         "darwin/arm64": {
           "url": "https://github.com/oven-sh/bun/releases/download/bun-v1.4.2/bun-darwin-aarch64.zip",
@@ -1989,6 +2104,13 @@
         }
       },
       "resolver": "github.com/oven-sh/bun",
+      "recipes": [
+        {
+          "title": "Bun in the shell",
+          "yaml": "group: shop\nruntimes:\n  bun: \"1.4\"\n",
+          "gives": "Gives bun in the shell, and NODE_EXTRA_CA_CERTS so it trusts the sites Stack serves."
+        }
+      ],
       "image": {
         "repository": "docker.io/oven/bun",
         "tag": "1.4.2-debian",
@@ -2019,6 +2141,7 @@
       "type": "go",
       "kind": "runtime",
       "category": "language",
+      "summary": "The Go toolchain, with go and gofmt.",
       "support": "current",
       "version": "1.27.1",
       "description": "Go 1.27, the current release",
@@ -2152,6 +2275,13 @@
         }
       },
       "resolver": "go.dev",
+      "recipes": [
+        {
+          "title": "Go with gofmt in the shell",
+          "yaml": "group: shop\nruntimes:\n  go: {version: \"1.27\", commands: [gofmt]}\n",
+          "gives": "Gives go and gofmt in the shell."
+        }
+      ],
       "image": {
         "repository": "docker.io/library/golang",
         "tag": "1.27.1-bookworm",
@@ -2183,6 +2313,7 @@
       "type": "go",
       "kind": "runtime",
       "category": "language",
+      "summary": "The Go toolchain, with go and gofmt.",
       "support": "current",
       "version": "1.26.8",
       "description": "Go 1.26, the previous release, supported until Go 1.28 ships",
@@ -2316,6 +2447,13 @@
         }
       },
       "resolver": "go.dev",
+      "recipes": [
+        {
+          "title": "Go with gofmt in the shell",
+          "yaml": "group: shop\nruntimes:\n  go: {version: \"1.27\", commands: [gofmt]}\n",
+          "gives": "Gives go and gofmt in the shell."
+        }
+      ],
       "image": {
         "repository": "docker.io/library/golang",
         "tag": "1.26.8-bookworm",
@@ -2347,9 +2485,10 @@
       "type": "node",
       "kind": "runtime",
       "category": "language",
+      "summary": "Node.js, the JavaScript runtime, with npm and npx.",
       "support": "lts",
       "version": "24.20.0",
-      "description": "Node.js 24, the current long-term support release",
+      "description": "Node.js 24, a long-term support release",
       "artifacts": {
         "darwin/arm64": {
           "url": "https://nodejs.org/dist/v24.20.0/node-v24.20.0-darwin-arm64.tar.gz",
@@ -2469,6 +2608,18 @@
         "end": "2028-04-30"
       },
       "resolver": "nodejs.org",
+      "recipes": [
+        {
+          "title": "Vite front end, npm in the shell",
+          "yaml": "group: shop\nruntimes:\n  node: {version: \"26\", commands: [npm, npx]}\nsites:\n  - {name: web, type: vite}\n",
+          "gives": "Gives https://web.shop.test running vite, and node, npm and npx in the shell."
+        },
+        {
+          "title": "One Node.js for every repository in a group",
+          "yaml": "group: shop\ndefaults:\n  runtimes:\n    node: \"24\"\n",
+          "gives": "Gives node 24 to every repository of group shop that pins no node of its own."
+        }
+      ],
       "image": {
         "repository": "docker.io/library/node",
         "tag": "24.20.0-bookworm",
@@ -2502,9 +2653,10 @@
       "type": "node",
       "kind": "runtime",
       "category": "language",
+      "summary": "Node.js, the JavaScript runtime, with npm and npx.",
       "support": "current",
       "version": "26.8.1",
-      "description": "Node.js 26, the current release, which is not long-term support",
+      "description": "Node.js 26, a long-term support release since October 2026",
       "artifacts": {
         "darwin/arm64": {
           "url": "https://nodejs.org/dist/v26.8.1/node-v26.8.1-darwin-arm64.tar.gz",
@@ -2622,12 +2774,25 @@
         "lts": "2026-10-28",
         "end": "2029-04-30"
       },
-      "resolver": "nodejs.org"
+      "resolver": "nodejs.org",
+      "recipes": [
+        {
+          "title": "Vite front end, npm in the shell",
+          "yaml": "group: shop\nruntimes:\n  node: {version: \"26\", commands: [npm, npx]}\nsites:\n  - {name: web, type: vite}\n",
+          "gives": "Gives https://web.shop.test running vite, and node, npm and npx in the shell."
+        },
+        {
+          "title": "One Node.js for every repository in a group",
+          "yaml": "group: shop\ndefaults:\n  runtimes:\n    node: \"24\"\n",
+          "gives": "Gives node 24 to every repository of group shop that pins no node of its own."
+        }
+      ]
     },
     {
       "type": "node",
       "kind": "runtime",
       "category": "language",
+      "summary": "Node.js, the JavaScript runtime, with npm and npx.",
       "support": "end of life",
       "version": "20.20.2",
       "description": "Node.js 20, past end of life; receives no security fixes",
@@ -2749,12 +2914,25 @@
         "lts": "2023-10-24",
         "end": "2026-04-30"
       },
-      "resolver": "nodejs.org"
+      "resolver": "nodejs.org",
+      "recipes": [
+        {
+          "title": "Vite front end, npm in the shell",
+          "yaml": "group: shop\nruntimes:\n  node: {version: \"26\", commands: [npm, npx]}\nsites:\n  - {name: web, type: vite}\n",
+          "gives": "Gives https://web.shop.test running vite, and node, npm and npx in the shell."
+        },
+        {
+          "title": "One Node.js for every repository in a group",
+          "yaml": "group: shop\ndefaults:\n  runtimes:\n    node: \"24\"\n",
+          "gives": "Gives node 24 to every repository of group shop that pins no node of its own."
+        }
+      ]
     },
     {
       "type": "node",
       "kind": "runtime",
       "category": "language",
+      "summary": "Node.js, the JavaScript runtime, with npm and npx.",
       "support": "end of life",
       "version": "18.20.8",
       "description": "Node.js 18, past end of life: it receives no security fixes",
@@ -2876,12 +3054,25 @@
         "lts": "2022-10-25",
         "end": "2025-04-30"
       },
-      "resolver": "nodejs.org"
+      "resolver": "nodejs.org",
+      "recipes": [
+        {
+          "title": "Vite front end, npm in the shell",
+          "yaml": "group: shop\nruntimes:\n  node: {version: \"26\", commands: [npm, npx]}\nsites:\n  - {name: web, type: vite}\n",
+          "gives": "Gives https://web.shop.test running vite, and node, npm and npx in the shell."
+        },
+        {
+          "title": "One Node.js for every repository in a group",
+          "yaml": "group: shop\ndefaults:\n  runtimes:\n    node: \"24\"\n",
+          "gives": "Gives node 24 to every repository of group shop that pins no node of its own."
+        }
+      ]
     },
     {
       "type": "node",
       "kind": "runtime",
       "category": "language",
+      "summary": "Node.js, the JavaScript runtime, with npm and npx.",
       "support": "end of life",
       "version": "16.20.2",
       "description": "Node.js 16, past end of life: it receives no security fixes",
@@ -3003,12 +3194,25 @@
         "lts": "2021-10-26",
         "end": "2023-09-11"
       },
-      "resolver": "nodejs.org"
+      "resolver": "nodejs.org",
+      "recipes": [
+        {
+          "title": "Vite front end, npm in the shell",
+          "yaml": "group: shop\nruntimes:\n  node: {version: \"26\", commands: [npm, npx]}\nsites:\n  - {name: web, type: vite}\n",
+          "gives": "Gives https://web.shop.test running vite, and node, npm and npx in the shell."
+        },
+        {
+          "title": "One Node.js for every repository in a group",
+          "yaml": "group: shop\ndefaults:\n  runtimes:\n    node: \"24\"\n",
+          "gives": "Gives node 24 to every repository of group shop that pins no node of its own."
+        }
+      ]
     },
     {
       "type": "php",
       "kind": "runtime",
       "category": "language",
+      "summary": "PHP, serving php and laravel sites through PHP-FPM.",
       "support": "current",
       "version": "8.5.12",
       "description": "PHP 8.5, in active support until the end of 2027",
@@ -3168,12 +3372,25 @@
         }
       },
       "documentation": "https://www.php.net/manual/en/ini.list.php",
-      "resolve": "image"
+      "resolve": "image",
+      "recipes": [
+        {
+          "title": "Laravel site with Composer",
+          "yaml": "group: shop\nruntimes:\n  php: \"8.4\"\n  composer: \"2\"\nsites:\n  - {name: app, type: laravel}\n",
+          "gives": "Gives https://app.shop.test served from public/ through PHP-FPM, and php and composer in the shell."
+        },
+        {
+          "title": "PHP settings from the repository",
+          "yaml": "group: shop\nruntimes:\n  php:\n    version: \"8.4\"\n    config: [config/php.ini]\nsites:\n  - {name: app, type: php}\n",
+          "gives": "Gives https://app.shop.test, served from public/ through PHP-FPM, and php in the shell; PHP-FPM and the shell's php both read config/php.ini after the engine's own settings."
+        }
+      ]
     },
     {
       "type": "php",
       "kind": "runtime",
       "category": "language",
+      "summary": "PHP, serving php and laravel sites through PHP-FPM.",
       "support": "lts",
       "version": "8.4.27",
       "description": "PHP 8.4, in active support",
@@ -3334,6 +3551,18 @@
       },
       "documentation": "https://www.php.net/manual/en/ini.list.php",
       "resolve": "image",
+      "recipes": [
+        {
+          "title": "Laravel site with Composer",
+          "yaml": "group: shop\nruntimes:\n  php: \"8.4\"\n  composer: \"2\"\nsites:\n  - {name: app, type: laravel}\n",
+          "gives": "Gives https://app.shop.test served from public/ through PHP-FPM, and php and composer in the shell."
+        },
+        {
+          "title": "PHP settings from the repository",
+          "yaml": "group: shop\nruntimes:\n  php:\n    version: \"8.4\"\n    config: [config/php.ini]\nsites:\n  - {name: app, type: php}\n",
+          "gives": "Gives https://app.shop.test, served from public/ through PHP-FPM, and php in the shell; PHP-FPM and the shell's php both read config/php.ini after the engine's own settings."
+        }
+      ],
       "image": {
         "repository": "docker.io/library/php",
         "tag": "8.4.27-fpm-bookworm",
@@ -3365,6 +3594,7 @@
       "type": "php",
       "kind": "runtime",
       "category": "language",
+      "summary": "PHP, serving php and laravel sites through PHP-FPM.",
       "support": "current",
       "version": "8.3.36",
       "description": "PHP 8.3, security fixes until the end of 2027",
@@ -3524,12 +3754,25 @@
         }
       },
       "documentation": "https://www.php.net/manual/en/ini.list.php",
-      "resolve": "image"
+      "resolve": "image",
+      "recipes": [
+        {
+          "title": "Laravel site with Composer",
+          "yaml": "group: shop\nruntimes:\n  php: \"8.4\"\n  composer: \"2\"\nsites:\n  - {name: app, type: laravel}\n",
+          "gives": "Gives https://app.shop.test served from public/ through PHP-FPM, and php and composer in the shell."
+        },
+        {
+          "title": "PHP settings from the repository",
+          "yaml": "group: shop\nruntimes:\n  php:\n    version: \"8.4\"\n    config: [config/php.ini]\nsites:\n  - {name: app, type: php}\n",
+          "gives": "Gives https://app.shop.test, served from public/ through PHP-FPM, and php in the shell; PHP-FPM and the shell's php both read config/php.ini after the engine's own settings."
+        }
+      ]
     },
     {
       "type": "php",
       "kind": "runtime",
       "category": "language",
+      "summary": "PHP, serving php and laravel sites through PHP-FPM.",
       "support": "current",
       "version": "8.2.35",
       "description": "PHP 8.2, security fixes only, and they end 31 December 2026",
@@ -3689,12 +3932,25 @@
         }
       },
       "documentation": "https://www.php.net/manual/en/ini.list.php",
-      "resolve": "image"
+      "resolve": "image",
+      "recipes": [
+        {
+          "title": "Laravel site with Composer",
+          "yaml": "group: shop\nruntimes:\n  php: \"8.4\"\n  composer: \"2\"\nsites:\n  - {name: app, type: laravel}\n",
+          "gives": "Gives https://app.shop.test served from public/ through PHP-FPM, and php and composer in the shell."
+        },
+        {
+          "title": "PHP settings from the repository",
+          "yaml": "group: shop\nruntimes:\n  php:\n    version: \"8.4\"\n    config: [config/php.ini]\nsites:\n  - {name: app, type: php}\n",
+          "gives": "Gives https://app.shop.test, served from public/ through PHP-FPM, and php in the shell; PHP-FPM and the shell's php both read config/php.ini after the engine's own settings."
+        }
+      ]
     },
     {
       "type": "php",
       "kind": "runtime",
       "category": "language",
+      "summary": "PHP, serving php and laravel sites through PHP-FPM.",
       "support": "end of life",
       "version": "8.1.34",
       "description": "PHP 8.1, past end of life since December 2025, with php-src's mitigation of CVE-2026-109618 and CVE-2026-109619, which also turns off session upload progress",
@@ -3854,15 +4110,28 @@
         }
       },
       "documentation": "https://www.php.net/manual/en/ini.list.php",
-      "resolve": "image"
+      "resolve": "image",
+      "recipes": [
+        {
+          "title": "Laravel site with Composer",
+          "yaml": "group: shop\nruntimes:\n  php: \"8.4\"\n  composer: \"2\"\nsites:\n  - {name: app, type: laravel}\n",
+          "gives": "Gives https://app.shop.test served from public/ through PHP-FPM, and php and composer in the shell."
+        },
+        {
+          "title": "PHP settings from the repository",
+          "yaml": "group: shop\nruntimes:\n  php:\n    version: \"8.4\"\n    config: [config/php.ini]\nsites:\n  - {name: app, type: php}\n",
+          "gives": "Gives https://app.shop.test, served from public/ through PHP-FPM, and php in the shell; PHP-FPM and the shell's php both read config/php.ini after the engine's own settings."
+        }
+      ]
     },
     {
       "type": "python",
       "kind": "runtime",
       "category": "language",
+      "summary": "Python 3, with pip.",
       "support": "lts",
       "version": "3.14.7",
-      "description": "Python 3.14, taking bug fixes until October 2030",
+      "description": "Python 3.14, bug fixes until about October 2027, security fixes until October 2030",
       "artifacts": {
         "darwin/arm64": {
           "url": "https://github.com/astral-sh/python-build-standalone/releases/download/20260825/cpython-3.14.7+20260825-aarch64-apple-darwin-install_only.tar.gz",
@@ -3970,12 +4239,20 @@
             "python"
           ]
         }
-      }
+      },
+      "recipes": [
+        {
+          "title": "Python with pip in the shell",
+          "yaml": "group: shop\nruntimes:\n  python: {version: \"3.14\", commands: [pip]}\n",
+          "gives": "Gives python3 and pip in the shell."
+        }
+      ]
     },
     {
       "type": "ruby",
       "kind": "runtime",
       "category": "language",
+      "summary": "Ruby, with gem, bundle and rake.",
       "support": "current",
       "version": "3.3.12",
       "description": "Ruby 3.3, security fixes only, and they end 31 March 2027",
@@ -4070,12 +4347,20 @@
         "exposed": [
           "ruby"
         ]
-      }
+      },
+      "recipes": [
+        {
+          "title": "Ruby with Bundler and Rake",
+          "yaml": "group: shop\nruntimes:\n  ruby: {version: \"4.0\", commands: [bundle, rake]}\n",
+          "gives": "Gives ruby, bundle and rake in the shell."
+        }
+      ]
     },
     {
       "type": "ruby",
       "kind": "runtime",
       "category": "language",
+      "summary": "Ruby, with gem, bundle and rake.",
       "support": "current",
       "version": "3.4.10",
       "description": "Ruby 3.4, in normal maintenance: it still takes bug fixes",
@@ -4170,12 +4455,20 @@
         "exposed": [
           "ruby"
         ]
-      }
+      },
+      "recipes": [
+        {
+          "title": "Ruby with Bundler and Rake",
+          "yaml": "group: shop\nruntimes:\n  ruby: {version: \"4.0\", commands: [bundle, rake]}\n",
+          "gives": "Gives ruby, bundle and rake in the shell."
+        }
+      ]
     },
     {
       "type": "ruby",
       "kind": "runtime",
       "category": "language",
+      "summary": "Ruby, with gem, bundle and rake.",
       "support": "current",
       "version": "4.0.6",
       "description": "Ruby 4.0, the current release",
@@ -4270,12 +4563,20 @@
         "exposed": [
           "ruby"
         ]
-      }
+      },
+      "recipes": [
+        {
+          "title": "Ruby with Bundler and Rake",
+          "yaml": "group: shop\nruntimes:\n  ruby: {version: \"4.0\", commands: [bundle, rake]}\n",
+          "gives": "Gives ruby, bundle and rake in the shell."
+        }
+      ]
     },
     {
       "type": "rust",
       "kind": "runtime",
       "category": "language",
+      "summary": "The Rust toolchain, with cargo and rustc.",
       "support": "current",
       "version": "1.98.1",
       "description": "Rust 1.98, the current stable release",
@@ -4370,12 +4671,20 @@
           "cargo-clippy",
           "clippy-driver"
         ]
-      }
+      },
+      "recipes": [
+        {
+          "title": "Rust with rust-analyzer",
+          "yaml": "group: shop\nruntimes:\n  rust: {version: \"1.98\", commands: [rust-analyzer]}\n",
+          "gives": "Gives cargo, rustc, rustdoc, rustfmt, cargo-fmt, cargo-clippy and clippy-driver, plus rust-analyzer, in the shell."
+        }
+      ]
     },
     {
       "type": "rust",
       "kind": "runtime",
       "category": "language",
+      "summary": "The Rust toolchain, with cargo and rustc.",
       "support": "end of life",
       "version": "1.97.1",
       "description": "Rust 1.97, past end of life: Rust fixes only its newest stable release",
@@ -4470,11 +4779,19 @@
           "cargo-clippy",
           "clippy-driver"
         ]
-      }
+      },
+      "recipes": [
+        {
+          "title": "Rust with rust-analyzer",
+          "yaml": "group: shop\nruntimes:\n  rust: {version: \"1.98\", commands: [rust-analyzer]}\n",
+          "gives": "Gives cargo, rustc, rustdoc, rustfmt, cargo-fmt, cargo-clippy and clippy-driver, plus rust-analyzer, in the shell."
+        }
+      ]
     },
     {
       "type": "mailpit",
       "category": "mail",
+      "summary": "Mailpit, showing caught mail at mail.<group>.<tld>.",
       "support": "current",
       "version": "1.31.6",
       "description": "Mailpit 1.31, a mail catcher with a web interface",
@@ -4587,11 +4904,19 @@
             ]
           }
         }
-      }
+      },
+      "recipes": [
+        {
+          "title": "Catch a Laravel site's mail",
+          "yaml": "group: shop\nruntimes:\n  php: \"8.4\"\nservices:\n  - {name: mailer, type: mailpit}\nsites:\n  - {name: app, type: laravel}\n",
+          "gives": "Gives the site MAIL_MAILER=smtp, MAIL_SCHEME, MAIL_HOST and MAIL_PORT, and MAIL_URL, SMTP_HOST and SMTP_PORT, and shows the mail it sends at https://mail.shop.test."
+        }
+      ]
     },
     {
       "type": "nats",
       "category": "messaging",
+      "summary": "NATS messaging with JetStream, one account per group.",
       "support": "current",
       "version": "2.15.0",
       "description": "NATS 2.15, the newest release",
@@ -4679,7 +5004,7 @@
           "reserved": [
             {
               "key": "accounts",
-              "reason": "holds the accounts Stack provisions"
+              "reason": "decides who may sign in, which Stack's accounts decide"
             },
             {
               "key": "authorization",
@@ -4687,267 +5012,267 @@
             },
             {
               "key": "system_account",
-              "reason": "names the account Stack administers the server through"
+              "reason": "decides who may sign in, which Stack's accounts decide"
             },
             {
               "key": "system",
-              "reason": "names the account Stack administers the server through"
+              "reason": "decides who may sign in, which Stack's accounts decide"
             },
             {
               "key": "no_system_account",
-              "reason": "removes the account Stack administers the server through"
+              "reason": "decides who may sign in, which Stack's accounts decide"
             },
             {
               "key": "no_system",
-              "reason": "removes the account Stack administers the server through"
+              "reason": "decides who may sign in, which Stack's accounts decide"
             },
             {
               "key": "no_sys_acc",
-              "reason": "removes the account Stack administers the server through"
+              "reason": "decides who may sign in, which Stack's accounts decide"
             },
             {
               "key": "operator",
-              "reason": "replaces Stack's accounts with operator-signed ones"
+              "reason": "decides who may sign in, which Stack's accounts decide"
             },
             {
               "key": "operators",
-              "reason": "replaces Stack's accounts with operator-signed ones"
+              "reason": "decides who may sign in, which Stack's accounts decide"
             },
             {
               "key": "root",
-              "reason": "replaces Stack's accounts with operator-signed ones"
+              "reason": "decides who may sign in, which Stack's accounts decide"
             },
             {
               "key": "roots",
-              "reason": "replaces Stack's accounts with operator-signed ones"
+              "reason": "decides who may sign in, which Stack's accounts decide"
             },
             {
               "key": "root_operator",
-              "reason": "replaces Stack's accounts with operator-signed ones"
+              "reason": "decides who may sign in, which Stack's accounts decide"
             },
             {
               "key": "root_operators",
-              "reason": "replaces Stack's accounts with operator-signed ones"
+              "reason": "decides who may sign in, which Stack's accounts decide"
             },
             {
               "key": "trusted",
-              "reason": "trusts operator keys beside Stack's accounts"
+              "reason": "decides who may sign in, which Stack's accounts decide"
             },
             {
               "key": "trusted_keys",
-              "reason": "trusts operator keys beside Stack's accounts"
+              "reason": "decides who may sign in, which Stack's accounts decide"
             },
             {
               "key": "resolver",
-              "reason": "loads accounts Stack did not provision"
+              "reason": "decides who may sign in, which Stack's accounts decide"
             },
             {
               "key": "account_resolver",
-              "reason": "loads accounts Stack did not provision"
+              "reason": "decides who may sign in, which Stack's accounts decide"
             },
             {
               "key": "accounts_resolver",
-              "reason": "loads accounts Stack did not provision"
+              "reason": "decides who may sign in, which Stack's accounts decide"
             },
             {
               "key": "resolver_preload",
-              "reason": "loads accounts Stack did not provision"
+              "reason": "decides who may sign in, which Stack's accounts decide"
             },
             {
               "key": "resolver_pinned_accounts",
-              "reason": "configures account resolution, which Stack does not use"
+              "reason": "decides who may sign in, which Stack's accounts decide"
             },
             {
               "key": "resolver_tls",
-              "reason": "configures account resolution, which Stack does not use"
+              "reason": "decides who may sign in, which Stack's accounts decide"
             },
             {
               "key": "no_auth_user",
-              "reason": "lets a client sign in without a password"
+              "reason": "decides who may sign in, which Stack's accounts decide"
             },
             {
               "key": "default_sentinel",
-              "reason": "signs in clients that present no credentials"
+              "reason": "decides who may sign in, which Stack's accounts decide"
             },
             {
               "key": "proxies",
-              "reason": "trusts proxies to sign clients in"
+              "reason": "decides who may sign in, which Stack's accounts decide"
             },
             {
               "key": "proxy_protocol",
-              "reason": "changes how the client port reads connections"
+              "reason": "changes how clients connect to the port Stack sets"
             },
             {
               "key": "listen",
-              "reason": "is where Stack's clients connect, which Stack sets on the command line"
+              "reason": "is where clients connect, which Stack sets on the command line"
             },
             {
               "key": "port",
-              "reason": "is where Stack's clients connect, which Stack sets on the command line"
+              "reason": "is where clients connect, which Stack sets on the command line"
             },
             {
               "key": "host",
-              "reason": "is where Stack's clients connect, which Stack sets on the command line"
+              "reason": "is where clients connect, which Stack sets on the command line"
             },
             {
               "key": "net",
-              "reason": "is where Stack's clients connect, which Stack sets on the command line"
+              "reason": "is where clients connect, which Stack sets on the command line"
             },
             {
               "key": "client_advertise",
-              "reason": "advertises an address other than Stack's to clients"
+              "reason": "is where clients connect, which Stack sets on the command line"
             },
             {
               "key": "http",
-              "reason": "opens a monitoring port Stack did not ask for"
+              "reason": "opens a listener Stack does not set up"
             },
             {
               "key": "https",
-              "reason": "opens a monitoring port Stack did not ask for"
+              "reason": "opens a listener Stack does not set up"
             },
             {
               "key": "http_port",
-              "reason": "opens a monitoring port Stack did not ask for"
+              "reason": "opens a listener Stack does not set up"
             },
             {
               "key": "https_port",
-              "reason": "opens a monitoring port Stack did not ask for"
+              "reason": "opens a listener Stack does not set up"
             },
             {
               "key": "monitor_port",
-              "reason": "opens a monitoring port Stack did not ask for"
+              "reason": "opens a listener Stack does not set up"
             },
             {
               "key": "prof_port",
-              "reason": "opens a profiling port Stack did not ask for"
+              "reason": "opens a listener Stack does not set up"
             },
             {
               "key": "websocket",
-              "reason": "listens where Stack did not ask"
+              "reason": "opens a listener Stack does not set up"
             },
             {
               "key": "websocket.*",
-              "reason": "listens where Stack did not ask"
+              "reason": "opens a listener Stack does not set up"
             },
             {
               "key": "ws",
-              "reason": "listens where Stack did not ask"
+              "reason": "opens a listener Stack does not set up"
             },
             {
               "key": "ws.*",
-              "reason": "listens where Stack did not ask"
+              "reason": "opens a listener Stack does not set up"
             },
             {
               "key": "mqtt",
-              "reason": "listens where Stack did not ask"
+              "reason": "opens a listener Stack does not set up"
             },
             {
               "key": "mqtt.*",
-              "reason": "listens where Stack did not ask"
+              "reason": "opens a listener Stack does not set up"
             },
             {
               "key": "cluster",
-              "reason": "connects the server to others and listens where Stack did not ask"
+              "reason": "opens a listener Stack does not set up"
             },
             {
               "key": "cluster.*",
-              "reason": "connects the server to others and listens where Stack did not ask"
+              "reason": "opens a listener Stack does not set up"
             },
             {
               "key": "gateway",
-              "reason": "connects the server to others and listens where Stack did not ask"
+              "reason": "opens a listener Stack does not set up"
             },
             {
               "key": "gateway.*",
-              "reason": "connects the server to others and listens where Stack did not ask"
+              "reason": "opens a listener Stack does not set up"
             },
             {
               "key": "leafnodes",
-              "reason": "connects the server to others and listens where Stack did not ask"
+              "reason": "opens a listener Stack does not set up"
             },
             {
               "key": "leafnodes.*",
-              "reason": "connects the server to others and listens where Stack did not ask"
+              "reason": "opens a listener Stack does not set up"
             },
             {
               "key": "leaf",
-              "reason": "connects the server to others and listens where Stack did not ask"
+              "reason": "opens a listener Stack does not set up"
             },
             {
               "key": "leaf.*",
-              "reason": "connects the server to others and listens where Stack did not ask"
+              "reason": "opens a listener Stack does not set up"
             },
             {
               "key": "tls",
-              "reason": "changes how clients connect, which Stack does not set up"
+              "reason": "configures TLS, which Stack does not set up"
             },
             {
               "key": "ocsp",
-              "reason": "concerns TLS, which Stack does not set up"
+              "reason": "configures TLS, which Stack does not set up"
             },
             {
               "key": "ocsp_cache",
-              "reason": "concerns TLS, which Stack does not set up"
+              "reason": "configures TLS, which Stack does not set up"
             },
             {
               "key": "ocsp_cache.*",
-              "reason": "concerns TLS, which Stack does not set up"
+              "reason": "configures TLS, which Stack does not set up"
             },
             {
               "key": "store_dir",
-              "reason": "is the data directory Stack manages, which Stack sets on the command line"
+              "reason": "is the JetStream directory, which Stack sets on the command line"
             },
             {
               "key": "storedir",
-              "reason": "is the data directory Stack manages, which Stack sets on the command line"
+              "reason": "is the JetStream directory, which Stack sets on the command line"
             },
             {
               "key": "jetstream.store_dir",
-              "reason": "is the data directory Stack manages, which Stack sets on the command line"
+              "reason": "is the JetStream directory, which Stack sets on the command line"
             },
             {
               "key": "jetstream.store",
-              "reason": "is the data directory Stack manages, which Stack sets on the command line"
+              "reason": "is the JetStream directory, which Stack sets on the command line"
             },
             {
               "key": "jetstream.storedir",
-              "reason": "is the data directory Stack manages, which Stack sets on the command line"
+              "reason": "is the JetStream directory, which Stack sets on the command line"
             },
             {
               "key": "jetstream.tpm",
-              "reason": "keeps a key file outside the data directory Stack manages"
+              "reason": "writes files or logs outside the data directory Stack manages"
             },
             {
               "key": "logfile",
-              "reason": "writes the server's log somewhere other than the file Stack supervises"
+              "reason": "writes files or logs outside the data directory Stack manages"
             },
             {
               "key": "log_file",
-              "reason": "writes the server's log somewhere other than the file Stack supervises"
+              "reason": "writes files or logs outside the data directory Stack manages"
             },
             {
               "key": "syslog",
-              "reason": "sends the server's log away from the file Stack supervises"
+              "reason": "writes files or logs outside the data directory Stack manages"
             },
             {
               "key": "remote_syslog",
-              "reason": "sends the server's log away from the file Stack supervises"
+              "reason": "writes files or logs outside the data directory Stack manages"
             },
             {
               "key": "pidfile",
-              "reason": "writes a file outside the data directory Stack manages"
+              "reason": "writes files or logs outside the data directory Stack manages"
             },
             {
               "key": "pid_file",
-              "reason": "writes a file outside the data directory Stack manages"
+              "reason": "writes files or logs outside the data directory Stack manages"
             },
             {
               "key": "ports_file_dir",
-              "reason": "writes a file outside the data directory Stack manages"
+              "reason": "writes files or logs outside the data directory Stack manages"
             },
             {
               "key": "max_payload",
-              "reason": "is set by Stack, whose settings are read last"
+              "reason": "is set in Stack's own nats.conf, which the main file includes last"
             }
           ]
         },
@@ -4986,14 +5311,27 @@
             ]
           }
         }
-      }
+      },
+      "recipes": [
+        {
+          "title": "A messaging server for the group",
+          "yaml": "group: shop\nservices:\n  - {name: bus, type: nats}\n",
+          "gives": "Gives NATS_URL, NATS_HOST, NATS_PORT, NATS_USER and NATS_PASSWORD for the group's account, which may use JetStream, and the same five prefixed BUS_."
+        },
+        {
+          "title": "One server shared by several groups",
+          "yaml": "group: shop\nservices:\n  - {name: bus, type: nats, shared: local}\n",
+          "gives": "Gives shop the same NATS_* variables, served by one NATS process for every group naming shared: local; each group keeps its own account."
+        }
+      ]
     },
     {
       "type": "nats",
       "category": "messaging",
+      "summary": "NATS messaging with JetStream, one account per group.",
       "support": "current",
       "version": "2.14.7",
-      "description": "NATS 2.14, the previous release line",
+      "description": "NATS 2.14, the previous release",
       "artifacts": {
         "darwin/arm64": {
           "url": "https://github.com/nats-io/nats-server/releases/download/v2.14.7/nats-server-v2.14.7-darwin-arm64.tar.gz",
@@ -5078,7 +5416,7 @@
           "reserved": [
             {
               "key": "accounts",
-              "reason": "holds the accounts Stack provisions"
+              "reason": "decides who may sign in, which Stack's accounts decide"
             },
             {
               "key": "authorization",
@@ -5086,267 +5424,267 @@
             },
             {
               "key": "system_account",
-              "reason": "names the account Stack administers the server through"
+              "reason": "decides who may sign in, which Stack's accounts decide"
             },
             {
               "key": "system",
-              "reason": "names the account Stack administers the server through"
+              "reason": "decides who may sign in, which Stack's accounts decide"
             },
             {
               "key": "no_system_account",
-              "reason": "removes the account Stack administers the server through"
+              "reason": "decides who may sign in, which Stack's accounts decide"
             },
             {
               "key": "no_system",
-              "reason": "removes the account Stack administers the server through"
+              "reason": "decides who may sign in, which Stack's accounts decide"
             },
             {
               "key": "no_sys_acc",
-              "reason": "removes the account Stack administers the server through"
+              "reason": "decides who may sign in, which Stack's accounts decide"
             },
             {
               "key": "operator",
-              "reason": "replaces Stack's accounts with operator-signed ones"
+              "reason": "decides who may sign in, which Stack's accounts decide"
             },
             {
               "key": "operators",
-              "reason": "replaces Stack's accounts with operator-signed ones"
+              "reason": "decides who may sign in, which Stack's accounts decide"
             },
             {
               "key": "root",
-              "reason": "replaces Stack's accounts with operator-signed ones"
+              "reason": "decides who may sign in, which Stack's accounts decide"
             },
             {
               "key": "roots",
-              "reason": "replaces Stack's accounts with operator-signed ones"
+              "reason": "decides who may sign in, which Stack's accounts decide"
             },
             {
               "key": "root_operator",
-              "reason": "replaces Stack's accounts with operator-signed ones"
+              "reason": "decides who may sign in, which Stack's accounts decide"
             },
             {
               "key": "root_operators",
-              "reason": "replaces Stack's accounts with operator-signed ones"
+              "reason": "decides who may sign in, which Stack's accounts decide"
             },
             {
               "key": "trusted",
-              "reason": "trusts operator keys beside Stack's accounts"
+              "reason": "decides who may sign in, which Stack's accounts decide"
             },
             {
               "key": "trusted_keys",
-              "reason": "trusts operator keys beside Stack's accounts"
+              "reason": "decides who may sign in, which Stack's accounts decide"
             },
             {
               "key": "resolver",
-              "reason": "loads accounts Stack did not provision"
+              "reason": "decides who may sign in, which Stack's accounts decide"
             },
             {
               "key": "account_resolver",
-              "reason": "loads accounts Stack did not provision"
+              "reason": "decides who may sign in, which Stack's accounts decide"
             },
             {
               "key": "accounts_resolver",
-              "reason": "loads accounts Stack did not provision"
+              "reason": "decides who may sign in, which Stack's accounts decide"
             },
             {
               "key": "resolver_preload",
-              "reason": "loads accounts Stack did not provision"
+              "reason": "decides who may sign in, which Stack's accounts decide"
             },
             {
               "key": "resolver_pinned_accounts",
-              "reason": "configures account resolution, which Stack does not use"
+              "reason": "decides who may sign in, which Stack's accounts decide"
             },
             {
               "key": "resolver_tls",
-              "reason": "configures account resolution, which Stack does not use"
+              "reason": "decides who may sign in, which Stack's accounts decide"
             },
             {
               "key": "no_auth_user",
-              "reason": "lets a client sign in without a password"
+              "reason": "decides who may sign in, which Stack's accounts decide"
             },
             {
               "key": "default_sentinel",
-              "reason": "signs in clients that present no credentials"
+              "reason": "decides who may sign in, which Stack's accounts decide"
             },
             {
               "key": "proxies",
-              "reason": "trusts proxies to sign clients in"
+              "reason": "decides who may sign in, which Stack's accounts decide"
             },
             {
               "key": "proxy_protocol",
-              "reason": "changes how the client port reads connections"
+              "reason": "changes how clients connect to the port Stack sets"
             },
             {
               "key": "listen",
-              "reason": "is where Stack's clients connect, which Stack sets on the command line"
+              "reason": "is where clients connect, which Stack sets on the command line"
             },
             {
               "key": "port",
-              "reason": "is where Stack's clients connect, which Stack sets on the command line"
+              "reason": "is where clients connect, which Stack sets on the command line"
             },
             {
               "key": "host",
-              "reason": "is where Stack's clients connect, which Stack sets on the command line"
+              "reason": "is where clients connect, which Stack sets on the command line"
             },
             {
               "key": "net",
-              "reason": "is where Stack's clients connect, which Stack sets on the command line"
+              "reason": "is where clients connect, which Stack sets on the command line"
             },
             {
               "key": "client_advertise",
-              "reason": "advertises an address other than Stack's to clients"
+              "reason": "is where clients connect, which Stack sets on the command line"
             },
             {
               "key": "http",
-              "reason": "opens a monitoring port Stack did not ask for"
+              "reason": "opens a listener Stack does not set up"
             },
             {
               "key": "https",
-              "reason": "opens a monitoring port Stack did not ask for"
+              "reason": "opens a listener Stack does not set up"
             },
             {
               "key": "http_port",
-              "reason": "opens a monitoring port Stack did not ask for"
+              "reason": "opens a listener Stack does not set up"
             },
             {
               "key": "https_port",
-              "reason": "opens a monitoring port Stack did not ask for"
+              "reason": "opens a listener Stack does not set up"
             },
             {
               "key": "monitor_port",
-              "reason": "opens a monitoring port Stack did not ask for"
+              "reason": "opens a listener Stack does not set up"
             },
             {
               "key": "prof_port",
-              "reason": "opens a profiling port Stack did not ask for"
+              "reason": "opens a listener Stack does not set up"
             },
             {
               "key": "websocket",
-              "reason": "listens where Stack did not ask"
+              "reason": "opens a listener Stack does not set up"
             },
             {
               "key": "websocket.*",
-              "reason": "listens where Stack did not ask"
+              "reason": "opens a listener Stack does not set up"
             },
             {
               "key": "ws",
-              "reason": "listens where Stack did not ask"
+              "reason": "opens a listener Stack does not set up"
             },
             {
               "key": "ws.*",
-              "reason": "listens where Stack did not ask"
+              "reason": "opens a listener Stack does not set up"
             },
             {
               "key": "mqtt",
-              "reason": "listens where Stack did not ask"
+              "reason": "opens a listener Stack does not set up"
             },
             {
               "key": "mqtt.*",
-              "reason": "listens where Stack did not ask"
+              "reason": "opens a listener Stack does not set up"
             },
             {
               "key": "cluster",
-              "reason": "connects the server to others and listens where Stack did not ask"
+              "reason": "opens a listener Stack does not set up"
             },
             {
               "key": "cluster.*",
-              "reason": "connects the server to others and listens where Stack did not ask"
+              "reason": "opens a listener Stack does not set up"
             },
             {
               "key": "gateway",
-              "reason": "connects the server to others and listens where Stack did not ask"
+              "reason": "opens a listener Stack does not set up"
             },
             {
               "key": "gateway.*",
-              "reason": "connects the server to others and listens where Stack did not ask"
+              "reason": "opens a listener Stack does not set up"
             },
             {
               "key": "leafnodes",
-              "reason": "connects the server to others and listens where Stack did not ask"
+              "reason": "opens a listener Stack does not set up"
             },
             {
               "key": "leafnodes.*",
-              "reason": "connects the server to others and listens where Stack did not ask"
+              "reason": "opens a listener Stack does not set up"
             },
             {
               "key": "leaf",
-              "reason": "connects the server to others and listens where Stack did not ask"
+              "reason": "opens a listener Stack does not set up"
             },
             {
               "key": "leaf.*",
-              "reason": "connects the server to others and listens where Stack did not ask"
+              "reason": "opens a listener Stack does not set up"
             },
             {
               "key": "tls",
-              "reason": "changes how clients connect, which Stack does not set up"
+              "reason": "configures TLS, which Stack does not set up"
             },
             {
               "key": "ocsp",
-              "reason": "concerns TLS, which Stack does not set up"
+              "reason": "configures TLS, which Stack does not set up"
             },
             {
               "key": "ocsp_cache",
-              "reason": "concerns TLS, which Stack does not set up"
+              "reason": "configures TLS, which Stack does not set up"
             },
             {
               "key": "ocsp_cache.*",
-              "reason": "concerns TLS, which Stack does not set up"
+              "reason": "configures TLS, which Stack does not set up"
             },
             {
               "key": "store_dir",
-              "reason": "is the data directory Stack manages, which Stack sets on the command line"
+              "reason": "is the JetStream directory, which Stack sets on the command line"
             },
             {
               "key": "storedir",
-              "reason": "is the data directory Stack manages, which Stack sets on the command line"
+              "reason": "is the JetStream directory, which Stack sets on the command line"
             },
             {
               "key": "jetstream.store_dir",
-              "reason": "is the data directory Stack manages, which Stack sets on the command line"
+              "reason": "is the JetStream directory, which Stack sets on the command line"
             },
             {
               "key": "jetstream.store",
-              "reason": "is the data directory Stack manages, which Stack sets on the command line"
+              "reason": "is the JetStream directory, which Stack sets on the command line"
             },
             {
               "key": "jetstream.storedir",
-              "reason": "is the data directory Stack manages, which Stack sets on the command line"
+              "reason": "is the JetStream directory, which Stack sets on the command line"
             },
             {
               "key": "jetstream.tpm",
-              "reason": "keeps a key file outside the data directory Stack manages"
+              "reason": "writes files or logs outside the data directory Stack manages"
             },
             {
               "key": "logfile",
-              "reason": "writes the server's log somewhere other than the file Stack supervises"
+              "reason": "writes files or logs outside the data directory Stack manages"
             },
             {
               "key": "log_file",
-              "reason": "writes the server's log somewhere other than the file Stack supervises"
+              "reason": "writes files or logs outside the data directory Stack manages"
             },
             {
               "key": "syslog",
-              "reason": "sends the server's log away from the file Stack supervises"
+              "reason": "writes files or logs outside the data directory Stack manages"
             },
             {
               "key": "remote_syslog",
-              "reason": "sends the server's log away from the file Stack supervises"
+              "reason": "writes files or logs outside the data directory Stack manages"
             },
             {
               "key": "pidfile",
-              "reason": "writes a file outside the data directory Stack manages"
+              "reason": "writes files or logs outside the data directory Stack manages"
             },
             {
               "key": "pid_file",
-              "reason": "writes a file outside the data directory Stack manages"
+              "reason": "writes files or logs outside the data directory Stack manages"
             },
             {
               "key": "ports_file_dir",
-              "reason": "writes a file outside the data directory Stack manages"
+              "reason": "writes files or logs outside the data directory Stack manages"
             },
             {
               "key": "max_payload",
-              "reason": "is set by Stack, whose settings are read last"
+              "reason": "is set in Stack's own nats.conf, which the main file includes last"
             }
           ]
         },
@@ -5385,12 +5723,25 @@
             ]
           }
         }
-      }
+      },
+      "recipes": [
+        {
+          "title": "A messaging server for the group",
+          "yaml": "group: shop\nservices:\n  - {name: bus, type: nats}\n",
+          "gives": "Gives NATS_URL, NATS_HOST, NATS_PORT, NATS_USER and NATS_PASSWORD for the group's account, which may use JetStream, and the same five prefixed BUS_."
+        },
+        {
+          "title": "One server shared by several groups",
+          "yaml": "group: shop\nservices:\n  - {name: bus, type: nats, shared: local}\n",
+          "gives": "Gives shop the same NATS_* variables, served by one NATS process for every group naming shared: local; each group keeps its own account."
+        }
+      ]
     },
     {
       "type": "composer",
       "kind": "runtime",
       "category": "packages",
+      "summary": "Composer, the PHP package manager.",
       "support": "current",
       "version": "2.10.3",
       "description": "Composer 2, the current line",
@@ -5467,12 +5818,20 @@
         },
         "container": {}
       },
-      "resolver": "getcomposer.org"
+      "resolver": "getcomposer.org",
+      "recipes": [
+        {
+          "title": "Composer beside PHP",
+          "yaml": "group: shop\nruntimes:\n  php: \"8.4\"\n  composer: \"2\"\n",
+          "gives": "Gives php and composer in the shell; composer runs with the pinned php."
+        }
+      ]
     },
     {
       "type": "pnpm",
       "kind": "runtime",
       "category": "packages",
+      "summary": "pnpm, a Node.js package manager.",
       "support": "current",
       "version": "11.28.6",
       "description": "pnpm 11, the line pnpm points its own users at",
@@ -5551,12 +5910,20 @@
         "bin_dir": ".",
         "container": {}
       },
-      "resolver": "github.com/pnpm/pnpm"
+      "resolver": "github.com/pnpm/pnpm",
+      "recipes": [
+        {
+          "title": "pnpm and Node.js for a Next.js app",
+          "yaml": "group: shop\nruntimes:\n  node: \"24\"\n  pnpm: \"12\"\nsites:\n  - {name: app, type: next}\n",
+          "gives": "Gives https://app.shop.test running next, with pnpm and node in the shell."
+        }
+      ]
     },
     {
       "type": "pnpm",
       "kind": "runtime",
       "category": "packages",
+      "summary": "pnpm, a Node.js package manager.",
       "support": "current",
       "version": "12.14.0",
       "description": "pnpm 12, newer than the line pnpm recommends",
@@ -5635,11 +6002,19 @@
         "bin_dir": ".",
         "container": {}
       },
-      "resolver": "github.com/pnpm/pnpm"
+      "resolver": "github.com/pnpm/pnpm",
+      "recipes": [
+        {
+          "title": "pnpm and Node.js for a Next.js app",
+          "yaml": "group: shop\nruntimes:\n  node: \"24\"\n  pnpm: \"12\"\nsites:\n  - {name: app, type: next}\n",
+          "gives": "Gives https://app.shop.test running next, with pnpm and node in the shell."
+        }
+      ]
     },
     {
       "type": "s3",
       "category": "storage",
+      "summary": "S3-compatible object storage, buckets per group.",
       "support": "current",
       "version": "1.7.0",
       "description": "versitygw, an S3 gateway over a plain directory",
@@ -5803,6 +6178,23 @@
           }
         }
       },
+      "recipes": [
+        {
+          "title": "Private and public buckets",
+          "yaml": "group: shop\nservices:\n  - name: files\n    type: s3\n    buckets:\n      - {name: uploads}\n      - {name: public, publish: true}\n",
+          "gives": "Gives S3_PRIVATE_BUCKET=b.shop.uploads, S3_PUBLIC_BUCKET=b.shop.public and S3_PUBLIC_BASE_URL=https://public.s3.shop.test, with S3_ENDPOINT, the S3_* and AWS_* access keys and the AWS_* endpoint settings."
+        },
+        {
+          "title": "A bucket with variables of its own",
+          "yaml": "group: shop\nservices:\n  - name: files\n    type: s3\n    buckets:\n      - {name: media, env_prefix: MEDIA}\n",
+          "gives": "Gives MEDIA_BUCKET=b.shop.media, MEDIA_ENDPOINT, MEDIA_DEFAULT_REGION, MEDIA_ACCESS_KEY_ID, MEDIA_SECRET_ACCESS_KEY and an empty MEDIA_URL, as the bucket is not published, beside the service's own variables."
+        },
+        {
+          "title": "Uploads from the browser",
+          "yaml": "group: shop\nservices:\n  - name: files\n    type: s3\n    buckets:\n      - name: uploads\n        cors: {allowed_origins: [\"https://app.shop.test\"]}\n",
+          "gives": "Gives a bucket that answers CORS requests from https://app.shop.test with GET, HEAD and PUT."
+        }
+      ],
       "image": {
         "repository": "docker.io/versity/versitygw",
         "tag": "v1.7.0",

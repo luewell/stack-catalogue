@@ -2,6 +2,7 @@
   "defaults": {
     "type": "postgres",
     "category": "database",
+    "summary": "PostgreSQL, one database and role per group.",
     "every_platform": {
       "archive": "tar.gz",
       "paths": [
@@ -45,35 +46,35 @@
         "reserved": [
           {
             "key": "shared_preload_libraries",
-            "reason": "loads libraries into the server"
+            "reason": "loads code into the server or its sessions"
           },
           {
             "key": "session_preload_libraries",
-            "reason": "loads libraries into every session"
+            "reason": "loads code into the server or its sessions"
           },
           {
             "key": "local_preload_libraries",
-            "reason": "loads libraries into every session"
+            "reason": "loads code into the server or its sessions"
           },
           {
             "key": "dynamic_library_path",
-            "reason": "decides where the server loads libraries from"
+            "reason": "loads code into the server or its sessions"
           },
           {
             "key": "extension_control_path",
-            "reason": "decides where the server finds extensions to load"
+            "reason": "loads code into the server or its sessions"
           },
           {
             "key": "jit_provider",
-            "reason": "loads a library into the server"
+            "reason": "loads code into the server or its sessions"
           },
           {
             "key": "oauth_validator_libraries",
-            "reason": "loads libraries into the server"
+            "reason": "loads code into the server or its sessions"
           },
           {
             "key": "archive_library",
-            "reason": "loads a library into the server"
+            "reason": "loads code into the server or its sessions"
           },
           {
             "key": "archive_command",
@@ -97,43 +98,43 @@
           },
           {
             "key": "listen_addresses",
-            "reason": "is where Stack's clients connect, which Stack sets on the command line"
+            "reason": "is where clients connect, which Stack sets on the command line"
           },
           {
             "key": "port",
-            "reason": "is where Stack's clients connect, which Stack sets on the command line"
+            "reason": "is where clients connect, which Stack sets on the command line"
           },
           {
             "key": "unix_socket_directories",
-            "reason": "is where Stack's clients connect, which Stack sets on the command line"
+            "reason": "is where clients connect, which Stack sets on the command line"
           },
           {
             "key": "unix_socket_group",
-            "reason": "decides who may reach the server's private socket"
+            "reason": "decides who may reach the socket or sign in"
           },
           {
             "key": "unix_socket_permissions",
-            "reason": "decides who may reach the server's private socket"
+            "reason": "decides who may reach the socket or sign in"
           },
           {
             "key": "data_directory",
-            "reason": "is the cluster Stack manages"
+            "reason": "is the cluster and main file Stack manages"
           },
           {
             "key": "config_file",
-            "reason": "is the main file Stack generates"
+            "reason": "is the cluster and main file Stack manages"
           },
           {
             "key": "hba_file",
-            "reason": "decides who may sign in, which Stack keeps to its own accounts"
+            "reason": "decides who may reach the socket or sign in"
           },
           {
             "key": "ident_file",
-            "reason": "decides who may sign in, which Stack keeps to its own accounts"
+            "reason": "decides who may reach the socket or sign in"
           },
           {
             "key": "external_pid_file",
-            "reason": "writes a file outside the cluster Stack manages"
+            "reason": "writes files outside the cluster Stack manages"
           },
           {
             "key": "logging_collector",
@@ -310,7 +311,24 @@
           "restricted": true
         }
       }
-    }
+    },
+    "recipes": [
+      {
+        "title": "Laravel with PostgreSQL, Valkey and S3",
+        "yaml": "group: shop\nruntimes:\n  php: \"8.4\"\nservices:\n  - {name: db, type: postgres, version: \"18\", commands: [psql]}\n  - {name: cache, type: valkey}\n  - name: files\n    type: s3\n    buckets:\n      - {name: uploads}\n      - {name: public, publish: true}\nsites:\n  - {name: app, type: laravel}\n",
+        "gives": "Gives the site DATABASE_URL, the DB_* variables and DB_CONNECTION=pgsql; the REDIS_* variables; the AWS_* and S3_* variables, AWS_BUCKET=b.shop.uploads among them; and APP_URL. Service-prefixed copies such as DB_DATABASE_URL and CACHE_REDIS_URL come too, and psql joins the shell."
+      },
+      {
+        "title": "Several databases on one server",
+        "yaml": "group: shop\nservices:\n  - name: db\n    type: postgres\n    databases:\n      - {name: app, env_prefix: \"\"}\n      - {name: wallet, env_prefix: WALLET}\n",
+        "gives": "Gives DATABASE_URL and the DB_* variables for app, and the same names prefixed WALLET_ for wallet, such as WALLET_DATABASE_URL; each database has its own role."
+      },
+      {
+        "title": "One server shared by several groups",
+        "yaml": "group: shop\nservices:\n  - {name: db, type: postgres, version: \"18\", shared: local}\n",
+        "gives": "Gives shop DATABASE_URL and the DB_* variables, served by one PostgreSQL process for every group naming shared: local; no group can open another's database."
+      }
+    ]
   },
   "services": [
     {

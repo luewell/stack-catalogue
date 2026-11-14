@@ -2,6 +2,7 @@
   "defaults": {
     "type": "valkey",
     "category": "cache",
+    "summary": "Valkey, a Redis-compatible key-value store.",
     "aliases": [
       "redis"
     ],
@@ -49,143 +50,143 @@
           },
           {
             "key": "enable-module-command",
-            "reason": "would let clients load code into the server"
+            "reason": "lets clients load modules, change protected settings or run debugging commands"
           },
           {
             "key": "enable-debug-command",
-            "reason": "would let clients run debugging commands"
+            "reason": "lets clients load modules, change protected settings or run debugging commands"
           },
           {
             "key": "enable-protected-configs",
-            "reason": "would let clients change protected settings such as dir"
+            "reason": "lets clients load modules, change protected settings or run debugging commands"
           },
           {
             "key": "user",
-            "reason": "defines accounts beside Stack's ACL file, which Valkey refuses"
+            "reason": "decides who may sign in, which Stack's ACL file decides"
           },
           {
             "key": "aclfile",
-            "reason": "holds the accounts Stack manages"
+            "reason": "decides who may sign in, which Stack's ACL file decides"
           },
           {
             "key": "requirepass",
-            "reason": "changes the password of Stack's administrator"
+            "reason": "decides who may sign in, which Stack's ACL file decides"
           },
           {
             "key": "primaryauth",
-            "reason": "signs in to another server as a replica"
+            "reason": "sets up replication from another server, whose data would replace the data Stack manages"
           },
           {
             "key": "masterauth",
-            "reason": "signs in to another server as a replica"
+            "reason": "sets up replication from another server, whose data would replace the data Stack manages"
           },
           {
             "key": "primaryuser",
-            "reason": "signs in to another server as a replica"
+            "reason": "sets up replication from another server, whose data would replace the data Stack manages"
           },
           {
             "key": "masteruser",
-            "reason": "signs in to another server as a replica"
+            "reason": "sets up replication from another server, whose data would replace the data Stack manages"
           },
           {
             "key": "replicaof",
-            "reason": "turns the server into a replica of another"
+            "reason": "sets up replication from another server, whose data would replace the data Stack manages"
           },
           {
             "key": "slaveof",
-            "reason": "turns the server into a replica of another"
+            "reason": "sets up replication from another server, whose data would replace the data Stack manages"
           },
           {
             "key": "rename-command",
-            "reason": "would hide commands Stack provisions and stops the server with"
+            "reason": "renames the commands Stack needs to provision and stop the server"
           },
           {
             "key": "sentinel",
-            "reason": "runs a different server mode"
+            "reason": "runs the server in a mode or process Stack does not supervise"
           },
           {
             "key": "dir",
-            "reason": "is the data directory Stack manages, which Stack sets on the command line"
+            "reason": "decides where or how data is stored, which Stack sets on the command line"
           },
           {
             "key": "port",
-            "reason": "is where Stack's clients connect, which Stack sets on the command line"
+            "reason": "is where clients connect, which Stack sets on the command line"
           },
           {
             "key": "bind",
-            "reason": "is where Stack's clients connect, which Stack sets on the command line"
+            "reason": "is where clients connect, which Stack sets on the command line"
           },
           {
             "key": "unixsocket",
-            "reason": "is the private socket Stack connects through, which Stack sets on the command line"
+            "reason": "is where clients connect, which Stack sets on the command line"
           },
           {
             "key": "unixsocketperm",
-            "reason": "decides who may reach the server's private socket"
+            "reason": "decides who may connect to the server"
           },
           {
             "key": "unixsocketgroup",
-            "reason": "decides who may reach the server's private socket"
+            "reason": "decides who may connect to the server"
           },
           {
             "key": "protected-mode",
-            "reason": "guards the server against connections Stack did not set up"
+            "reason": "decides who may connect to the server"
           },
           {
             "key": "tls-port",
-            "reason": "listens where Stack did not ask"
+            "reason": "opens a listener Stack does not set up"
           },
           {
             "key": "rdma-port",
-            "reason": "listens where Stack did not ask"
+            "reason": "opens a listener Stack does not set up"
           },
           {
             "key": "rdma-bind",
-            "reason": "listens where Stack did not ask"
+            "reason": "opens a listener Stack does not set up"
           },
           {
             "key": "cluster-enabled",
-            "reason": "opens a cluster bus port Stack did not ask for"
+            "reason": "opens a listener Stack does not set up"
           },
           {
             "key": "cluster-port",
-            "reason": "listens where Stack did not ask"
+            "reason": "opens a listener Stack does not set up"
           },
           {
             "key": "daemonize",
-            "reason": "detaches the server from the process Stack supervises"
+            "reason": "runs the server in a mode or process Stack does not supervise"
           },
           {
             "key": "appendonly",
-            "reason": "is set by Stack on the command line"
+            "reason": "decides where or how data is stored, which Stack sets on the command line"
           },
           {
             "key": "pidfile",
-            "reason": "writes files Stack does not manage"
+            "reason": "writes files or logs Stack does not manage"
           },
           {
             "key": "logfile",
-            "reason": "writes files Stack does not manage"
+            "reason": "writes files or logs Stack does not manage"
           },
           {
             "key": "syslog-enabled",
-            "reason": "writes files Stack does not manage"
+            "reason": "writes files or logs Stack does not manage"
           },
           {
             "key": "syslog-ident",
-            "reason": "writes files Stack does not manage"
+            "reason": "writes files or logs Stack does not manage"
           },
           {
             "key": "syslog-facility",
-            "reason": "writes files Stack does not manage"
+            "reason": "writes files or logs Stack does not manage"
           },
           {
             "key": "cluster-config-file",
-            "reason": "writes files Stack does not manage"
+            "reason": "writes files or logs Stack does not manage"
           },
           {
             "key": "dbfilename",
-            "reason": "names a file in the data directory, where Stack keeps its ACL file"
+            "reason": "writes files or logs Stack does not manage"
           }
         ]
       },
@@ -233,7 +234,24 @@
           "secret": "VALKEY_ADMIN_PASSWORD"
         }
       }
-    }
+    },
+    "recipes": [
+      {
+        "title": "Cache for a Laravel site",
+        "yaml": "group: shop\nruntimes:\n  php: \"8.4\"\nservices:\n  - {name: cache, type: valkey}\nsites:\n  - {name: app, type: laravel}\n",
+        "gives": "Gives the site REDIS_URL, REDIS_HOST, REDIS_PORT, REDIS_USERNAME and REDIS_PASSWORD, and the same five prefixed CACHE_, such as CACHE_REDIS_URL."
+      },
+      {
+        "title": "Two stores, one holding the bare names",
+        "yaml": "group: shop\nservices:\n  - {name: cache, type: valkey, default: true}\n  - {name: queue, type: valkey}\n",
+        "gives": "Gives the five REDIS_* variables to cache, the default, and every variable again prefixed CACHE_ or QUEUE_ for each store, such as CACHE_REDIS_URL and QUEUE_REDIS_URL."
+      },
+      {
+        "title": "valkey-cli in the shell",
+        "yaml": "group: shop\nservices:\n  - {name: cache, type: valkey, commands: [valkey-cli]}\n",
+        "gives": "Gives valkey-cli in the shell, and the REDIS_* variables; \"valkey-cli -u $REDIS_URL\" signs in as the group's account."
+      }
+    ]
   },
   "services": [
     {

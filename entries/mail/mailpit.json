@@ -2,6 +2,7 @@
   "defaults": {
     "type": "mailpit",
     "category": "mail",
+    "summary": "Mailpit, showing caught mail at mail.<group>.<tld>.",
     "every_platform": {
       "archive": "tar.gz",
       "paths": [
@@ -79,7 +80,14 @@
           ]
         }
       }
-    }
+    },
+    "recipes": [
+      {
+        "title": "Catch a Laravel site's mail",
+        "yaml": "group: shop\nruntimes:\n  php: \"8.4\"\nservices:\n  - {name: mailer, type: mailpit}\nsites:\n  - {name: app, type: laravel}\n",
+        "gives": "Gives the site MAIL_MAILER=smtp, MAIL_SCHEME, MAIL_HOST and MAIL_PORT, and MAIL_URL, SMTP_HOST and SMTP_PORT, and shows the mail it sends at https://mail.shop.test."
+      }
+    ]
   },
   "services": [
     {

@@ -3,6 +3,7 @@
     "type": "mongosh",
     "kind": "runtime",
     "category": "database",
+    "summary": "The MongoDB shell, a client for mongodb services.",
     "every_platform": {
       "paths": [
         "bin"
@@ -37,13 +38,20 @@
         "mongosh"
       ],
       "bin_dir": "bin"
-    }
+    },
+    "recipes": [
+      {
+        "title": "The MongoDB shell beside a MongoDB service",
+        "yaml": "group: shop\nruntimes:\n  mongosh: \"2\"\nservices:\n  - {name: docs, type: mongodb}\n",
+        "gives": "Gives mongosh in the shell, and the MONGODB_* variables from docs; \"mongosh $MONGODB_URI\" connects as the group's account."
+      }
+    ]
   },
   "services": [
     {
       "support": "current",
       "version": "2.12.0",
-      "description": "The MongoDB Shell, the current line",
+      "description": "mongosh 2, the current line",
       "artifacts": {
         "darwin/arm64": {
           "digest": {

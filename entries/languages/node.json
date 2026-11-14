@@ -3,6 +3,7 @@
     "type": "node",
     "kind": "runtime",
     "category": "language",
+    "summary": "Node.js, the JavaScript runtime, with npm and npx.",
     "resolver": "nodejs.org",
     "every_platform": {
       "archive": "tar.gz",
@@ -83,13 +84,25 @@
       "windows": {
         "bin_dir": "."
       }
-    }
+    },
+    "recipes": [
+      {
+        "title": "Vite front end, npm in the shell",
+        "yaml": "group: shop\nruntimes:\n  node: {version: \"26\", commands: [npm, npx]}\nsites:\n  - {name: web, type: vite}\n",
+        "gives": "Gives https://web.shop.test running vite, and node, npm and npx in the shell."
+      },
+      {
+        "title": "One Node.js for every repository in a group",
+        "yaml": "group: shop\ndefaults:\n  runtimes:\n    node: \"24\"\n",
+        "gives": "Gives node 24 to every repository of group shop that pins no node of its own."
+      }
+    ]
   },
   "services": [
     {
       "support": "lts",
       "version": "24.20.0",
-      "description": "Node.js 24, the current long-term support release",
+      "description": "Node.js 24, a long-term support release",
       "artifacts": {
         "darwin/arm64": {
           "digest": {
@@ -158,7 +171,7 @@
     {
       "support": "current",
       "version": "26.8.1",
-      "description": "Node.js 26, the current release, which is not long-term support",
+      "description": "Node.js 26, a long-term support release since October 2026",
       "artifacts": {
         "darwin/arm64": {
           "digest": {

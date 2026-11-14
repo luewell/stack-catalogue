@@ -2,6 +2,7 @@
   "defaults": {
     "type": "nats",
     "category": "messaging",
+    "summary": "NATS messaging with JetStream, one account per group.",
     "every_platform": {
       "archive": "tar.gz",
       "paths": [
@@ -54,7 +55,7 @@
         "reserved": [
           {
             "key": "accounts",
-            "reason": "holds the accounts Stack provisions"
+            "reason": "decides who may sign in, which Stack's accounts decide"
           },
           {
             "key": "authorization",
@@ -62,267 +63,267 @@
           },
           {
             "key": "system_account",
-            "reason": "names the account Stack administers the server through"
+            "reason": "decides who may sign in, which Stack's accounts decide"
           },
           {
             "key": "system",
-            "reason": "names the account Stack administers the server through"
+            "reason": "decides who may sign in, which Stack's accounts decide"
           },
           {
             "key": "no_system_account",
-            "reason": "removes the account Stack administers the server through"
+            "reason": "decides who may sign in, which Stack's accounts decide"
           },
           {
             "key": "no_system",
-            "reason": "removes the account Stack administers the server through"
+            "reason": "decides who may sign in, which Stack's accounts decide"
           },
           {
             "key": "no_sys_acc",
-            "reason": "removes the account Stack administers the server through"
+            "reason": "decides who may sign in, which Stack's accounts decide"
           },
           {
             "key": "operator",
-            "reason": "replaces Stack's accounts with operator-signed ones"
+            "reason": "decides who may sign in, which Stack's accounts decide"
           },
           {
             "key": "operators",
-            "reason": "replaces Stack's accounts with operator-signed ones"
+            "reason": "decides who may sign in, which Stack's accounts decide"
           },
           {
             "key": "root",
-            "reason": "replaces Stack's accounts with operator-signed ones"
+            "reason": "decides who may sign in, which Stack's accounts decide"
           },
           {
             "key": "roots",
-            "reason": "replaces Stack's accounts with operator-signed ones"
+            "reason": "decides who may sign in, which Stack's accounts decide"
           },
           {
             "key": "root_operator",
-            "reason": "replaces Stack's accounts with operator-signed ones"
+            "reason": "decides who may sign in, which Stack's accounts decide"
           },
           {
             "key": "root_operators",
-            "reason": "replaces Stack's accounts with operator-signed ones"
+            "reason": "decides who may sign in, which Stack's accounts decide"
           },
           {
             "key": "trusted",
-            "reason": "trusts operator keys beside Stack's accounts"
+            "reason": "decides who may sign in, which Stack's accounts decide"
           },
           {
             "key": "trusted_keys",
-            "reason": "trusts operator keys beside Stack's accounts"
+            "reason": "decides who may sign in, which Stack's accounts decide"
           },
           {
             "key": "resolver",
-            "reason": "loads accounts Stack did not provision"
+            "reason": "decides who may sign in, which Stack's accounts decide"
           },
           {
             "key": "account_resolver",
-            "reason": "loads accounts Stack did not provision"
+            "reason": "decides who may sign in, which Stack's accounts decide"
           },
           {
             "key": "accounts_resolver",
-            "reason": "loads accounts Stack did not provision"
+            "reason": "decides who may sign in, which Stack's accounts decide"
           },
           {
             "key": "resolver_preload",
-            "reason": "loads accounts Stack did not provision"
+            "reason": "decides who may sign in, which Stack's accounts decide"
           },
           {
             "key": "resolver_pinned_accounts",
-            "reason": "configures account resolution, which Stack does not use"
+            "reason": "decides who may sign in, which Stack's accounts decide"
           },
           {
             "key": "resolver_tls",
-            "reason": "configures account resolution, which Stack does not use"
+            "reason": "decides who may sign in, which Stack's accounts decide"
           },
           {
             "key": "no_auth_user",
-            "reason": "lets a client sign in without a password"
+            "reason": "decides who may sign in, which Stack's accounts decide"
           },
           {
             "key": "default_sentinel",
-            "reason": "signs in clients that present no credentials"
+            "reason": "decides who may sign in, which Stack's accounts decide"
           },
           {
             "key": "proxies",
-            "reason": "trusts proxies to sign clients in"
+            "reason": "decides who may sign in, which Stack's accounts decide"
           },
           {
             "key": "proxy_protocol",
-            "reason": "changes how the client port reads connections"
+            "reason": "changes how clients connect to the port Stack sets"
           },
           {
             "key": "listen",
-            "reason": "is where Stack's clients connect, which Stack sets on the command line"
+            "reason": "is where clients connect, which Stack sets on the command line"
           },
           {
             "key": "port",
-            "reason": "is where Stack's clients connect, which Stack sets on the command line"
+            "reason": "is where clients connect, which Stack sets on the command line"
           },
           {
             "key": "host",
-            "reason": "is where Stack's clients connect, which Stack sets on the command line"
+            "reason": "is where clients connect, which Stack sets on the command line"
           },
           {
             "key": "net",
-            "reason": "is where Stack's clients connect, which Stack sets on the command line"
+            "reason": "is where clients connect, which Stack sets on the command line"
           },
           {
             "key": "client_advertise",
-            "reason": "advertises an address other than Stack's to clients"
+            "reason": "is where clients connect, which Stack sets on the command line"
           },
           {
             "key": "http",
-            "reason": "opens a monitoring port Stack did not ask for"
+            "reason": "opens a listener Stack does not set up"
           },
           {
             "key": "https",
-            "reason": "opens a monitoring port Stack did not ask for"
+            "reason": "opens a listener Stack does not set up"
           },
           {
             "key": "http_port",
-            "reason": "opens a monitoring port Stack did not ask for"
+            "reason": "opens a listener Stack does not set up"
           },
           {
             "key": "https_port",
-            "reason": "opens a monitoring port Stack did not ask for"
+            "reason": "opens a listener Stack does not set up"
           },
           {
             "key": "monitor_port",
-            "reason": "opens a monitoring port Stack did not ask for"
+            "reason": "opens a listener Stack does not set up"
           },
           {
             "key": "prof_port",
-            "reason": "opens a profiling port Stack did not ask for"
+            "reason": "opens a listener Stack does not set up"
           },
           {
             "key": "websocket",
-            "reason": "listens where Stack did not ask"
+            "reason": "opens a listener Stack does not set up"
           },
           {
             "key": "websocket.*",
-            "reason": "listens where Stack did not ask"
+            "reason": "opens a listener Stack does not set up"
           },
           {
             "key": "ws",
-            "reason": "listens where Stack did not ask"
+            "reason": "opens a listener Stack does not set up"
           },
           {
             "key": "ws.*",
-            "reason": "listens where Stack did not ask"
+            "reason": "opens a listener Stack does not set up"
           },
           {
             "key": "mqtt",
-            "reason": "listens where Stack did not ask"
+            "reason": "opens a listener Stack does not set up"
           },
           {
             "key": "mqtt.*",
-            "reason": "listens where Stack did not ask"
+            "reason": "opens a listener Stack does not set up"
           },
           {
             "key": "cluster",
-            "reason": "connects the server to others and listens where Stack did not ask"
+            "reason": "opens a listener Stack does not set up"
           },
           {
             "key": "cluster.*",
-            "reason": "connects the server to others and listens where Stack did not ask"
+            "reason": "opens a listener Stack does not set up"
           },
           {
             "key": "gateway",
-            "reason": "connects the server to others and listens where Stack did not ask"
+            "reason": "opens a listener Stack does not set up"
           },
           {
             "key": "gateway.*",
-            "reason": "connects the server to others and listens where Stack did not ask"
+            "reason": "opens a listener Stack does not set up"
           },
           {
             "key": "leafnodes",
-            "reason": "connects the server to others and listens where Stack did not ask"
+            "reason": "opens a listener Stack does not set up"
           },
           {
             "key": "leafnodes.*",
-            "reason": "connects the server to others and listens where Stack did not ask"
+            "reason": "opens a listener Stack does not set up"
           },
           {
             "key": "leaf",
-            "reason": "connects the server to others and listens where Stack did not ask"
+            "reason": "opens a listener Stack does not set up"
           },
           {
             "key": "leaf.*",
-            "reason": "connects the server to others and listens where Stack did not ask"
+            "reason": "opens a listener Stack does not set up"
           },
           {
             "key": "tls",
-            "reason": "changes how clients connect, which Stack does not set up"
+            "reason": "configures TLS, which Stack does not set up"
           },
           {
             "key": "ocsp",
-            "reason": "concerns TLS, which Stack does not set up"
+            "reason": "configures TLS, which Stack does not set up"
           },
           {
             "key": "ocsp_cache",
-            "reason": "concerns TLS, which Stack does not set up"
+            "reason": "configures TLS, which Stack does not set up"
           },
           {
             "key": "ocsp_cache.*",
-            "reason": "concerns TLS, which Stack does not set up"
+            "reason": "configures TLS, which Stack does not set up"
           },
           {
             "key": "store_dir",
-            "reason": "is the data directory Stack manages, which Stack sets on the command line"
+            "reason": "is the JetStream directory, which Stack sets on the command line"
           },
           {
             "key": "storedir",
-            "reason": "is the data directory Stack manages, which Stack sets on the command line"
+            "reason": "is the JetStream directory, which Stack sets on the command line"
           },
           {
             "key": "jetstream.store_dir",
-            "reason": "is the data directory Stack manages, which Stack sets on the command line"
+            "reason": "is the JetStream directory, which Stack sets on the command line"
           },
           {
             "key": "jetstream.store",
-            "reason": "is the data directory Stack manages, which Stack sets on the command line"
+            "reason": "is the JetStream directory, which Stack sets on the command line"
           },
           {
             "key": "jetstream.storedir",
-            "reason": "is the data directory Stack manages, which Stack sets on the command line"
+            "reason": "is the JetStream directory, which Stack sets on the command line"
           },
           {
             "key": "jetstream.tpm",
-            "reason": "keeps a key file outside the data directory Stack manages"
+            "reason": "writes files or logs outside the data directory Stack manages"
           },
           {
             "key": "logfile",
-            "reason": "writes the server's log somewhere other than the file Stack supervises"
+            "reason": "writes files or logs outside the data directory Stack manages"
           },
           {
             "key": "log_file",
-            "reason": "writes the server's log somewhere other than the file Stack supervises"
+            "reason": "writes files or logs outside the data directory Stack manages"
           },
           {
             "key": "syslog",
-            "reason": "sends the server's log away from the file Stack supervises"
+            "reason": "writes files or logs outside the data directory Stack manages"
           },
           {
             "key": "remote_syslog",
-            "reason": "sends the server's log away from the file Stack supervises"
+            "reason": "writes files or logs outside the data directory Stack manages"
           },
           {
             "key": "pidfile",
-            "reason": "writes a file outside the data directory Stack manages"
+            "reason": "writes files or logs outside the data directory Stack manages"
           },
           {
             "key": "pid_file",
-            "reason": "writes a file outside the data directory Stack manages"
+            "reason": "writes files or logs outside the data directory Stack manages"
           },
           {
             "key": "ports_file_dir",
-            "reason": "writes a file outside the data directory Stack manages"
+            "reason": "writes files or logs outside the data directory Stack manages"
           },
           {
             "key": "max_payload",
-            "reason": "is set by Stack, whose settings are read last"
+            "reason": "is set in Stack's own nats.conf, which the main file includes last"
           }
         ]
       },
@@ -361,7 +362,19 @@
           ]
         }
       }
-    }
+    },
+    "recipes": [
+      {
+        "title": "A messaging server for the group",
+        "yaml": "group: shop\nservices:\n  - {name: bus, type: nats}\n",
+        "gives": "Gives NATS_URL, NATS_HOST, NATS_PORT, NATS_USER and NATS_PASSWORD for the group's account, which may use JetStream, and the same five prefixed BUS_."
+      },
+      {
+        "title": "One server shared by several groups",
+        "yaml": "group: shop\nservices:\n  - {name: bus, type: nats, shared: local}\n",
+        "gives": "Gives shop the same NATS_* variables, served by one NATS process for every group naming shared: local; each group keeps its own account."
+      }
+    ]
   },
   "services": [
     {
@@ -404,7 +417,7 @@
     {
       "support": "current",
       "version": "2.14.7",
-      "description": "NATS 2.14, the previous release line",
+      "description": "NATS 2.14, the previous release",
       "artifacts": {
         "darwin/arm64": {
           "digest": {

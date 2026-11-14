@@ -3,6 +3,7 @@
     "type": "bun",
     "kind": "runtime",
     "category": "language",
+    "summary": "Bun, a JavaScript runtime and package manager.",
     "resolver": "github.com/oven-sh/bun",
     "every_platform": {
       "archive": "zip",
@@ -59,7 +60,14 @@
         },
         "base_priority": -2
       }
-    }
+    },
+    "recipes": [
+      {
+        "title": "Bun in the shell",
+        "yaml": "group: shop\nruntimes:\n  bun: \"1.4\"\n",
+        "gives": "Gives bun in the shell, and NODE_EXTRA_CA_CERTS so it trusts the sites Stack serves."
+      }
+    ]
   },
   "services": [
     {
@@ -128,7 +136,7 @@
     {
       "support": "current",
       "version": "1.4.2",
-      "description": "Bun 1.4, the only line Bun backports anything to",
+      "description": "Bun 1.4, the newest line and the only one Bun fixes",
       "artifacts": {
         "darwin/arm64": {
           "digest": {

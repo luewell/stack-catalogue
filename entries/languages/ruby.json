@@ -3,6 +3,7 @@
     "type": "ruby",
     "kind": "runtime",
     "category": "language",
+    "summary": "Ruby, with gem, bundle and rake.",
     "every_platform": {
       "archive": "tar.gz",
       "paths": [
@@ -52,7 +53,14 @@
       "exposed": [
         "ruby"
       ]
-    }
+    },
+    "recipes": [
+      {
+        "title": "Ruby with Bundler and Rake",
+        "yaml": "group: shop\nruntimes:\n  ruby: {version: \"4.0\", commands: [bundle, rake]}\n",
+        "gives": "Gives ruby, bundle and rake in the shell."
+      }
+    ]
   },
   "services": [
     {

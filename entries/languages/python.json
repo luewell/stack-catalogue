@@ -3,6 +3,7 @@
     "type": "python",
     "kind": "runtime",
     "category": "language",
+    "summary": "Python 3, with pip.",
     "every_platform": {
       "archive": "tar.gz",
       "paths": [
@@ -74,13 +75,20 @@
           "python"
         ]
       }
-    }
+    },
+    "recipes": [
+      {
+        "title": "Python with pip in the shell",
+        "yaml": "group: shop\nruntimes:\n  python: {version: \"3.14\", commands: [pip]}\n",
+        "gives": "Gives python3 and pip in the shell."
+      }
+    ]
   },
   "services": [
     {
       "support": "lts",
       "version": "3.14.7",
-      "description": "Python 3.14, taking bug fixes until October 2030",
+      "description": "Python 3.14, bug fixes until about October 2027, security fixes until October 2030",
       "artifacts": {
         "darwin/arm64": {
           "digest": {

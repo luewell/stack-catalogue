@@ -3,6 +3,7 @@
     "type": "pnpm",
     "kind": "runtime",
     "category": "packages",
+    "summary": "pnpm, a Node.js package manager.",
     "resolver": "github.com/pnpm/pnpm",
     "every_platform": {
       "archive": "tar.gz",
@@ -46,7 +47,14 @@
       ],
       "bin_dir": ".",
       "container": {}
-    }
+    },
+    "recipes": [
+      {
+        "title": "pnpm and Node.js for a Next.js app",
+        "yaml": "group: shop\nruntimes:\n  node: \"24\"\n  pnpm: \"12\"\nsites:\n  - {name: app, type: next}\n",
+        "gives": "Gives https://app.shop.test running next, with pnpm and node in the shell."
+      }
+    ]
   },
   "services": [
     {

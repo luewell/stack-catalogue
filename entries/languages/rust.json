@@ -3,6 +3,7 @@
     "type": "rust",
     "kind": "runtime",
     "category": "language",
+    "summary": "The Rust toolchain, with cargo and rustc.",
     "every_platform": {
       "archive": "tar.gz",
       "paths": [
@@ -52,7 +53,14 @@
         "cargo-clippy",
         "clippy-driver"
       ]
-    }
+    },
+    "recipes": [
+      {
+        "title": "Rust with rust-analyzer",
+        "yaml": "group: shop\nruntimes:\n  rust: {version: \"1.98\", commands: [rust-analyzer]}\n",
+        "gives": "Gives cargo, rustc, rustdoc, rustfmt, cargo-fmt, cargo-clippy and clippy-driver, plus rust-analyzer, in the shell."
+      }
+    ]
   },
   "services": [
     {

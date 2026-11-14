@@ -3,6 +3,7 @@
     "type": "go",
     "kind": "runtime",
     "category": "language",
+    "summary": "The Go toolchain, with go and gofmt.",
     "resolver": "go.dev",
     "every_platform": {
       "archive": "tar.gz",
@@ -64,7 +65,14 @@
         },
         "base_priority": -1
       }
-    }
+    },
+    "recipes": [
+      {
+        "title": "Go with gofmt in the shell",
+        "yaml": "group: shop\nruntimes:\n  go: {version: \"1.27\", commands: [gofmt]}\n",
+        "gives": "Gives go and gofmt in the shell."
+      }
+    ]
   },
   "services": [
     {

@@ -2,6 +2,7 @@
   "defaults": {
     "type": "mongodb",
     "category": "database",
+    "summary": "MongoDB, one database and account per group.",
     "every_platform": {
       "archive": "tar.gz",
       "paths": [
@@ -84,7 +85,19 @@
           "secret": "MONGODB_ADMIN_PASSWORD"
         }
       }
-    }
+    },
+    "recipes": [
+      {
+        "title": "A database for the group",
+        "yaml": "group: shop\nservices:\n  - {name: docs, type: mongodb}\n",
+        "gives": "Gives MONGODB_URI, MONGODB_HOST, MONGODB_PORT, MONGODB_DATABASE, MONGODB_USERNAME and MONGODB_PASSWORD for a database and account named shop, and the same six prefixed DOCS_."
+      },
+      {
+        "title": "Two databases on one server",
+        "yaml": "group: shop\nservices:\n  - name: docs\n    type: mongodb\n    databases:\n      - {name: app, env_prefix: \"\"}\n      - {name: events, env_prefix: EVENTS}\n",
+        "gives": "Gives the MONGODB_* variables for app, and the same names prefixed EVENTS_ for events, such as EVENTS_MONGODB_URI; each database has its own account."
+      }
+    ]
   },
   "services": [
     {

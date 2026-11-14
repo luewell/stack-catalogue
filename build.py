@@ -37,7 +37,10 @@ DEPTH = 2
 # source file happened to use: what it is, then which release, then what to
 # download. This decides reading order and nothing else, and a key it does not
 # name keeps its place after these.
-ORDER = ["type", "kind", "category", "support", "version", "description",
+# Help indents a recipe by 4 and stays within 96 columns (catalogue.RecipeLineWidth).
+RECIPE_LINE_WIDTH = 92
+
+ORDER = ["type", "kind", "category", "summary", "support", "version", "description",
          "artifacts", "runtime", "lifecycle"]
 # The same for one platform's build: what is downloaded, what it has to hash to,
 # and then how it is unpacked.
@@ -113,6 +116,38 @@ def problems_with(defaults, source):
             problems.append(
                 f"{source}: defaults carries {name}, which each release states for itself")
     return problems
+
+
+def help_problems(defaults, source):
+    """A declarable type's one-line purpose and recipes, which help prints raw."""
+    if defaults.get("kind") == "internal":
+        return []
+    problems = []
+    summary = defaults.get("summary")
+    if not isinstance(summary, str) or not summary.strip() or "\n" in summary:
+        problems.append(f"{source}: defaults has no one-line summary of what the type is for")
+    elif not ascii_printable(summary):
+        problems.append(f"{source}: its summary holds a character other than printable ASCII")
+    for recipe in defaults.get("recipes", []):
+        if sorted(recipe) != ["gives", "title", "yaml"] or not all(
+                isinstance(value, str) and value.strip() for value in recipe.values()):
+            problems.append(f"{source}: a recipe needs a title, its yaml and what it gives")
+            continue
+        if not ascii_printable(recipe["title"]) or not ascii_printable(recipe["gives"]):
+            problems.append(
+                f"{source}: recipe {recipe['title']!r} holds a character other than printable ASCII")
+        for line in recipe["yaml"].rstrip("\n").split("\n"):
+            if not ascii_printable(line):
+                problems.append(f"{source}: a line of recipe {recipe['title']!r} holds a "
+                                "character other than printable ASCII")
+            elif len(line) > RECIPE_LINE_WIDTH:
+                problems.append(f"{source}: a line of recipe {recipe['title']!r} is wider than "
+                                f"{RECIPE_LINE_WIDTH} characters, which help cannot wrap")
+    return problems
+
+
+def ascii_printable(text):
+    return all(" " <= character <= "~" for character in text)
 
 
 def alike(values):
@@ -272,8 +307,8 @@ def main() -> int:
 
         problems = excluded(document, source)
         if not problems:
-            problems = (problems_with(defaults, source) + repeats(document, source)
-                        + out_of_place(document, source))
+            problems = (problems_with(defaults, source) + help_problems(defaults, source)
+                        + repeats(document, source) + out_of_place(document, source))
         for problem in problems:
             print(problem, file=sys.stderr)
         if problems:
