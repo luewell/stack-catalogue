@@ -17,6 +17,8 @@ jobs:
       # decides what every machine downloads.
       - name: Check out
         uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        with:
+          persist-credentials: false
 
       # A well-formed file is the part CI can settle on its own. The rules about
       # what an entry may offer live in one place, in the tool, and
