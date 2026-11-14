@@ -68,6 +68,7 @@
       "trust": {
         "bundle": "add",
         "variable": "NODE_EXTRA_CA_CERTS",
+        "system": "NODE_USE_SYSTEM_CA",
         "serves": [
           "vite",
           "nuxt",

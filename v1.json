@@ -1955,7 +1955,8 @@
         "bin_dir": ".",
         "trust": {
           "bundle": "add",
-          "variable": "NODE_EXTRA_CA_CERTS"
+          "variable": "NODE_EXTRA_CA_CERTS",
+          "system": "NODE_USE_SYSTEM_CA"
         },
         "container": {
           "environment": {
@@ -1978,7 +1979,7 @@
         {
           "title": "Bun in the shell",
           "yaml": "group: shop\nruntimes:\n  bun: \"1.4\"\n",
-          "gives": "Gives bun in the shell, and NODE_EXTRA_CA_CERTS so it trusts the sites Stack serves."
+          "gives": "Gives bun in the shell, with NODE_USE_SYSTEM_CA=1 so it trusts the sites Stack serves once stack trust has run."
         }
       ],
       "image": {
@@ -2284,6 +2285,7 @@
         "trust": {
           "bundle": "add",
           "variable": "NODE_EXTRA_CA_CERTS",
+          "system": "NODE_USE_SYSTEM_CA",
           "serves": [
             "vite",
             "nuxt",
