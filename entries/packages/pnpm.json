@@ -59,45 +59,8 @@
   "services": [
     {
       "support": "current",
-      "version": "11.28.6",
-      "description": "pnpm 11, the line pnpm points its own users at",
-      "artifacts": {
-        "darwin/arm64": {
-          "digest": {
-            "algorithm": "sha256",
-            "value": "acf4dd667fbf792e45bc3908be89afda098e2e660132b7731bbade7147b4912b"
-          }
-        },
-        "linux/amd64": {
-          "digest": {
-            "algorithm": "sha256",
-            "value": "10ff3203f3a38d637561182bec457c7abf43658c27c9f4a7d0dd78ac6f4c891c"
-          }
-        },
-        "linux/arm64": {
-          "digest": {
-            "algorithm": "sha256",
-            "value": "b3febc1090e252483f4f1d12dcfc9bd27e6e10171885dd4d7dc109ba84183a53"
-          }
-        },
-        "windows/amd64": {
-          "digest": {
-            "algorithm": "sha256",
-            "value": "cb8de9e96199295971dc4f320171e363bc39a0b00697744ef6f453ebcf407fe1"
-          }
-        },
-        "windows/arm64": {
-          "digest": {
-            "algorithm": "sha256",
-            "value": "2954cc45bbbd0eaccb3370e212cbda7dd9547aaba4b6b64349717e938e4de961"
-          }
-        }
-      }
-    },
-    {
-      "support": "current",
       "version": "12.14.0",
-      "description": "pnpm 12, newer than the line pnpm recommends",
+      "description": "pnpm 12, the line pnpm points its own users at",
       "artifacts": {
         "darwin/arm64": {
           "digest": {

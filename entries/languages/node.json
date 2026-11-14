@@ -60,8 +60,7 @@
       "commands": [
         "node",
         "npm",
-        "npx",
-        "corepack"
+        "npx"
       ],
       "exposed": [
         "node"
@@ -93,252 +92,78 @@
       },
       {
         "title": "One Node.js for every repository in a group",
-        "yaml": "group: shop\ndefaults:\n  runtimes:\n    node: \"24\"\n",
-        "gives": "Gives node 24 to every repository of group shop that pins no node of its own."
+        "yaml": "group: shop\ndefaults:\n  runtimes:\n    node: \"26\"\n",
+        "gives": "Gives node 26 to every repository of group shop that pins no node of its own."
       }
     ]
   },
   "services": [
     {
       "support": "lts",
-      "version": "24.20.0",
-      "description": "Node.js 24, a long-term support release",
+      "version": "26.13.1",
+      "description": "Node.js 26, the newest long-term support release",
       "artifacts": {
         "darwin/arm64": {
           "digest": {
             "algorithm": "sha256",
-            "value": "40e5607e5ecb3db9192723776da2d75d966260fc74a7a9e731c1bd67dda96bc8"
+            "value": "aec2514ea1ceb2ba52455e9ec65986f6749a06dd759e5db2a72e6889668c9735"
           }
         },
         "linux/amd64": {
           "digest": {
             "algorithm": "sha256",
-            "value": "855d581f8a4eb1a8117e3426de25fe02770592febcfb31369aee1ffbfee9e8ec"
+            "value": "518674de2b621728a5e4486f5fb3b7d2900bb3cc4aa97969edaa463db99f9778"
           }
         },
         "linux/arm64": {
           "digest": {
             "algorithm": "sha256",
-            "value": "3515603e2487879a39bc75716f1a2affd027500c64ba50e845cf72cb33219013"
+            "value": "80a330b35415382878df18d41afbd106ea89bfb3be0087d6608e289a14c5cc7d"
           }
         },
         "windows/amd64": {
           "digest": {
             "algorithm": "sha256",
-            "value": "6cac9ffbca8f6a47091e4b5c772e0606049c3871cb67d900c0cedde630e545ba"
+            "value": "e2edda75bfb089654705cf65a13b58933bfd5f57148e8ebda916f58a2474f1f7"
           }
         },
         "windows/arm64": {
           "digest": {
             "algorithm": "sha256",
-            "value": "31c6799744de8a54601643098040c68c3697e56c94e407d61d0e5fa5f34191d7"
+            "value": "181ebe431b90787113a9e4fc80d38ce86d37888a353a0386de44d2872e48cb97"
           }
         }
       },
       "lifecycle": {
-        "lts": "2025-10-28",
-        "end": "2028-04-30"
+        "lts": "2026-10-28",
+        "end": "2029-04-30"
       },
       "image": {
         "repository": "docker.io/library/node",
-        "tag": "24.20.0-bookworm",
+        "tag": "26.13.1-bookworm",
         "source": "https://hub.docker.com/_/node",
         "digest": {
           "algorithm": "sha256",
-          "value": "be23f54a88d34e8824c741b19b91064094f92c1c97b194144bfc8b50d67258e2"
+          "value": "b7087bc4d973034b30854b378ba107f9fab622b47514cb7e2592e41b8bab8d49"
         },
         "platforms": {
           "linux/amd64": {
             "algorithm": "sha256",
-            "value": "9137a20e25879e0b557227b57e3ee4e9af4bde29eb3db66134cd1723e84f830b"
+            "value": "6eca1d4ba35cef57a8a41008310420541a2a9ffdcd4883841463ccb39a588bd8"
           },
           "linux/arm64": {
             "algorithm": "sha256",
-            "value": "78b162211207872503ea9245188122b815150b9b4380e47a7c4a447332c01660"
+            "value": "d9877cf8835a437f06398df212fd9a344a306c0de7b4e6b4d2724c95728f9476"
           }
         },
         "commands": {
           "node": "/usr/local/bin/node",
           "npm": "/usr/local/bin/npm",
-          "npx": "/usr/local/bin/npx",
-          "corepack": "/usr/local/bin/corepack"
+          "npx": "/usr/local/bin/npx"
         },
         "processes": {
           "shell": "/bin/sh"
         }
-      }
-    },
-    {
-      "support": "current",
-      "version": "26.8.1",
-      "description": "Node.js 26, a long-term support release since October 2026",
-      "artifacts": {
-        "darwin/arm64": {
-          "digest": {
-            "algorithm": "sha256",
-            "value": "6e577fd0d9db776db82306629e441a9dace416702622aebdd171c9dfaa41f4d2"
-          }
-        },
-        "linux/amd64": {
-          "digest": {
-            "algorithm": "sha256",
-            "value": "b2b76660fa4ded4e0b2a41ee3c0c651cd52ea8170ead91ebac1e147ac3d55643"
-          }
-        },
-        "linux/arm64": {
-          "digest": {
-            "algorithm": "sha256",
-            "value": "d5f973ce975e4bd03e6c2038260f7e9201615aa8e1ee293c72f8dcc2a6d9fddb"
-          }
-        },
-        "windows/amd64": {
-          "digest": {
-            "algorithm": "sha256",
-            "value": "57693d8e93d1b04e7b7de46aca53ecd63e97564e73de36a68428d7ff08d83587"
-          }
-        },
-        "windows/arm64": {
-          "digest": {
-            "algorithm": "sha256",
-            "value": "09d62005aa9dca8fcd9bdce8196f5aa783eee3818d5af74089eb7297103c02d4"
-          }
-        }
-      },
-      "runtime": {
-        "commands": [
-          "node",
-          "npm",
-          "npx"
-        ]
-      },
-      "lifecycle": {
-        "lts": "2026-10-28",
-        "end": "2029-04-30"
-      }
-    },
-    {
-      "support": "end of life",
-      "version": "20.20.2",
-      "description": "Node.js 20, past end of life; receives no security fixes",
-      "artifacts": {
-        "darwin/arm64": {
-          "digest": {
-            "algorithm": "sha256",
-            "value": "466e05f3477c20dfb723054dfebffe55bc74660ee77f612166fca121dacb65b6"
-          }
-        },
-        "linux/amd64": {
-          "digest": {
-            "algorithm": "sha256",
-            "value": "19e56f0825510207dd904f087fe52faa0a4eb6b2aab5f0ea7a33830d04888b8b"
-          }
-        },
-        "linux/arm64": {
-          "digest": {
-            "algorithm": "sha256",
-            "value": "47ef73d543ecf6eb19435f6c03a0ac4809b3bf0dd6b26c7c571efc2a6572a74d"
-          }
-        },
-        "windows/amd64": {
-          "digest": {
-            "algorithm": "sha256",
-            "value": "dc3700fdd57a63eedb8fd7e3c7baaa32e6a740a1b904167ff4204bc68ed8bf77"
-          }
-        },
-        "windows/arm64": {
-          "digest": {
-            "algorithm": "sha256",
-            "value": "d5c5b1d56f7f9469830eb1f57efeec0a6a9078c0a9e88cd5b4b4b48f46c22069"
-          }
-        }
-      },
-      "lifecycle": {
-        "lts": "2023-10-24",
-        "end": "2026-04-30"
-      }
-    },
-    {
-      "support": "end of life",
-      "version": "18.20.8",
-      "description": "Node.js 18, past end of life: it receives no security fixes",
-      "artifacts": {
-        "darwin/arm64": {
-          "digest": {
-            "algorithm": "sha256",
-            "value": "bae4965d29d29bd32f96364eefbe3bca576a03e917ddbb70b9330d75f2cacd76"
-          }
-        },
-        "linux/amd64": {
-          "digest": {
-            "algorithm": "sha256",
-            "value": "27a9f3f14d5e99ad05a07ed3524ba3ee92f8ff8b6db5ff80b00f9feb5ec8097a"
-          }
-        },
-        "linux/arm64": {
-          "digest": {
-            "algorithm": "sha256",
-            "value": "2e3dfc51154e6fea9fc86a90c4ea8f3ecb8b60acaf7367c4b76691da192571c1"
-          }
-        },
-        "windows/amd64": {
-          "digest": {
-            "algorithm": "sha256",
-            "value": "1a1e40260a6facba83636e4cd0ba01eb5bd1386896824b36645afba44857384a"
-          }
-        },
-        "windows/arm64": {
-          "url": "https://nodejs.org/dist/v18.20.8/node-v18.20.8-win-x64.zip",
-          "digest": {
-            "algorithm": "sha256",
-            "value": "1a1e40260a6facba83636e4cd0ba01eb5bd1386896824b36645afba44857384a"
-          }
-        }
-      },
-      "lifecycle": {
-        "lts": "2022-10-25",
-        "end": "2025-04-30"
-      }
-    },
-    {
-      "support": "end of life",
-      "version": "16.20.2",
-      "description": "Node.js 16, past end of life: it receives no security fixes",
-      "artifacts": {
-        "darwin/arm64": {
-          "digest": {
-            "algorithm": "sha256",
-            "value": "6a5c4108475871362d742b988566f3fe307f6a67ce14634eb3fbceb4f9eea88c"
-          }
-        },
-        "linux/amd64": {
-          "digest": {
-            "algorithm": "sha256",
-            "value": "c9193e6c414891694759febe846f4f023bf48410a6924a8b1520c46565859665"
-          }
-        },
-        "linux/arm64": {
-          "digest": {
-            "algorithm": "sha256",
-            "value": "b6945fcc9ad220386bb814bfae7137189fd17297f2959a744105e1bee006035a"
-          }
-        },
-        "windows/amd64": {
-          "digest": {
-            "algorithm": "sha256",
-            "value": "f8bb35f6c08dc7bf14ac753509c06ed1a7ebf5b390cd3fbdc8f8c1aedd020ec3"
-          }
-        },
-        "windows/arm64": {
-          "url": "https://nodejs.org/dist/v16.20.2/node-v16.20.2-win-x64.zip",
-          "digest": {
-            "algorithm": "sha256",
-            "value": "f8bb35f6c08dc7bf14ac753509c06ed1a7ebf5b390cd3fbdc8f8c1aedd020ec3"
-          }
-        }
-      },
-      "lifecycle": {
-        "lts": "2021-10-26",
-        "end": "2023-09-11"
       }
     }
   ]
