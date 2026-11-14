@@ -100,7 +100,7 @@
         "name": "PHP-FPM",
         "title": "PHP",
         "directory": "php-fpm",
-        "config": "; #stack-generated\n[global]\ndaemonize = no\nerror_log = /dev/stderr\nlog_limit = 65536\n\n[www]\nlisten = ${STACK_LISTEN}\npm = dynamic\npm.max_children = 5\npm.start_servers = 1\npm.min_spare_servers = 1\npm.max_spare_servers = 3\ncatch_workers_output = yes\ndecorate_workers_output = no\nphp_value[log_errors] = On\nclear_env = no\n",
+        "config": "; #stack-generated\n[global]\ndaemonize = no\nerror_log = /dev/stderr\nlog_limit = 65536\n\n[www]\nlisten = ${STACK_LISTEN}\nlisten.mode = 0600\npm = dynamic\npm.max_children = 5\npm.start_servers = 1\npm.min_spare_servers = 1\npm.max_spare_servers = 3\ncatch_workers_output = yes\ndecorate_workers_output = no\nphp_value[log_errors] = On\nclear_env = no\n",
         "config_name": "pool",
         "marker": "#stack-generated",
         "arguments": [
