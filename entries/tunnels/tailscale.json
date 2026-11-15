@@ -1,0 +1,67 @@
+{
+  "name": "tailscale",
+  "summary": "Tailscale Funnel through the Tailscale client already signed in on this machine, at its ts.net hostname",
+  "requires": [
+    "tunnel_v1"
+  ],
+  "notes": [
+    {
+      "name": "requirements",
+      "text": "Needs Tailscale 1.38.3 or later with MagicDNS, HTTPS certificates and the funnel node attribute; on Linux run \"sudo tailscale set --operator=$USER\" once."
+    },
+    {
+      "name": "first_use",
+      "text": "The first funnel may print a link to enable it for the tailnet; open it, and the share continues once it is enabled."
+    },
+    {
+      "name": "ports",
+      "text": "Funnel serves one share per public port: 443, 8443 or 10000."
+    }
+  ],
+  "executable": {
+    "system": [
+      "tailscale"
+    ],
+    "paths": {
+      "darwin": [
+        "/Applications/Tailscale.app/Contents/MacOS/Tailscale",
+        "/opt/homebrew/bin/tailscale"
+      ],
+      "linux": [
+        "/usr/bin/tailscale"
+      ],
+      "windows": [
+        "C:\\Program Files\\Tailscale\\tailscale.exe"
+      ]
+    }
+  },
+  "modes": [
+    {
+      "name": "funnel",
+      "summary": "This machine's ts.net hostname, public through Funnel",
+      "default": true,
+      "settings": [
+        {
+          "name": "port",
+          "summary": "The public HTTPS port",
+          "choices": [
+            "443",
+            "8443",
+            "10000"
+          ],
+          "default": "443"
+        }
+      ],
+      "arguments": [
+        "funnel",
+        "--yes",
+        "--https=${STACK_SHARE_SETTING_PORT}",
+        "${STACK_SHARE_ORIGIN}"
+      ],
+      "url": {
+        "output": "(https://[a-z0-9-]+(?:\\.[a-z0-9-]+)*\\.ts\\.net(?::[0-9]+)?)/?"
+      },
+      "host_suffix": ".ts.net"
+    }
+  ]
+}

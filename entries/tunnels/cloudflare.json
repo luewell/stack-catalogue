@@ -1,0 +1,98 @@
+{
+  "name": "cloudflare",
+  "summary": "Cloudflare Tunnel through cloudflared: a random trycloudflare.com hostname with no account, or your own hostname through a named tunnel",
+  "default": true,
+  "requires": [
+    "tunnel_v1"
+  ],
+  "notes": [
+    {
+      "name": "quick_limits",
+      "text": "A quick tunnel is for testing: it gets a new random hostname each time, serves at most 200 requests at once, and does not pass server-sent events."
+    },
+    {
+      "name": "named_setup",
+      "text": "A named tunnel needs a Cloudflare account and, once, \"cloudflared tunnel login\", \"cloudflared tunnel create <name>\" and \"cloudflared tunnel route dns <name> <hostname>\"."
+    }
+  ],
+  "executable": {
+    "install": "cloudflared"
+  },
+  "modes": [
+    {
+      "name": "quick",
+      "summary": "A random trycloudflare.com hostname, with no account",
+      "default": true,
+      "files": [
+        {
+          "name": "config.yml",
+          "content": ""
+        }
+      ],
+      "arguments": [
+        "tunnel",
+        "--no-autoupdate",
+        "--config",
+        "${STACK_SHARE_DIR}/config.yml",
+        "--metrics",
+        "${STACK_SHARE_METRICS}",
+        "--url",
+        "${STACK_SHARE_ORIGIN}"
+      ],
+      "ready": {
+        "http": "/ready"
+      },
+      "url": {
+        "http": "/quicktunnel",
+        "json": "hostname"
+      },
+      "host_suffix": ".trycloudflare.com"
+    },
+    {
+      "name": "named",
+      "summary": "Your own hostname, through a tunnel you created and routed with cloudflared",
+      "settings": [
+        {
+          "name": "tunnel",
+          "summary": "The tunnel's name or UUID",
+          "required": true,
+          "pattern": "[A-Za-z0-9][A-Za-z0-9._-]{0,63}"
+        },
+        {
+          "name": "hostname",
+          "summary": "The hostname routed to the tunnel",
+          "required": true,
+          "hostname": true
+        },
+        {
+          "name": "credentials_file",
+          "summary": "The absolute path of the tunnel's credentials file",
+          "required": true,
+          "path": true
+        }
+      ],
+      "files": [
+        {
+          "name": "config.yml",
+          "content": "url: '${STACK_SHARE_ORIGIN}'\ntunnel: '${STACK_SHARE_SETTING_TUNNEL}'\ncredentials-file: '${STACK_SHARE_SETTING_CREDENTIALS_FILE}'\n"
+        }
+      ],
+      "arguments": [
+        "tunnel",
+        "--no-autoupdate",
+        "--config",
+        "${STACK_SHARE_DIR}/config.yml",
+        "--metrics",
+        "${STACK_SHARE_METRICS}",
+        "run",
+        "${STACK_SHARE_SETTING_TUNNEL}"
+      ],
+      "ready": {
+        "http": "/ready"
+      },
+      "url": {
+        "setting": "hostname"
+      }
+    }
+  ]
+}

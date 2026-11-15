@@ -9,6 +9,7 @@
     "entries/databases/mysql.json",
     "entries/databases/postgres.json",
     "entries/internal/busybox.json",
+    "entries/internal/cloudflared.json",
     "entries/languages/bun.json",
     "entries/languages/go.json",
     "entries/languages/node.json",
@@ -22,7 +23,9 @@
     "entries/packages/pnpm.json",
     "entries/search/meilisearch.json",
     "entries/search/typesense.json",
-    "entries/storage/s3.json"
+    "entries/storage/s3.json",
+    "entries/tunnels/cloudflare.json",
+    "entries/tunnels/tailscale.json"
   ],
   "services": [
     {
@@ -2395,6 +2398,76 @@
       "provides": "posix-shell"
     },
     {
+      "type": "cloudflared",
+      "kind": "internal",
+      "category": "internal",
+      "support": "current",
+      "version": "2026.11.0",
+      "description": "cloudflared 2026.11.0 (Apache-2.0), the Cloudflare Tunnel client \"stack share\" runs; Windows on Arm runs the amd64 build",
+      "artifacts": {
+        "darwin/arm64": {
+          "url": "https://github.com/cloudflare/cloudflared/releases/download/2026.11.0/cloudflared-darwin-arm64.tgz",
+          "digest": {
+            "algorithm": "sha256",
+            "value": "8c2f90277ef06a6080bb40b964d33f09f1188102f8798f2e344174b6cf41accf"
+          },
+          "archive": "tar.gz",
+          "paths": [
+            "cloudflared"
+          ],
+          "strip": 0
+        },
+        "linux/amd64": {
+          "url": "https://github.com/cloudflare/cloudflared/releases/download/2026.11.0/cloudflared-linux-amd64",
+          "digest": {
+            "algorithm": "sha256",
+            "value": "51f7c68b57ed7269164075d7e789efce5b59355982f06392deeb037d982a51fd"
+          },
+          "archive": "none",
+          "paths": [
+            "cloudflared"
+          ],
+          "strip": 0
+        },
+        "linux/arm64": {
+          "url": "https://github.com/cloudflare/cloudflared/releases/download/2026.11.0/cloudflared-linux-arm64",
+          "digest": {
+            "algorithm": "sha256",
+            "value": "abe54a006acf9faf2d19ee9d953cb0d0804e92f59c5382a162e57b84d086f56f"
+          },
+          "archive": "none",
+          "paths": [
+            "cloudflared"
+          ],
+          "strip": 0
+        },
+        "windows/amd64": {
+          "url": "https://github.com/cloudflare/cloudflared/releases/download/2026.11.0/cloudflared-windows-amd64.exe",
+          "digest": {
+            "algorithm": "sha256",
+            "value": "d5c1d82031da6253dcdcff64c944cd0fe063016edeb2e4fd088075fc9bd52d0a"
+          },
+          "archive": "none",
+          "paths": [
+            "cloudflared.exe"
+          ],
+          "strip": 0
+        },
+        "windows/arm64": {
+          "url": "https://github.com/cloudflare/cloudflared/releases/download/2026.11.0/cloudflared-windows-amd64.exe",
+          "digest": {
+            "algorithm": "sha256",
+            "value": "d5c1d82031da6253dcdcff64c944cd0fe063016edeb2e4fd088075fc9bd52d0a"
+          },
+          "archive": "none",
+          "paths": [
+            "cloudflared.exe"
+          ],
+          "strip": 0
+        }
+      }
+    },
+    {
       "type": "bun",
       "kind": "runtime",
       "category": "language",
@@ -3002,7 +3075,7 @@
           "name": "PHP-FPM",
           "title": "PHP",
           "directory": "php-fpm",
-          "config": "; #stack-generated\n[global]\ndaemonize = no\nerror_log = /dev/stderr\nlog_limit = 65536\n\n[www]\nlisten = ${STACK_LISTEN}\nlisten.mode = 0600\npm = dynamic\npm.max_children = 5\npm.start_servers = 1\npm.min_spare_servers = 1\npm.max_spare_servers = 3\ncatch_workers_output = yes\ndecorate_workers_output = no\nphp_value[log_errors] = On\nclear_env = no\n",
+          "config": "; #stack-generated\n[global]\ndaemonize = no\nerror_log = /dev/stderr\nlog_limit = 65536\n\n[www]\nlisten = ${STACK_LISTEN}\nlisten.mode = 0600\npm = ondemand\npm.max_children = 5\npm.process_idle_timeout = 10s\ncatch_workers_output = yes\ndecorate_workers_output = no\nphp_value[log_errors] = On\nclear_env = no\n",
           "config_name": "pool",
           "marker": "#stack-generated",
           "arguments": [
@@ -3183,7 +3256,7 @@
           "name": "PHP-FPM",
           "title": "PHP",
           "directory": "php-fpm",
-          "config": "; #stack-generated\n[global]\ndaemonize = no\nerror_log = /dev/stderr\nlog_limit = 65536\n\n[www]\nlisten = ${STACK_LISTEN}\nlisten.mode = 0600\npm = dynamic\npm.max_children = 5\npm.start_servers = 1\npm.min_spare_servers = 1\npm.max_spare_servers = 3\ncatch_workers_output = yes\ndecorate_workers_output = no\nphp_value[log_errors] = On\nclear_env = no\n",
+          "config": "; #stack-generated\n[global]\ndaemonize = no\nerror_log = /dev/stderr\nlog_limit = 65536\n\n[www]\nlisten = ${STACK_LISTEN}\nlisten.mode = 0600\npm = ondemand\npm.max_children = 5\npm.process_idle_timeout = 10s\ncatch_workers_output = yes\ndecorate_workers_output = no\nphp_value[log_errors] = On\nclear_env = no\n",
           "config_name": "pool",
           "marker": "#stack-generated",
           "arguments": [
@@ -3390,7 +3463,7 @@
           "name": "PHP-FPM",
           "title": "PHP",
           "directory": "php-fpm",
-          "config": "; #stack-generated\n[global]\ndaemonize = no\nerror_log = /dev/stderr\nlog_limit = 65536\n\n[www]\nlisten = ${STACK_LISTEN}\nlisten.mode = 0600\npm = dynamic\npm.max_children = 5\npm.start_servers = 1\npm.min_spare_servers = 1\npm.max_spare_servers = 3\ncatch_workers_output = yes\ndecorate_workers_output = no\nphp_value[log_errors] = On\nclear_env = no\n",
+          "config": "; #stack-generated\n[global]\ndaemonize = no\nerror_log = /dev/stderr\nlog_limit = 65536\n\n[www]\nlisten = ${STACK_LISTEN}\nlisten.mode = 0600\npm = ondemand\npm.max_children = 5\npm.process_idle_timeout = 10s\ncatch_workers_output = yes\ndecorate_workers_output = no\nphp_value[log_errors] = On\nclear_env = no\n",
           "config_name": "pool",
           "marker": "#stack-generated",
           "arguments": [
@@ -3571,7 +3644,7 @@
           "name": "PHP-FPM",
           "title": "PHP",
           "directory": "php-fpm",
-          "config": "; #stack-generated\n[global]\ndaemonize = no\nerror_log = /dev/stderr\nlog_limit = 65536\n\n[www]\nlisten = ${STACK_LISTEN}\nlisten.mode = 0600\npm = dynamic\npm.max_children = 5\npm.start_servers = 1\npm.min_spare_servers = 1\npm.max_spare_servers = 3\ncatch_workers_output = yes\ndecorate_workers_output = no\nphp_value[log_errors] = On\nclear_env = no\n",
+          "config": "; #stack-generated\n[global]\ndaemonize = no\nerror_log = /dev/stderr\nlog_limit = 65536\n\n[www]\nlisten = ${STACK_LISTEN}\nlisten.mode = 0600\npm = ondemand\npm.max_children = 5\npm.process_idle_timeout = 10s\ncatch_workers_output = yes\ndecorate_workers_output = no\nphp_value[log_errors] = On\nclear_env = no\n",
           "config_name": "pool",
           "marker": "#stack-generated",
           "arguments": [
@@ -3752,7 +3825,7 @@
           "name": "PHP-FPM",
           "title": "PHP",
           "directory": "php-fpm",
-          "config": "; #stack-generated\n[global]\ndaemonize = no\nerror_log = /dev/stderr\nlog_limit = 65536\n\n[www]\nlisten = ${STACK_LISTEN}\nlisten.mode = 0600\npm = dynamic\npm.max_children = 5\npm.start_servers = 1\npm.min_spare_servers = 1\npm.max_spare_servers = 3\ncatch_workers_output = yes\ndecorate_workers_output = no\nphp_value[log_errors] = On\nclear_env = no\n",
+          "config": "; #stack-generated\n[global]\ndaemonize = no\nerror_log = /dev/stderr\nlog_limit = 65536\n\n[www]\nlisten = ${STACK_LISTEN}\nlisten.mode = 0600\npm = ondemand\npm.max_children = 5\npm.process_idle_timeout = 10s\ncatch_workers_output = yes\ndecorate_workers_output = no\nphp_value[log_errors] = On\nclear_env = no\n",
           "config_name": "pool",
           "marker": "#stack-generated",
           "arguments": [
@@ -6076,6 +6149,173 @@
           "shell": "/bin/sh"
         }
       }
+    }
+  ],
+  "tunnels": [
+    {
+      "name": "cloudflare",
+      "summary": "Cloudflare Tunnel through cloudflared: a random trycloudflare.com hostname with no account, or your own hostname through a named tunnel",
+      "default": true,
+      "requires": [
+        "tunnel_v1"
+      ],
+      "notes": [
+        {
+          "name": "quick_limits",
+          "text": "A quick tunnel is for testing: it gets a new random hostname each time, serves at most 200 requests at once, and does not pass server-sent events."
+        },
+        {
+          "name": "named_setup",
+          "text": "A named tunnel needs a Cloudflare account and, once, \"cloudflared tunnel login\", \"cloudflared tunnel create <name>\" and \"cloudflared tunnel route dns <name> <hostname>\"."
+        }
+      ],
+      "executable": {
+        "install": "cloudflared"
+      },
+      "modes": [
+        {
+          "name": "quick",
+          "summary": "A random trycloudflare.com hostname, with no account",
+          "default": true,
+          "files": [
+            {
+              "name": "config.yml",
+              "content": ""
+            }
+          ],
+          "arguments": [
+            "tunnel",
+            "--no-autoupdate",
+            "--config",
+            "${STACK_SHARE_DIR}/config.yml",
+            "--metrics",
+            "${STACK_SHARE_METRICS}",
+            "--url",
+            "${STACK_SHARE_ORIGIN}"
+          ],
+          "ready": {
+            "http": "/ready"
+          },
+          "url": {
+            "http": "/quicktunnel",
+            "json": "hostname"
+          },
+          "host_suffix": ".trycloudflare.com"
+        },
+        {
+          "name": "named",
+          "summary": "Your own hostname, through a tunnel you created and routed with cloudflared",
+          "settings": [
+            {
+              "name": "tunnel",
+              "summary": "The tunnel's name or UUID",
+              "required": true,
+              "pattern": "[A-Za-z0-9][A-Za-z0-9._-]{0,63}"
+            },
+            {
+              "name": "hostname",
+              "summary": "The hostname routed to the tunnel",
+              "required": true,
+              "hostname": true
+            },
+            {
+              "name": "credentials_file",
+              "summary": "The absolute path of the tunnel's credentials file",
+              "required": true,
+              "path": true
+            }
+          ],
+          "files": [
+            {
+              "name": "config.yml",
+              "content": "url: '${STACK_SHARE_ORIGIN}'\ntunnel: '${STACK_SHARE_SETTING_TUNNEL}'\ncredentials-file: '${STACK_SHARE_SETTING_CREDENTIALS_FILE}'\n"
+            }
+          ],
+          "arguments": [
+            "tunnel",
+            "--no-autoupdate",
+            "--config",
+            "${STACK_SHARE_DIR}/config.yml",
+            "--metrics",
+            "${STACK_SHARE_METRICS}",
+            "run",
+            "${STACK_SHARE_SETTING_TUNNEL}"
+          ],
+          "ready": {
+            "http": "/ready"
+          },
+          "url": {
+            "setting": "hostname"
+          }
+        }
+      ]
+    },
+    {
+      "name": "tailscale",
+      "summary": "Tailscale Funnel through the Tailscale client already signed in on this machine, at its ts.net hostname",
+      "requires": [
+        "tunnel_v1"
+      ],
+      "notes": [
+        {
+          "name": "requirements",
+          "text": "Needs Tailscale 1.38.3 or later with MagicDNS, HTTPS certificates and the funnel node attribute; on Linux run \"sudo tailscale set --operator=$USER\" once."
+        },
+        {
+          "name": "first_use",
+          "text": "The first funnel may print a link to enable it for the tailnet; open it, and the share continues once it is enabled."
+        },
+        {
+          "name": "ports",
+          "text": "Funnel serves one share per public port: 443, 8443 or 10000."
+        }
+      ],
+      "executable": {
+        "system": [
+          "tailscale"
+        ],
+        "paths": {
+          "darwin": [
+            "/Applications/Tailscale.app/Contents/MacOS/Tailscale",
+            "/opt/homebrew/bin/tailscale"
+          ],
+          "linux": [
+            "/usr/bin/tailscale"
+          ],
+          "windows": [
+            "C:\\Program Files\\Tailscale\\tailscale.exe"
+          ]
+        }
+      },
+      "modes": [
+        {
+          "name": "funnel",
+          "summary": "This machine's ts.net hostname, public through Funnel",
+          "default": true,
+          "settings": [
+            {
+              "name": "port",
+              "summary": "The public HTTPS port",
+              "choices": [
+                "443",
+                "8443",
+                "10000"
+              ],
+              "default": "443"
+            }
+          ],
+          "arguments": [
+            "funnel",
+            "--yes",
+            "--https=${STACK_SHARE_SETTING_PORT}",
+            "${STACK_SHARE_ORIGIN}"
+          ],
+          "url": {
+            "output": "(https://[a-z0-9-]+(?:\\.[a-z0-9-]+)*\\.ts\\.net(?::[0-9]+)?)/?"
+          },
+          "host_suffix": ".ts.net"
+        }
+      ]
     }
   ]
 }

@@ -1,0 +1,86 @@
+{
+  "defaults": {
+    "type": "cloudflared",
+    "kind": "internal",
+    "category": "internal",
+    "every_platform": {
+      "strip": 0
+    },
+    "artifacts": {
+      "darwin/arm64": {
+        "url": "https://github.com/cloudflare/cloudflared/releases/download/{version}/cloudflared-darwin-arm64.tgz",
+        "archive": "tar.gz",
+        "paths": [
+          "cloudflared"
+        ]
+      },
+      "linux/amd64": {
+        "url": "https://github.com/cloudflare/cloudflared/releases/download/{version}/cloudflared-linux-amd64",
+        "archive": "none",
+        "paths": [
+          "cloudflared"
+        ]
+      },
+      "linux/arm64": {
+        "url": "https://github.com/cloudflare/cloudflared/releases/download/{version}/cloudflared-linux-arm64",
+        "archive": "none",
+        "paths": [
+          "cloudflared"
+        ]
+      },
+      "windows/amd64": {
+        "url": "https://github.com/cloudflare/cloudflared/releases/download/{version}/cloudflared-windows-amd64.exe",
+        "archive": "none",
+        "paths": [
+          "cloudflared.exe"
+        ]
+      },
+      "windows/arm64": {
+        "url": "https://github.com/cloudflare/cloudflared/releases/download/{version}/cloudflared-windows-amd64.exe",
+        "archive": "none",
+        "paths": [
+          "cloudflared.exe"
+        ]
+      }
+    }
+  },
+  "services": [
+    {
+      "support": "current",
+      "version": "2026.11.0",
+      "description": "cloudflared 2026.11.0 (Apache-2.0), the Cloudflare Tunnel client \"stack share\" runs; Windows on Arm runs the amd64 build",
+      "artifacts": {
+        "darwin/arm64": {
+          "digest": {
+            "algorithm": "sha256",
+            "value": "8c2f90277ef06a6080bb40b964d33f09f1188102f8798f2e344174b6cf41accf"
+          }
+        },
+        "linux/amd64": {
+          "digest": {
+            "algorithm": "sha256",
+            "value": "51f7c68b57ed7269164075d7e789efce5b59355982f06392deeb037d982a51fd"
+          }
+        },
+        "linux/arm64": {
+          "digest": {
+            "algorithm": "sha256",
+            "value": "abe54a006acf9faf2d19ee9d953cb0d0804e92f59c5382a162e57b84d086f56f"
+          }
+        },
+        "windows/amd64": {
+          "digest": {
+            "algorithm": "sha256",
+            "value": "d5c1d82031da6253dcdcff64c944cd0fe063016edeb2e4fd088075fc9bd52d0a"
+          }
+        },
+        "windows/arm64": {
+          "digest": {
+            "algorithm": "sha256",
+            "value": "d5c1d82031da6253dcdcff64c944cd0fe063016edeb2e4fd088075fc9bd52d0a"
+          }
+        }
+      }
+    }
+  ]
+}
