@@ -43,7 +43,10 @@
       "ready": "url=\"http://127.0.0.1:$STACK_PORT/health\"\nif command -v curl >/dev/null 2>&1; then\n  curl -fsS -o /dev/null \"$url\"\nelse\n  wget -q -O /dev/null \"$url\"\nfi\n",
       "group_secrets": [
         "TYPESENSE_API_KEY"
-      ]
+      ],
+      "workspace_laravel_connection": {
+        "SCOUT_PREFIX": "{workspace}_"
+      }
     },
     "notes": [
       {

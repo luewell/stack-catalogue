@@ -129,7 +129,10 @@
             "PHP_FCGI_MAX_REQUESTS=0"
           ]
         }
-      }
+      },
+      "workspace_clone": [
+        "vendor"
+      ]
     },
     "recipes": [
       {

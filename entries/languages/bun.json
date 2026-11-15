@@ -60,7 +60,10 @@
           "exact": "{release}"
         },
         "base_priority": -2
-      }
+      },
+      "workspace_clone": [
+        "node_modules"
+      ]
     },
     "recipes": [
       {

@@ -314,7 +314,8 @@
           ],
           "restricted": true
         }
-      }
+      },
+      "database_drop": "set -e\nPGPASSWORD=\"$POSTGRES_ADMIN_PASSWORD\" \"$STACK_INSTALL_DIR/bin/psql\" -h \"$STACK_SOCKET_DIR\" -p \"$STACK_PORT\" -U stack_admin -X -w -q -v ON_ERROR_STOP=1 -v ECHO=none -d postgres <<'SQL'\n{snippet:target-owned}\nSELECT format('DROP DATABASE IF EXISTS %I WITH (FORCE)', :'database_name')\\gexec\nSQL\n"
     },
     "recipes": [
       {

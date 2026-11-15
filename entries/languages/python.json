@@ -74,7 +74,10 @@
         "exposed": [
           "python"
         ]
-      }
+      },
+      "workspace_clone": [
+        ".venv"
+      ]
     },
     "recipes": [
       {

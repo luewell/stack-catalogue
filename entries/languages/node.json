@@ -83,7 +83,10 @@
       },
       "windows": {
         "bin_dir": "."
-      }
+      },
+      "workspace_clone": [
+        "node_modules"
+      ]
     },
     "recipes": [
       {

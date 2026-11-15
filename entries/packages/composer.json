@@ -22,7 +22,10 @@
       "windows": {
         "run_with": "php"
       },
-      "container": {}
+      "container": {},
+      "workspace_clone": [
+        "vendor"
+      ]
     },
     "recipes": [
       {

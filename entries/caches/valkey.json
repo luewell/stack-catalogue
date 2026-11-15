@@ -233,6 +233,9 @@
           "protocol": "resp",
           "secret": "VALKEY_ADMIN_PASSWORD"
         }
+      },
+      "workspace_connection": {
+        "REDIS_PREFIX": "{workspace}_"
       }
     },
     "recipes": [

@@ -46,7 +46,10 @@
         "pnpm"
       ],
       "bin_dir": ".",
-      "container": {}
+      "container": {},
+      "workspace_clone": [
+        "node_modules"
+      ]
     },
     "recipes": [
       {

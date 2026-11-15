@@ -39,7 +39,7 @@
       }
     },
     "runtime": {
-      "start": "exec \"$STACK_INSTALL_DIR/mailpit\" --smtp \"127.0.0.1:$STACK_PORT\" --listen \"127.0.0.1:${STACK_PORT_HTTP:?this Mailpit entry needs a newer Stack}\" --allowed-hosts \"${STACK_HOSTNAMES:?this Mailpit entry needs a newer Stack}\" --database \"$STACK_DATA_DIR/mailpit.db\" --smtp-auth-accept-any --smtp-auth-allow-insecure --smtp-disable-rdns --disable-version-check\n",
+      "start": "exec \"$STACK_INSTALL_DIR/mailpit\" --smtp \"127.0.0.1:$STACK_PORT\" --listen \"127.0.0.1:${STACK_PORT_HTTP:?this Mailpit entry needs a newer Stack}\" --allowed-hosts \"${STACK_HOSTNAMES:?this Mailpit entry needs a newer Stack}\" --database \"$STACK_DATA_DIR/mailpit.db\" --smtp-auth-accept-any --smtp-auth-allow-insecure --smtp-disable-rdns --disable-version-check --tags-username\n",
       "stop_signal": "SIGTERM",
       "default_port": 1025,
       "ports": [
@@ -47,6 +47,10 @@
       ],
       "hostname": {
         "label": "mail",
+        "port": "http"
+      },
+      "mail_api": {
+        "protocol": "mailpit-v1",
         "port": "http"
       },
       "connection": {
@@ -76,11 +80,28 @@
             "--smtp-auth-accept-any",
             "--smtp-auth-allow-insecure",
             "--smtp-disable-rdns",
-            "--disable-version-check"
+            "--disable-version-check",
+            "--tags-username"
           ]
         }
+      },
+      "workspace_connection": {
+        "MAIL_URL": "smtp://{workspace}@127.0.0.1:{port}"
+      },
+      "workspace_laravel_connection": {
+        "MAIL_USERNAME": "{workspace}"
       }
     },
+    "notes": [
+      {
+        "name": "mail_commands",
+        "text": "stack mail lists, shows, waits for and clears the mail this service caught, and saves its attachments, through Mailpit's API; stack help mail lists every command."
+      },
+      {
+        "name": "access",
+        "text": "Mailpit's web interface and API listen on 127.0.0.1 without a password: any account on this machine can read and delete the mail it caught, so send it no real addresses' mail."
+      }
+    ],
     "recipes": [
       {
         "title": "Catch a Laravel site's mail",
