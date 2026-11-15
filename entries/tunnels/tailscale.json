@@ -7,11 +7,15 @@
   "notes": [
     {
       "name": "requirements",
-      "text": "Needs Tailscale 1.38.3 or later with MagicDNS, HTTPS certificates and the funnel node attribute; on Linux run \"sudo tailscale set --operator=$USER\" once."
+      "text": "Needs Tailscale 1.52.0 or later with MagicDNS, HTTPS certificates and the funnel node attribute; on Linux run \"sudo tailscale set --operator=$USER\" once."
+    },
+    {
+      "name": "version",
+      "text": "Before 1.52.0, funnel neither runs in the foreground nor takes --https and --yes, so an older client rejects the command and the share fails to start."
     },
     {
       "name": "first_use",
-      "text": "The first funnel may print a link to enable it for the tailnet; open it, and the share continues once it is enabled."
+      "text": "The first funnel may print a link to enable it for the tailnet; open it, and the share continues once it is enabled. A share that is not live within 60 seconds ends; enable Funnel, then share again."
     },
     {
       "name": "ports",

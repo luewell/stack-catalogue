@@ -95,6 +95,23 @@ TUNNEL_JSON_FIELD = re.compile(r"[A-Za-z0-9_]{1,64}")
 TUNNEL_REFERENCE = re.compile(r"\$(\$|\{([A-Za-z_][A-Za-z0-9_]*)\})")
 HOSTNAME_LABEL = re.compile(r"[a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?")
 NOTE_NAME = re.compile(r"[a-z]+(_[a-z]+)*")
+# Stack compiles patterns with Go's RE2, which has none of these.
+RE2_MISSING = re.compile(r"\(\?(=|!|<=|<!|>|P=|\()|\\[1-9]")
+# A field's shape: a type, [shape] for a list of them, {"*": shape} for an
+# object of any keys, or the fields an object may have.
+TUNNEL_SETTING_SHAPE = {"name": str, "summary": str, "required": bool, "default": str,
+                        "pattern": str, "choices": [str], "hostname": bool, "path": bool}
+TUNNEL_MODE_SHAPE = {"name": str, "summary": str, "default": bool,
+                     "settings": [TUNNEL_SETTING_SHAPE],
+                     "files": [{"name": str, "content": str}], "arguments": [str],
+                     "ready": {"http": str, "output": str},
+                     "url": {"http": str, "json": str, "output": str, "setting": str},
+                     "host_suffix": str}
+TUNNEL_SHAPE = {"name": str, "summary": str, "default": bool, "requires": [str],
+                "notes": [{"name": str, "text": str}],
+                "executable": {"install": str, "system": [str], "paths": {"*": [str]}},
+                "modes": [TUNNEL_MODE_SHAPE]}
+SHAPE_NAMES = {str: "a string", bool: "true or false"}
 
 
 def expand(value, version):
@@ -376,11 +393,36 @@ def is_hostname(name, labels=1):
 
 
 def compiles(pattern):
+    """Whether both Python and Go's RE2 accept the pattern, as far as a scan tells."""
     try:
         re.compile(pattern)
     except (re.error, TypeError):
         return False
-    return True
+    outside_classes = re.sub(r"\\[^1-9]|\[\^?\]?(\\.|[^\]])*\]", "", pattern)
+    return RE2_MISSING.search(outside_classes) is None
+
+
+def shape_problems(value, shape, where):
+    if isinstance(shape, type):
+        if not isinstance(value, shape):
+            return [f"{where} is not {SHAPE_NAMES[shape]}"]
+        return []
+    if isinstance(shape, list):
+        if not isinstance(value, list):
+            return [f"{where} is not a list"]
+        return [problem for position, item in enumerate(value)
+                for problem in shape_problems(item, shape[0], f"{where}[{position}]")]
+    if not isinstance(value, dict):
+        return [f"{where} is not an object"]
+    if "*" in shape:
+        return [problem for key, item in sorted(value.items())
+                for problem in shape_problems(item, shape["*"], f"{where}.{key}")]
+    problems = [f"{where} has an unknown field {key!r}"
+                for key in sorted(value.keys() - shape.keys())]
+    for key, field_shape in shape.items():
+        if key in value:
+            problems += shape_problems(value[key], field_shape, f"{where}.{key}")
+    return problems
 
 
 def printable_line(text, required=True):
@@ -389,12 +431,6 @@ def printable_line(text, required=True):
     if not text:
         return not required
     return len(text) <= 200 and ascii_printable(text)
-
-
-def unknown_keys(value, allowed, what):
-    if not isinstance(value, dict):
-        return [f"{what} is not an object"]
-    return [f"{what} has an unknown field {key!r}" for key in sorted(value.keys() - set(allowed))]
 
 
 def template_problem(text, known):
@@ -422,10 +458,7 @@ def setting_accepts(setting, value):
 
 
 def setting_problems(setting, where):
-    problems = unknown_keys(setting, ["name", "summary", "required", "default", "pattern",
-                                      "choices", "hostname", "path"], where)
-    if problems:
-        return problems
+    problems = []
     kinds = [kind for kind in ("pattern", "choices", "hostname", "path") if setting.get(kind)]
     if not TUNNEL_SETTING_NAME.fullmatch(str(setting.get("name", ""))):
         problems.append(f"{where} is not named in lowercase letters, digits and underscores")
@@ -434,7 +467,7 @@ def setting_problems(setting, where):
     if len(kinds) != 1:
         problems.append(f"{where} does not declare exactly one of pattern, choices, hostname and path")
     elif "pattern" in setting and not compiles(setting["pattern"]):
-        problems.append(f"{where} has a pattern that does not compile")
+        problems.append(f"{where} has a pattern that does not compile, or uses what RE2 lacks")
     elif "choices" in setting and not all(
             isinstance(choice, str) and choice and ascii_printable(choice) for choice in setting["choices"]):
         problems.append(f"{where} offers an empty or unprintable choice")
@@ -444,9 +477,7 @@ def setting_problems(setting, where):
 
 
 def executable_problems(executable, where, internal_types):
-    problems = unknown_keys(executable, ["install", "system", "paths"], where)
-    if problems:
-        return problems
+    problems = []
     installed = executable.get("install")
     system = executable.get("system") or executable.get("paths")
     if bool(installed) == bool(system):
@@ -476,17 +507,14 @@ def executable_problems(executable, where, internal_types):
 
 
 def mode_problems(mode, where, installed):
-    problems = unknown_keys(mode, ["name", "summary", "default", "settings", "files", "arguments",
-                                   "ready", "url", "host_suffix"], where)
-    if problems:
-        return problems
+    problems = []
     if not TUNNEL_NAME.fullmatch(str(mode.get("name", ""))):
         problems.append(f"{where} is not named in lowercase letters, digits and hyphens")
     if not printable_line(mode.get("summary", ""), required=False):
         problems.append(f"{where} has a summary that is not one printable line")
 
     settings = mode.get("settings", [])
-    names = [setting.get("name") for setting in settings if isinstance(setting, dict)]
+    names = [setting.get("name") for setting in settings]
     if len(settings) > 16 or len(set(names)) != len(settings):
         problems.append(f"{where} declares more than 16 settings or one twice")
     for setting in settings:
@@ -496,7 +524,7 @@ def mode_problems(mode, where, installed):
     if installed:
         known.add(TUNNEL_INSTALL_PLACEHOLDER)
     arguments = mode.get("arguments", [])
-    if not isinstance(arguments, list) or not 1 <= len(arguments) <= 64:
+    if not 1 <= len(arguments) <= 64:
         problems.append(f"{where} does not have between 1 and 64 arguments")
         arguments = []
     for argument in arguments:
@@ -508,8 +536,7 @@ def mode_problems(mode, where, installed):
     if len(files) > 8 or len({file.get("name") for file in files}) != len(files):
         problems.append(f"{where} writes more than 8 files or one twice")
     for file in files:
-        problems += unknown_keys(file, ["name", "content"], f"{where} file")
-        name, content = file.get("name", ""), file.get("content")
+        name, content = file.get("name", ""), file.get("content", "")
         if not TUNNEL_FILE_NAME.fullmatch(str(name)) or name in (".", ".."):
             problems.append(f"{where} writes {name!r}, which is not a plain lowercase file name")
         reason = template_problem(content, known)
@@ -527,16 +554,14 @@ def progress_problems(mode, where, names, metrics):
     problems = []
     ready = mode.get("ready")
     if ready is not None:
-        problems += unknown_keys(ready, ["http", "output"], f"{where} ready")
         if bool(ready.get("http")) == bool(ready.get("output")):
             problems.append(f"{where} ready names neither or both of http and output")
         elif ready.get("http") and (not TUNNEL_HTTP_PATH.fullmatch(ready["http"]) or not metrics):
             problems.append(f"{where} ready.http is not a plain path read on STACK_SHARE_METRICS")
         elif ready.get("output") and not compiles(ready["output"]):
-            problems.append(f"{where} ready.output does not compile")
+            problems.append(f"{where} ready.output does not compile, or uses what RE2 lacks")
 
     url = mode.get("url", {})
-    problems += unknown_keys(url, ["http", "json", "output", "setting"], f"{where} url")
     sources = [source for source in ("http", "output", "setting") if url.get(source)]
     if len(sources) != 1:
         problems.append(f"{where} url is not exactly one of http, output and setting")
@@ -547,7 +572,8 @@ def progress_problems(mode, where, names, metrics):
         problems.append(f"{where} url.http is not a plain path read on STACK_SHARE_METRICS "
                         "with a plain json field")
     elif url.get("output") and (not compiles(url["output"]) or re.compile(url["output"]).groups != 1):
-        problems.append(f"{where} url.output does not compile to a pattern with one group")
+        problems.append(f"{where} url.output does not compile to a pattern with one group, "
+                        "or uses what RE2 lacks")
     elif url.get("setting") and not any(
             setting.get("name") == url["setting"] and setting.get("hostname")
             for setting in mode.get("settings", [])):
@@ -564,8 +590,7 @@ def progress_problems(mode, where, names, metrics):
 
 def tunnel_problems(adapter, source, internal_types):
     """Why Stack would skip an adapter, checked as catalogue/tunnels.go checks it."""
-    problems = unknown_keys(adapter, ["name", "summary", "default", "requires", "notes",
-                                      "executable", "modes"], str(source))
+    problems = shape_problems(adapter, TUNNEL_SHAPE, f"{source}: the adapter")
     if problems:
         return problems
     if not TUNNEL_NAME.fullmatch(str(adapter.get("name", ""))):
@@ -604,9 +629,15 @@ def tunnel_adapters(services):
     adapters = []
     problems = []
     for source in sorted(TUNNELS.glob("*.json")):
-        adapter = json.loads(source.read_text())
+        try:
+            adapter = json.loads(source.read_text())
+        except json.JSONDecodeError as decode_error:
+            problems.append(f"{source}: not JSON: {decode_error}")
+            continue
         problems += tunnel_problems(adapter, source, internal_types)
         adapters.append(adapter)
+    if problems:
+        return adapters, problems
     if sum(1 for adapter in adapters if adapter.get("default")) > 1:
         problems.append(f"{TUNNELS}: more than one adapter is the default")
     return adapters, problems
@@ -621,7 +652,12 @@ def main() -> int:
     services = []
     seen = {}
     for source in sources:
-        document, problems = insert_snippets(json.loads(source.read_text()), source)
+        try:
+            parsed = json.loads(source.read_text())
+        except json.JSONDecodeError as decode_error:
+            print(f"{source}: not JSON: {decode_error}", file=sys.stderr)
+            return 1
+        document, problems = insert_snippets(parsed, source)
         for problem in problems:
             print(problem, file=sys.stderr)
         if problems:
